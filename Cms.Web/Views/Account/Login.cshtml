@@ -1,0 +1,139 @@
+﻿<main class="container d-flex flex-column align-items-center justify-content-center py-5" style="min-height: 100vh">
+
+    <div class="text-center mb-2">
+        <img src="~/img/logo.jpg" alt="SixDots Logo" class="img-fluid mb-5" style="max-width: 150px;">
+        <h5 class="fw-bold">Renㄟ想像空間</h5>
+    </div>
+
+    <div class="card login-card shadow-sm">
+        <div class="card-body p-4 p-md-5">
+            <h3 class="card-title text-center fw-bold mb-4">帳號登入</h3>
+
+            <form>
+                <div class="mb-3">
+                    <label for="username" class="form-label fw-bold">帳號</label>
+                    <input type="text" class="form-control custom-input" id="username" placeholder="請輸入您的帳號">
+                </div>
+                <div id="input-validation-username"></div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label fw-bold">密碼</label>
+
+                    <div class="password-wrapper">
+                        <input type="password"
+                                class="form-control custom-input"
+                                id="password"
+                                placeholder="請輸入您的密碼">
+
+                        <button type="button"
+                                class="password-toggle"
+                                id="togglePassword"
+                                tabindex="-1">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </button>
+                    </div>
+
+                    <div id="input-validation-password"></div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-lg login-btn">登入</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</main>
+
+<script>
+    //登入
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const username = document.querySelector("#username").value.trim();
+            const password = document.querySelector("#password").value.trim();
+
+            // 清掉舊錯誤
+            document.querySelectorAll(".text-danger").forEach(el => el.remove());
+
+            try {
+                let res = await login(username, password);
+
+                if (!res.success) {
+                    handleLoginError(res);
+                    return;
+                }
+
+                if (res.data.isAdmin) {
+                    window.location.href = '@Url.Action("Index", "Backend")';
+                }
+                else{
+                    window.location.href = '@Url.Action("Index", "Frontend")';
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("系統發生錯誤，請稍後再試。");
+            }
+
+        });
+    });
+
+    //登入Api
+    async function login(username, password) {
+        let res = await fetch('@Url.Action("Login", "Account")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
+
+        return await res.json();
+    }
+
+    // 帳密錯誤處理
+    function handleLoginError(res) {
+        if (res.validationErrors) {
+            Object.entries(res.validationErrors).forEach(([fieldName, errors]) => {
+                let target = null;
+
+                if (fieldName === "Username")
+                    target = document.querySelector("#input-validation-username");
+                if (fieldName === "Password")
+                    target = document.querySelector("#input-validation-password");
+
+                if (target) {
+                    const div = document.createElement("div");
+                    div.className = "text-danger mt-1";
+                    div.innerHTML = errors.join("<br>");
+                    target.insertAdjacentElement("afterend", div);
+                }
+            });
+        }
+        else if (res.errorMessage) {
+            alert(res.errorMessage);
+        }
+    }
+
+    //密碼小眼睛
+    const togglePassword = document.querySelector("#togglePassword");
+    const passwordInput = document.querySelector("#password");
+
+    togglePassword.addEventListener("click", function () {
+        const icon = togglePassword.querySelector("i");
+        const isPassword = passwordInput.type === "password";
+
+        passwordInput.type = isPassword ? "text" : "password";
+
+        icon.classList.toggle("fa-eye");
+        icon.classList.toggle("fa-eye-slash");
+    });
+</script>

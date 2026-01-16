@@ -1,3 +1,23 @@
 <Solution>
+  <Folder Name="/Docs/" />
+  <Folder Name="/Docs/DB/" />
+  <Folder Name="/Docs/DB/Deceisions/">
+    <File Path="2026.01.16 - RBAC 基礎架構.md" />
+  </Folder>
+  <Folder Name="/Docs/DB/ERModel/">
+    <File Path="2026.01.16 - RBAC 架構圖.md" />
+  </Folder>
+  <Folder Name="/Docs/DB/Schema/">
+    <File Path="2026.01.16 - RBAC - 1.Accounts.sql" />
+    <File Path="2026.01.16 - RBAC - 2.Roles.sql" />
+    <File Path="2026.01.16 - RBAC - 3.Permissions.sql" />
+    <File Path="2026.01.16 - RBAC - 4.AccountRoles.sql" />
+    <File Path="2026.01.16 - RBAC - 5.RolePermissions.sql" />
+    <File Path="2026.01.16 - RBAC - 6.新增一個帳號，並給他角色（驗證用）.sql" />
+    <File Path="2026.01.16 - RBAC - 7.權限指派給角色.sql" />
+    <File Path="2026.01.16 - RBAC - 8.驗證「這個帳號最後有哪些權限」.sql" />
+  </Folder>
+  <Project Path="Cms.Application/Cms.Application.csproj" />
+  <Project Path="Cms.Infrastructure/Cms.Infrastructure.csproj" />
   <Project Path="Cms.Web/Cms.Web.csproj" />
 </Solution>
