@@ -28,7 +28,8 @@ builder.Services.Scan(scan => scan
 // 註冊 DB Connection String
 builder.Services.AddScoped<IDbConnection>(sp =>
     new SqlConnection(
-        builder.Configuration.GetConnectionString("DefaultConnection")
+        //builder.Configuration.GetConnectionString("WindowsConnection")
+        builder.Configuration.GetConnectionString("MacOSConnection")
     )
 );
 
