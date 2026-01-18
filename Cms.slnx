@@ -1,22 +1,7 @@
 <Solution>
-  <Folder Name="/Database/" />
-  <Folder Name="/Database/Deceisions/">
-    <File Path="2026.01.16 - RBAC - 1.新增一個帳號，並給他角色（驗證用）.sql" />
-    <File Path="2026.01.16 - RBAC - 2.權限指派給角色.sql" />
-    <File Path="2026.01.16 - RBAC - 3.驗證「這個帳號最後有哪些權限」.sql" />
-  </Folder>
-  <Folder Name="/Database/ERModel/">
-    <File Path="2026.01.16 - RBAC 架構圖.md" />
-  </Folder>
-  <Folder Name="/Database/Schema/">
-    <File Path="AccountRoles.sql" />
-    <File Path="Accounts.sql" />
-    <File Path="Permissions.sql" />
-    <File Path="RolePermissions.sql" />
-    <File Path="Roles.sql" />
-  </Folder>
   <Folder Name="/Docs/" />
   <Project Path="Cms.Application/Cms.Application.csproj" />
+  <Project Path="Cms.Database/Cms.Database.csproj" Id="c85a27f2-e5e1-4da3-9c34-b5f5e19ccb2d" />
   <Project Path="Cms.Infrastructure/Cms.Infrastructure.csproj" />
   <Project Path="Cms.Web/Cms.Web.csproj" />
 </Solution>
