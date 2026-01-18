@@ -11,10 +11,10 @@ BEGIN
         CreatedAt   DATETIME2(0)  NOT NULL CONSTRAINT DF_Permissions_CreatedAt DEFAULT SYSUTCDATETIME()
     );
 
-    CREATE UNIQUE INDEX UX_Permissions_Code ON dbo.Permissions(Code);
+    CREATE UNIQUE INDEX UX_Permissions_Code ON dbo.Permissions(PermissionCodeCode);
 END
 
-INSERT INTO dbo.Permissions(Code, Description)
+INSERT INTO dbo.Permissions(PermissionCodeCode, Description)
 VALUES
 (N'Content.View',    N'瀏覽內容'),
 (N'Content.Create',  N'新增內容'),

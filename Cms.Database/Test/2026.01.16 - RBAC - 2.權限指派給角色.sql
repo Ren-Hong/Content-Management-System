@@ -13,4 +13,4 @@ DECLARE @EditorRoleId UNIQUEIDENTIFIER =
 INSERT INTO dbo.RolePermissions(RoleId, PermissionId)
 SELECT @EditorRoleId, p.PermissionId
 FROM dbo.Permissions p
-WHERE p.Code IN (N'Content.View', N'Content.Create', N'Content.Edit');
+WHERE p.PermissionCode IN (N'Content.View', N'Content.Create', N'Content.Edit');
