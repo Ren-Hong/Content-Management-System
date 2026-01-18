@@ -1,0 +1,133 @@
+﻿
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.bg-light-cream {
+    background-color: #f7f7f7;
+    min-height: 100%;
+}
+
+.container.d-flex.flex-column {
+
+    padding-top: 0px !important; 
+    padding-bottom: 0px !important;
+}
+
+.text-center {
+    margin-bottom: 30px !important;
+    display: block;
+}
+
+    .text-center img {
+        max-width: 150px !important;
+        height: auto;
+        margin-bottom: 15px !important;
+    }
+
+    .text-center h5.fw-bold {
+        font-size: 32px !important;
+        line-height: 1.8 !important; 
+        color: #333;
+        margin-top: 0px !important;
+        margin-bottom: 0 !important;
+    }
+.card-title {
+    font-size: 32px !important;
+    color: #333;
+    margin-bottom: 25px !important;
+}
+.login-card {
+    width: 100%;
+    max-width: 350px; 
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 30px !important; 
+}
+
+.card-title {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 25px !important;
+}
+
+.form-label {
+    font-size: 16px !important;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+    height: 19px;
+}
+
+.custom-input {
+    border-radius: 8px;
+    padding: 10px 15px;
+    height: 42px;
+    border: 1px solid #ddd;
+    box-shadow: none;
+    margin-top: 15px;
+    background-color: #EFEFF2 !important;
+}
+
+.login-btn {
+    background-color: #79c043;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    height: 42px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+
+.eye-btn {
+    background: none;
+    border: none;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(15%);
+    padding: 5px 10px;
+    z-index: 10;
+    color: #6c757d;
+}
+
+.text-danger {
+    font-size: 0.85rem;
+    margin-top: 5px !important;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 44px; /* 給眼睛留空間 */
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.password-toggle:hover {
+    color: #333;
+}
