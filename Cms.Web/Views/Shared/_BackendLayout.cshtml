@@ -6,16 +6,14 @@
     <title>後台</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/Backend/BackendLayout.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="container">
-        <main class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    @RenderBody()
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="~/js/backend/app.js"></script>
 </body>
 </html>

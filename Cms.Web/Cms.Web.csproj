@@ -18,4 +18,11 @@
     <ProjectReference Include="..\Cms.Application\Cms.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\css\Frontend\" />
+    <Folder Include="wwwroot\js\Backend\Services\" />
+    <Folder Include="wwwroot\js\Frontend\" />
+    <Folder Include="wwwroot\js\Account\" />
+  </ItemGroup>
+
 </Project>
