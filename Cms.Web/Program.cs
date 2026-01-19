@@ -1,5 +1,6 @@
 ﻿using Cms.Application.Services.Account;
 using Cms.Infrastructure.Repositories.Account;
+using Cms.Infrastructure.Repositories.UnitOfWork;
 using Cms.Web.Middlewares;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Data.SqlClient;
@@ -28,10 +29,12 @@ builder.Services.Scan(scan => scan
 // 註冊 DB Connection String
 builder.Services.AddScoped<IDbConnection>(sp =>
     new SqlConnection(
-        //builder.Configuration.GetConnectionString("WindowsConnection")
-        builder.Configuration.GetConnectionString("MacOSConnection")
+        builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
+
+// Service 層要包 Repository 交易
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // 註冊登入章
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme) //我們系統的預設登入機制是 "Cookie"

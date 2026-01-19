@@ -1,9 +1,11 @@
 ﻿using Cms.Application.Services.Account;
 using Cms.Application.Services.Account.Dtos;
-using Cms.Web.Models.username;
+using Cms.Web.Models.Account;
 using Cms.Web.Models.Api;
+using Cms.Web.Models.username;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -114,6 +116,62 @@ namespace Cms.Web.Controllers
                 Data = new LoginResponseModel{
                     IsAdmin = rdto.Roles?.Contains("Admin") == true //左邊必須是true才是true, null或false則為false
                 }
+            });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAccountSummaries()
+        {
+            var rdto = await _accountService.GetAccountSummariesAsync();
+
+            var res = rdto.Select(x => new GetAccountSummariesResponseModel // 跟 dto 長依樣
+            {
+                Username = x.Username,
+                Status = x.Status,
+                Roles = x.Roles
+            }).ToList();
+
+            return Json(new ApiResponse<IEnumerable<GetAccountSummariesResponseModel>>
+            {
+                Success = true,
+                Data = res 
+            });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequestModel req)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new ApiResponse
+                {
+                    Success = false,
+                    ValidationErrors = ModelState
+                        .Where(x => x.Value!.Errors.Any())
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                        )
+                });
+            }
+
+            var rdto = await _accountService.CreateAccountAsync(
+                new CreateAccountRequestDto
+                {
+                    Username = req.Username,
+                    Password = req.Password,
+                    RoleCode = req.RoleCode
+                }
+            );
+
+            return Json(new ApiResponse
+            {
+                Success = rdto.Result == CreateAccountResult.Success,
+                ErrorCode = rdto.Result != CreateAccountResult.Success
+                    ? rdto.Result.ToString() // 這邊要ToString喔, 不然前端會拿到魔法數字
+                    : null
             });
         }
     }

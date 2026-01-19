@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Cms.Application.Services.Account.Dtos
 {
-    public class AccountAuthDto
+    public class AccountAuthResponseDto
     {
         public Guid AccountId { get; set; }
         public string Username { get; set; } = null!;

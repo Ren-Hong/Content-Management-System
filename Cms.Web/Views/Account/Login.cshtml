@@ -87,7 +87,7 @@
 
     //登入Api
     async function login(username, password) {
-        let res = await fetch('@Url.Action("Login", "Account")', {
+        let res = await fetch('/Account/Login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -98,7 +98,7 @@
             })
         });
 
-        return await res.json();
+        return res.json();
     }
 
     // 帳密錯誤處理
