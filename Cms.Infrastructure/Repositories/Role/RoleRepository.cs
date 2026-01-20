@@ -1,5 +1,6 @@
 ﻿using Cms.Infrastructure.Repositories.Account;
 using Cms.Infrastructure.Repositories.Base;
+using Cms.Infrastructure.Repositories.Role.Entities;
 using Cms.Infrastructure.Repositories.UnitOfWork;
 using Dapper;
 using System.Data;
@@ -39,6 +40,20 @@ namespace Cms.Infrastructure.Repositories.Role
                 new { RoleCode = roleCode },
                 transaction: Tx   // ⚠️ 一樣接交易
             );
+        }
+
+        public async Task<IEnumerable<RoleOptionEntity>> GetRoleOptionsAsync()
+        {
+            const string sql = @"
+                SELECT
+                    RoleCode,
+                    RoleName
+                FROM Roles
+                WHERE Status = 1
+                ORDER BY CreatedAt
+            ";
+
+            return await _db.QueryAsync<RoleOptionEntity>(sql);
         }
     }
 }

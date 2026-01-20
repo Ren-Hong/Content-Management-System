@@ -6,11 +6,22 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Data.SqlClient;
 using Serilog;
 using System.Data;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services
+    .AddControllersWithViews()
+    .AddJsonOptions(o =>
+    {
+        // 前端 JSON 中的 enum 字串值會由 System.Text.Json 自動轉成對應的 enum
+        // 讓 ApiController 的 RequestModel 可以寫 Enum 
+        o.JsonSerializerOptions.Converters.Add( 
+            new JsonStringEnumConverter()
+        );
+    });
+
 
 // 自動 DI 註冊, 請先安裝 Scrutor 套件
 builder.Services.Scan(scan => scan

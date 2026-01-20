@@ -19,3 +19,11 @@ VALUES
 (N'Admin',    N'系統管理員'),
 (N'Editor',   N'內容編輯'),
 (N'Reviewer', N'內容審核');
+
+ALTER TABLE dbo.Roles
+ADD Status SMALLINT NOT NULL
+    CONSTRAINT DF_Roles_Status DEFAULT 1;
+-- 1 = Enable, 2 = Disabled
+
+ALTER TABLE dbo.Roles
+ADD UpdatedAt DATETIME2(0) NULL;

@@ -1,48 +1,30 @@
 ﻿using Cms.Application.Services.Account;
 using Cms.Application.Services.Account.Dtos;
-using Cms.Web.Models.Account;
-using Cms.Web.Models.Api;
-using Cms.Web.Models.username;
+using Cms.Application.Services.Domain;
+using Cms.Web.Controllers.Account.Models;
+using Cms.Web.Controllers.Contracts.Api;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace Cms.Web.Controllers
+namespace Cms.Web.Controllers.Account
 {
-    public class AccountController : Controller
+    [ApiController]
+    [Route("api/account")]
+    [Authorize(Roles = "Admin")]
+    public class AccountApiController : Controller
     {
         private readonly IAccountService _accountService;
 
-        public AccountController(IAccountService accountService)
+        public AccountApiController(IAccountService accountService)
         {
             _accountService = accountService;
         }
 
-        // 顯示登入頁
-        [HttpGet]
-        public IActionResult Login()
-        {
-            // 已登入
-            if (User.Identity?.IsAuthenticated == true)
-            {
-                // Admin → 後台
-                if (User.IsInRole("Admin"))
-                {
-                    return RedirectToAction("Index", "Backend");
-                }
-
-                // 其他登入者 → 前台
-                return RedirectToAction("Index", "Frontend");
-            }
-
-            // 尚未登入 → 顯示登入頁
-            return View();
-        }
-
-        // 處理登入
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginRequestModel req)
         {
             if (!ModelState.IsValid)
@@ -119,8 +101,7 @@ namespace Cms.Web.Controllers
             });
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [HttpPost("summaries")]
         public async Task<IActionResult> GetAccountSummaries()
         {
             var rdto = await _accountService.GetAccountSummariesAsync();
@@ -128,8 +109,12 @@ namespace Cms.Web.Controllers
             var res = rdto.Select(x => new GetAccountSummariesResponseModel // 跟 dto 長依樣
             {
                 Username = x.Username,
-                Status = x.Status,
-                Roles = x.Roles
+                Status = x.Status.ToString(),
+                Roles = x.Roles.Select(r => new RoleResponseModel
+                {
+                    RoleCode = r.RoleCode,
+                    RoleName = r.RoleName
+                }).ToList()
             }).ToList();
 
             return Json(new ApiResponse<IEnumerable<GetAccountSummariesResponseModel>>
@@ -139,8 +124,7 @@ namespace Cms.Web.Controllers
             });
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequestModel req)
         {
             if (!ModelState.IsValid)
@@ -174,5 +158,41 @@ namespace Cms.Web.Controllers
                     : null
             });
         }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountRequestModel req)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new ApiResponse
+                {
+                    Success = false,
+                    ValidationErrors = ModelState
+                        .Where(x => x.Value!.Errors.Any())
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                        )
+                });
+            }
+
+            var rdto = await _accountService.UpdateAccountAsync(
+                new UpdateAccountRequestDto
+                {
+                    Username = req.Username,
+                    RoleCode = req.RoleCode,
+                    Status   = req.Status,
+                }
+            );
+
+            return Json(new ApiResponse
+            {
+                Success = rdto.Result == UpdateAccountResult.Success,
+                ErrorCode = rdto.Result != UpdateAccountResult.Success
+                    ? rdto.Result.ToString() 
+                    : null
+            });
+        }
+
     }
 }

@@ -1,17 +1,23 @@
-﻿namespace Cms.Infrastructure.Repositories.Account.Entities
+﻿
+
+namespace Cms.Infrastructure.Repositories.Account.Entities
 {
     public class AccountEntity
     {
         public Guid AccountId { get; set; }
 
-        public string Username { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
+        public required string Username { get; set; }
 
-        public string Role { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
+        public required string PasswordHash { get; set; }
+
+        public required string Role { get; set; } //理論上創建帳戶的時候一定要配一個角色
+
+        public short Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
         public DateTime? UpdatedAt { get; set; }
+
         public DateTime? LastLoginAt { get; set; }
     }
 }

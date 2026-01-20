@@ -8,7 +8,6 @@
     public enum CreateAccountResult
     {
         Success,
-        InvalidRequest,
         UsernameRequired,
         PasswordRequired,
         UsernameAlreadyExists,

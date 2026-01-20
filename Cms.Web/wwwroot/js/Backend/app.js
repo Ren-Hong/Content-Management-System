@@ -1,9 +1,8 @@
 ﻿import { Header } from './Layout/Header.js';
 import { Sidebar } from './Layout/Sidebar.js';
-
-import { Accounts } from './Pages/Accounts.js';
-import { Roles } from './Pages/Roles.js';
-import { Permissions } from './Pages/Permissions.js';
+import { AccountManager } from './Pages/AccountManager.js';
+import { Roles } from './Pages/RoleManager.js';
+import { Permissions } from './Pages/PermissionManager.js';
 
 const { createApp } = Vue;
 
@@ -11,13 +10,13 @@ createApp({
     components: {
         Header,
         Sidebar,
-        accounts: Accounts,
+        AccountManager: AccountManager,
         roles: Roles,
         permissions: Permissions
     },
     data() {
         return {
-            currentPage: 'accounts'
+            currentPage: 'accountManager'
         };
     },
     template: `
@@ -56,4 +55,4 @@ createApp({
 
 // : 的完整寫法是 v-bind: 意思是把右邊的 JavaScript 表達式綁定(不是字串本身喔, 是之前宣告過的變數)到左邊這個 attribute 上
 // @ 的完整寫法是 v-on:   意思是「監聽一個叫 page-change 的事件事件發生時執行後面的 JS」
-// <component v-bind:is="currentPage" /> -> 「Vue，請你看一下現在的 currentPage 是什麼如果是 'accounts'，就幫我渲染 < Accounts />如果是 'roles'，就渲染 < Roles />以此類推」
+// <component v-bind:is="currentPage" /> -> 「Vue，請你看一下現在的 currentPage 是什麼如果是 'accountManager'，就幫我渲染 < AccountManager />如果是 'roleManager'，就渲染 < RoleManager />以此類推」

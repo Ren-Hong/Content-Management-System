@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Cms.Infrastructure.Repositories.Role.Entities;
 
 namespace Cms.Infrastructure.Repositories.Role
 {
@@ -19,5 +17,11 @@ namespace Cms.Infrastructure.Repositories.Role
         /// <param name="roleCode"></param>
         /// <returns></returns>
         Task<Guid?> GetRoleIdByCodeAsync(string roleCode);
+
+        /// <summary>
+        /// 給下拉用的role
+        /// </summary>
+        /// <returns>拿rolename跟rolecode</returns>
+        Task<IEnumerable<RoleOptionEntity>> GetRoleOptionsAsync();
     }
 }

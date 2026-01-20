@@ -1,4 +1,4 @@
-﻿namespace Cms.Web.Models.username
+﻿namespace Cms.Web.Controllers.Account.Models
 {
     public class LoginResponseModel
     {

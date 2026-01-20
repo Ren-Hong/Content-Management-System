@@ -6,10 +6,12 @@ namespace Cms.Infrastructure.Repositories.Account.Entities
 {
     public class AccountSummaryEntity
     {
-        public string Username { get; set; } = string.Empty;
+        public required string Username { get; set; } 
 
-        public string Role { get; set; } = string.Empty;
+        public required string RoleCode { get; set; } 
 
-        public string Status { get; set; } = string.Empty;
+        public required string RoleName { get; set; } 
+
+        public short Status { get; set; }
     }
 }

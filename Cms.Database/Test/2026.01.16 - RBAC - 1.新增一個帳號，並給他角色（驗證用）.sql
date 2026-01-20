@@ -1,6 +1,6 @@
 ﻿-- 1️⃣ 新增帳號（不要帶 AccountId）
 INSERT INTO dbo.Accounts (Username, PasswordHash, Status)
-VALUES (N'admin', N'hashed-password', N'Active');
+VALUES (N'admin', N'hashed-password', N'1');
 
 -- 2️⃣ 取得剛剛新增的 AccountId
 DECLARE @AccountId UNIQUEIDENTIFIER;

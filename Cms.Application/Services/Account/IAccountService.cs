@@ -16,7 +16,7 @@ namespace Cms.Application.Services.Account
         /// 取得所有帳戶摘要
         /// </summary>
         /// <returns></returns>
-        Task<List<AccountSummaryResponseDto>> GetAccountSummariesAsync();
+        Task<List<GetAccountSummariesResponseDto>> GetAccountSummariesAsync();
 
         /// <summary>
         /// 建立帳戶
@@ -24,5 +24,12 @@ namespace Cms.Application.Services.Account
         /// <param name=""></param>
         /// <returns></returns>
         Task<CreateAccountResponseDto> CreateAccountAsync(CreateAccountRequestDto req);
+
+        /// <summary>
+        /// 更新帳戶
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        Task<UpdateAccountResponseDto> UpdateAccountAsync(UpdateAccountRequestDto req);
     }
 }

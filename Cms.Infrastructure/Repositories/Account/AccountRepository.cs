@@ -31,7 +31,7 @@ namespace Cms.Infrastructure.Repositories.Account
                 LEFT JOIN RolePermissions rp ON r.RoleId = rp.RoleId
                 LEFT JOIN Permissions p ON rp.PermissionId = p.PermissionId
                 WHERE a.Username = @Username
-                  AND a.Status = 'Active';
+                  AND a.Status = 1;
             ";
 
             return await _db.QueryAsync<AccountAuthEntity>(
@@ -60,7 +60,8 @@ namespace Cms.Infrastructure.Repositories.Account
             const string sql = @"
                 SELECT
                     a.Username,
-                    r.RoleCode AS Role,
+                    r.RoleCode AS RoleCode,
+                    r.RoleName AS RoleName,
                     a.Status
                 FROM Accounts a
                 LEFT JOIN AccountRoles ar ON a.AccountId = ar.AccountId
@@ -71,7 +72,7 @@ namespace Cms.Infrastructure.Repositories.Account
             return await _db.QueryAsync<AccountSummaryEntity>(sql);
         }
 
-        public async Task<bool> UsernameExistsAsync(string username)
+        public async Task<bool> AccountExistsAsync(string username)
         {
             const string sql = @"
                 SELECT 1
@@ -104,7 +105,7 @@ namespace Cms.Infrastructure.Repositories.Account
                     NEWID(),
                     @Username,
                     @PasswordHash,
-                    'Active',
+                    1,
                     GETUTCDATE()
                 );
             ";
@@ -122,7 +123,7 @@ namespace Cms.Infrastructure.Repositories.Account
             return accountId;
         }
 
-        public async Task AssignRoleAsync(Guid accountId, Guid roleId)
+        public async Task CreateAccountRoleAsync(Guid accountId, Guid roleId)
         {
             const string sql = @"
                 INSERT INTO AccountRoles
@@ -145,6 +146,81 @@ namespace Cms.Infrastructure.Repositories.Account
                     RoleId = roleId
                 },
                 transaction: Tx  // 🔥 一樣要
+            );
+        }
+
+        public async Task<Guid> UpdateAccountStatusAsync(string username, short status)
+        {
+            const string sql = @"
+                UPDATE Accounts
+                SET
+                    Status = @Status,
+                    UpdatedAt = SYSUTCDATETIME()
+                OUTPUT INSERTED.AccountId
+                WHERE Username = @Username;
+            ";
+
+            var accountId = await _db.ExecuteScalarAsync<Guid>(
+                sql,
+                new
+                {
+                    Username = username,
+                    Status = status
+                },
+                Tx   // ⭐ 關鍵：一定要帶交易
+            );
+
+            return accountId;
+        }
+
+        public async Task UpdateAccountRoleAsync(Guid accountId, Guid roleId)
+        {
+            // ToDo : 未來可能要升級 Insert 多個角色
+
+            // 1:N的資料update 不能直接update喔 不然所有角色都變同一個, 要先刪後加, 不然資料庫會有很多髒資料 
+            // 1:N的資料update 不能直接update喔 不然所有角色都變同一個, 要先刪後加, 不然資料庫會有很多髒資料
+            // 1:N的資料update 不能直接update喔 不然所有角色都變同一個, 要先刪後加, 不然資料庫會有很多髒資料
+            // UPDATE 只能用在「我 100 % 確定只會影響一筆資料」的情況
+            // UPDATE 只能用在「我 100 % 確定只會影響一筆資料」的情況
+            // UPDATE 只能用在「我 100 % 確定只會影響一筆資料」的情況
+            // 很重要所以我要說三遍
+
+            const string deleteSql = @"
+                DELETE FROM AccountRoles
+                WHERE AccountId = @AccountId;
+            ";
+
+            const string insertSql = @"
+                INSERT INTO AccountRoles
+                (
+                    AccountId,
+                    RoleId,
+                    CreatedAt
+                )
+                VALUES
+                (
+                    @AccountId,
+                    @RoleId,
+                    SYSUTCDATETIME()
+                );
+            ";
+
+            // 先清掉舊角色
+            await _db.ExecuteAsync(
+                deleteSql,
+                new { AccountId = accountId },
+                Tx
+            );
+
+            // 再加新角色
+            await _db.ExecuteAsync(
+                insertSql,
+                new
+                {
+                    AccountId = accountId,
+                    RoleId = roleId
+                },
+                Tx
             );
         }
     }

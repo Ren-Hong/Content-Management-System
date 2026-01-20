@@ -9,7 +9,7 @@ BEGIN
         Username      NVARCHAR(50)  NOT NULL,
         PasswordHash NVARCHAR(255) NOT NULL,
 
-        Status        NVARCHAR(20)  NOT NULL,   -- Active / Disabled
+        Status        SMALLINT  NOT NULL, 
         CreatedAt     DATETIME2(0)  NOT NULL CONSTRAINT DF_Accounts_CreatedAt DEFAULT SYSUTCDATETIME(),
         UpdatedAt     DATETIME2(0)  NULL,
         LastLoginAt   DATETIME2(0)  NULL

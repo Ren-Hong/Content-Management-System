@@ -34,7 +34,7 @@ namespace Cms.Infrastructure.Repositories.Account
         /// <summary>
         /// 判斷帳號是否已存在
         /// </summary>
-        Task<bool> UsernameExistsAsync(string username);
+        Task<bool> AccountExistsAsync(string username);
 
         /// <summary>
         /// 建立帳戶
@@ -50,6 +50,22 @@ namespace Cms.Infrastructure.Repositories.Account
         /// <param name="accountId"></param>
         /// <param name="roleCode"></param>
         /// <returns>不用回傳值, 失敗就是例外</returns>
-        Task AssignRoleAsync(Guid accountId, Guid roleId);
+        Task CreateAccountRoleAsync(Guid accountId, Guid roleId);
+
+        /// <summary>
+        /// 先改狀態後改中介表
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="status"></param>
+        /// <returns>後面要改中介表所以回傳guid</returns>
+        Task<Guid> UpdateAccountStatusAsync(string username, short status);
+
+        /// <summary>
+        /// 更新帳戶對應的角色中介表 1:N的update不能直接update喔 會全部一起改
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="roleId"></param>
+        /// <returns></returns>
+        Task UpdateAccountRoleAsync(Guid accountId, Guid roleId);
     }
 }
