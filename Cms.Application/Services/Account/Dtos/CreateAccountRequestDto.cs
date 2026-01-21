@@ -6,6 +6,6 @@
 
         public required string Password { get; set; }
 
-        public required string RoleCode {  get; set; }
+        public required List<string> RoleCodes { get; set; }
     }
 }

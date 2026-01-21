@@ -1,4 +1,4 @@
-﻿
+﻿using Cms.Infrastructure.Repositories.Account.Persistence;
 
 namespace Cms.Infrastructure.Repositories.Account.Entities
 {
@@ -12,7 +12,7 @@ namespace Cms.Infrastructure.Repositories.Account.Entities
 
         public required string Role { get; set; } //理論上創建帳戶的時候一定要配一個角色
 
-        public short Status { get; set; }
+        public AccountStatus Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

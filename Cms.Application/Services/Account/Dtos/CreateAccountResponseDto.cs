@@ -10,8 +10,8 @@
         Success,
         UsernameRequired,
         PasswordRequired,
-        UsernameAlreadyExists,
-        RoleRequired,
-        RoleNotExist
+        UsernameDuplicated,
+        RoleCodesRequired,
+        RoleNotFound
     }
 }

@@ -1,4 +1,4 @@
-﻿using Cms.Application.Services.Domain;
+﻿using Cms.Infrastructure.Repositories.Account.Persistence;
 
 namespace Cms.Application.Services.Account.Dtos
 {

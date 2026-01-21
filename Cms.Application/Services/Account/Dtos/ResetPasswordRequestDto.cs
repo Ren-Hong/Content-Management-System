@@ -1,6 +1,6 @@
 ﻿namespace Cms.Application.Services.Account.Dtos
 {
-    public class LoginRequestDto
+    public class ResetPasswordRequestDto
     {
         public required string Username { get; set; }
 

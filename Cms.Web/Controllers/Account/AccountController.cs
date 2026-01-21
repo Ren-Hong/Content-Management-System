@@ -1,6 +1,5 @@
 ﻿using Cms.Application.Services.Account;
 using Cms.Application.Services.Account.Dtos;
-using Cms.Application.Services.Domain;
 using Cms.Web.Controllers.Account.Models;
 using Cms.Web.Controllers.Contracts.Api;
 using Microsoft.AspNetCore.Authentication;
@@ -11,6 +10,9 @@ using System.Security.Claims;
 
 namespace Cms.Web.Controllers.Account
 {
+    [ApiController]
+    [Route("api/account")]
+    [Authorize(Roles = "Admin")]
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
@@ -20,25 +22,243 @@ namespace Cms.Web.Controllers.Account
             _accountService = accountService;
         }
 
-        // 顯示登入頁
-        [HttpGet]
-        public IActionResult Login()
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] LoginRequestModel req)
         {
-            // 已登入
-            if (User.Identity?.IsAuthenticated == true)
+            if (!ModelState.IsValid)
             {
-                // Admin → 後台
-                if (User.IsInRole("Admin"))
+                return Json(new ApiResponse
                 {
-                    return RedirectToAction("Index", "Backend");
-                }
-
-                // 其他登入者 → 前台
-                return RedirectToAction("Index", "Frontend");
+                    Success = false,
+                    ValidationErrors = ModelState
+                        .Where(x => x.Value!.Errors.Any())
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                        )
+                });
             }
 
-            // 尚未登入 → 顯示登入頁
-            return View();
+            var dto = new LoginRequestDto
+            {
+                Username = req.Username,
+                Password = req.Password
+            };
+
+            var rdto = await _accountService.LoginAsync(dto);
+
+            if (rdto.Result != LoginResult.Success)
+            {
+                return Json(new ApiResponse
+                {
+                    Success = false,
+                    ErrorCode = rdto.Result.ToString()
+                });
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, rdto.AccountId!.Value.ToString()),
+                new Claim(ClaimTypes.Name, rdto.Username!)
+            };
+
+            if (rdto.Roles != null)
+            {
+                foreach (var role in rdto.Roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+            }
+
+            if (rdto.Permissions != null)
+            {
+                foreach (var permission in rdto.Permissions)
+                {
+                    claims.Add(new Claim("permission", permission));
+                }
+            }
+
+            var identity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal
+            );
+
+            return Json(new ApiResponse<LoginResponseModel>
+            {
+                Success = true,
+                Data = new LoginResponseModel{
+                    IsAdmin = rdto.Roles?.Contains("Admin") == true //左邊必須是true才是true, null或false則為false
+                }
+            });
         }
+
+        [HttpPost("summaries")]
+        public async Task<IActionResult> GetAccountSummaries()
+        {
+            var rdto = await _accountService.GetAccountSummariesAsync();
+
+            var res = rdto.Select(x => new GetAccountSummariesResponseModel // 跟 dto 長依樣
+            {
+                Username = x.Username,
+                Status = x.Status,
+                Roles = x.Roles.Select(r => new RoleResponseModel
+                {
+                    RoleCode = r.RoleCode,
+                    RoleName = r.RoleName
+                }).ToList()
+            }).ToList();
+
+            return Json(new ApiResponse<IEnumerable<GetAccountSummariesResponseModel>>
+            {
+                Success = true,
+                Data = res 
+            });
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequestModel req)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new ApiResponse
+                {
+                    Success = false,
+                    ValidationErrors = ModelState
+                        .Where(x => x.Value!.Errors.Any())
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                        )
+                });
+            }
+
+            var rdto = await _accountService.CreateAccountAsync(
+                new CreateAccountRequestDto
+                {
+                    Username = req.Username,
+                    Password = req.Password,
+                    RoleCodes = req.RoleCodes
+                }
+            );
+
+            return Json(new ApiResponse
+            {
+                Success = rdto.Result == CreateAccountResult.Success,
+                ErrorCode = rdto.Result != CreateAccountResult.Success
+                    ? rdto.Result.ToString() // 這邊要ToString喔, 不然前端會拿到魔法數字
+                    : null
+            });
+        }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountRequestModel req)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new ApiResponse
+                {
+                    Success = false,
+                    ValidationErrors = ModelState
+                        .Where(x => x.Value!.Errors.Any())
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                        )
+                });
+            }
+
+            var rdto = await _accountService.UpdateAccountAsync(
+                new UpdateAccountRequestDto
+                {
+                    Username = req.Username,
+                    RoleCodes = req.RoleCodes,
+                    Status   = req.Status,
+                }
+            );
+
+            return Json(new ApiResponse
+            {
+                Success = rdto.Result == UpdateAccountResult.Success,
+                ErrorCode = rdto.Result != UpdateAccountResult.Success
+                    ? rdto.Result.ToString() 
+                    : null
+            });
+        }
+
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestModel req)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new ApiResponse
+                {
+                    Success = false,
+                    ValidationErrors = ModelState
+                        .Where(x => x.Value!.Errors.Any())
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                        )
+                });
+            }
+
+            var rdto = await _accountService.ResetPasswordAsync(
+                new ResetPasswordRequestDto
+                {
+                    Username = req.Username,
+                    Password = req.Password,
+                }
+            );
+
+            return Json(new ApiResponse
+            {
+                Success = rdto.Result == ResetPasswordResult.Success,
+                ErrorCode = rdto.Result != ResetPasswordResult.Success
+                    ? rdto.Result.ToString()
+                    : null
+            });
+        }
+
+        [HttpPost("delete")]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequestModel req)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new ApiResponse
+                {
+                    Success = false,
+                    ValidationErrors = ModelState
+                        .Where(x => x.Value!.Errors.Any())
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                        )
+                });
+            }
+
+            var rdto = await _accountService.DeleteAccountAsync(
+                new DeleteAccountRequestDto
+                {
+                    Username = req.Username,
+                }
+            );
+
+            return Json(new ApiResponse
+            {
+                Success = rdto.Result == DeleteAccountResult.Success,
+                ErrorCode = rdto.Result != DeleteAccountResult.Success
+                    ? rdto.Result.ToString()
+                    : null
+            });
+        }
+
     }
 }

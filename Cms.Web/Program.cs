@@ -87,7 +87,7 @@ app.UseAuthorization();
 // 起站位置
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}" //當使用者沒指定Controller且action也沒指定的時候自動跳轉這個頁面
+    pattern: "{controller=Login}/{action=Index}" //當使用者沒指定Controller且action也沒指定的時候自動跳轉這個頁面
 );
 
 app.Run();

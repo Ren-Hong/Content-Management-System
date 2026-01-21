@@ -1,19 +1,19 @@
-﻿using Cms.Application.Services.Domain;
+﻿using Cms.Infrastructure.Repositories.Account.Persistence;
 
 namespace Cms.Web.Controllers.Account.Models
 {
     public class GetAccountSummariesResponseModel
     {
-        public string Username { get; set; }
+        public required string Username { get; set; }
 
-        public string Status { get; set; }
+        public AccountStatus Status { get; set; }
 
         public List<RoleResponseModel> Roles { get; set; } = new();
     }
 
-    public class RoleResponseModel // for GetAccountSummariesResponseModel
+    public class RoleResponseModel
     {
-        public string RoleCode { get; set; }
-        public string RoleName { get; set; }
+        public required string RoleCode { get; set; }
+        public required string RoleName { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿<link rel="stylesheet" href="~/css/Account/Login.css" asp-append-version="true" /> 
+﻿<link rel="stylesheet" href="~/css/Login/Index.css" asp-append-version="true" /> 
 
 <main class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
 
@@ -87,7 +87,7 @@
 
     //登入Api
     async function login(username, password) {
-        let res = await fetch('/Account/Login', {
+        let res = await fetch('/api/account/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

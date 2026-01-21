@@ -9,9 +9,9 @@
     {
         Success,
         UsernameRequired,
-        RoleCodeRequired,
-        AccountNotExist,
-        StatusNotExist,
-        RoleNotExist
+        RoleCodesRequired,
+        AccountNotFound,
+        StatusNotFound,
+        RoleNotFound
     }
 }

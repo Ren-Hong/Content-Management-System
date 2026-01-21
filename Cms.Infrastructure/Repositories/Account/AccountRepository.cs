@@ -1,4 +1,5 @@
 ﻿using Cms.Infrastructure.Repositories.Account.Entities;
+using Cms.Infrastructure.Repositories.Account.Persistence;
 using Cms.Infrastructure.Repositories.Base;
 using Cms.Infrastructure.Repositories.UnitOfWork;
 using Dapper;
@@ -38,21 +39,6 @@ namespace Cms.Infrastructure.Repositories.Account
                 sql,
                 new { Username = username }
             );
-        }
-
-        public async Task UpdateLastLoginAtAsync(Guid accountId, DateTime loginTime)
-        {
-            const string sql = @"
-                UPDATE Accounts
-                SET LastLoginAt = @LastLoginAt
-                WHERE AccountId = @AccountId
-            ";
-
-            await _db.ExecuteAsync(sql, new
-            {
-                AccountId = accountId,
-                LastLoginAt = loginTime
-            });
         }
 
         public async Task<IEnumerable<AccountSummaryEntity>> GetAccountSummariesAsync()
@@ -149,7 +135,22 @@ namespace Cms.Infrastructure.Repositories.Account
             );
         }
 
-        public async Task<Guid> UpdateAccountStatusAsync(string username, short status)
+        public async Task UpdateLastLoginAtAsync(Guid accountId, DateTime loginTime)
+        {
+            const string sql = @"
+                UPDATE Accounts
+                SET LastLoginAt = @LastLoginAt
+                WHERE AccountId = @AccountId
+            ";
+
+            await _db.ExecuteAsync(sql, new
+            {
+                AccountId = accountId,
+                LastLoginAt = loginTime
+            });
+        }
+
+        public async Task<Guid> UpdateStatusAsync(string username, AccountStatus status)
         {
             const string sql = @"
                 UPDATE Accounts
@@ -173,54 +174,74 @@ namespace Cms.Infrastructure.Repositories.Account
             return accountId;
         }
 
-        public async Task UpdateAccountRoleAsync(Guid accountId, Guid roleId)
+        public async Task UpdatePasswordAsync(string username, string passwordHash)
         {
-            // ToDo : 未來可能要升級 Insert 多個角色
+            const string sql = @"
+                UPDATE Accounts
+                SET PasswordHash = @PasswordHash
+                WHERE Username = @Username
+            ";
 
-            // 1:N的資料update 不能直接update喔 不然所有角色都變同一個, 要先刪後加, 不然資料庫會有很多髒資料 
-            // 1:N的資料update 不能直接update喔 不然所有角色都變同一個, 要先刪後加, 不然資料庫會有很多髒資料
-            // 1:N的資料update 不能直接update喔 不然所有角色都變同一個, 要先刪後加, 不然資料庫會有很多髒資料
-            // UPDATE 只能用在「我 100 % 確定只會影響一筆資料」的情況
-            // UPDATE 只能用在「我 100 % 確定只會影響一筆資料」的情況
-            // UPDATE 只能用在「我 100 % 確定只會影響一筆資料」的情況
-            // 很重要所以我要說三遍
+            await _db.ExecuteAsync(sql, new
+            {
+                Username = username,
+                PasswordHash = passwordHash
+            });
+        }
 
-            const string deleteSql = @"
+        public async Task UpdateUpdatedAtAsync(string username, DateTime updatedTime)
+        {
+            const string sql = @"
+                UPDATE Accounts
+                SET UpdatedAt = @UpdatedAt
+                WHERE Username = @Username
+            ";
+
+            await _db.ExecuteAsync(sql, new
+            {
+                Username = username,
+                UpdatedAt = updatedTime
+            });
+        }
+
+        public async Task DeleteAccountAsync(string username)
+        {
+            const string sql = @"
+                DELETE FROM Accounts
+                WHERE Username = @Username
+            ";
+
+            await _db.ExecuteAsync(sql, new
+            {
+                Username = username,
+            });
+        }
+
+        public async Task DeleteAccountRolesAsync(Guid accountId)
+        {
+            const string sql = @"
                 DELETE FROM AccountRoles
-                WHERE AccountId = @AccountId;
+                WHERE AccountId = @AccountId
             ";
 
-            const string insertSql = @"
-                INSERT INTO AccountRoles
-                (
-                    AccountId,
-                    RoleId,
-                    CreatedAt
-                )
-                VALUES
-                (
-                    @AccountId,
-                    @RoleId,
-                    SYSUTCDATETIME()
-                );
-            ";
-
-            // 先清掉舊角色
             await _db.ExecuteAsync(
-                deleteSql,
+                sql,
                 new { AccountId = accountId },
-                Tx
+                transaction: Tx
             );
+        }
 
-            // 再加新角色
+        public async Task AddAccountRoleAsync(Guid accountId, Guid roleId)
+        {
+            const string sql = @"
+                INSERT INTO AccountRoles (AccountId, RoleId, CreatedAt)
+                VALUES (@AccountId, @RoleId, SYSUTCDATETIME())
+            ";
+
             await _db.ExecuteAsync(
-                insertSql,
-                new
-                {
-                    AccountId = accountId,
-                    RoleId = roleId
-                },
-                Tx
+                sql,
+                new { AccountId = accountId, RoleId = roleId },
+                transaction: Tx
             );
         }
     }

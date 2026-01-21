@@ -69,7 +69,10 @@ export const AccountManager = {
             this.showCreate = false;
             this.showEdit = false;
             this.showResetPassword = false;
+            this.showDelete = false;
+
             this.selectedAccount = null;
+
             await this.loadAccountSummaries();
         }
     },

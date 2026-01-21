@@ -1,4 +1,4 @@
-﻿using Cms.Application.Services.Domain;
+﻿using Cms.Infrastructure.Repositories.Account.Persistence;
 
 namespace Cms.Application.Services.Account.Dtos
 {
@@ -6,7 +6,7 @@ namespace Cms.Application.Services.Account.Dtos
     {
         public required string Username { get; set; }
 
-        public required string RoleCode { get; set; }
+        public required List<string> RoleCodes { get; set; }
 
         public AccountStatus Status { get; set; }
     }

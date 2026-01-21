@@ -27,19 +27,23 @@ namespace Cms.Infrastructure.Repositories.Role
             return await _db.ExecuteScalarAsync<int?>(sql, new { RoleCode = roleCode }) != null; //ExecuteScalarAsync<T> 只回一個值
         }
 
-        public async Task<Guid?> GetRoleIdByCodeAsync(string roleCode)
+        public async Task<IEnumerable<Guid>> GetRoleIdsByRoleCodesAsync(List<string> roleCodes)
         {
+            // 這邊一次驗最棒, 不用foreach , 有Where IN語法
+            // Dapper 會幫你轉成 WHERE RoleCode IN (@RoleCodes1, @RoleCodes2, @RoleCodes3)
             const string sql = @"
                 SELECT RoleId
                 FROM Roles
-                WHERE RoleCode = @RoleCode
+                WHERE RoleCode IN @RoleCodes
             ";
 
-            return await _db.ExecuteScalarAsync<Guid?>(
+            var roleIds = await _db.QueryAsync<Guid>(
                 sql,
-                new { RoleCode = roleCode },
-                transaction: Tx   // ⚠️ 一樣接交易
+                new { RoleCodes = roleCodes },
+                transaction: Tx
             );
+
+            return roleIds;
         }
 
         public async Task<IEnumerable<RoleOptionEntity>> GetRoleOptionsAsync()

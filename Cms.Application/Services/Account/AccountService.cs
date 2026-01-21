@@ -1,6 +1,6 @@
 ﻿using Cms.Application.Services.Account.Dtos;
-using Cms.Application.Services.Domain;
 using Cms.Infrastructure.Repositories.Account;
+using Cms.Infrastructure.Repositories.Account.Persistence;
 using Cms.Infrastructure.Repositories.Role;
 using Cms.Infrastructure.Repositories.UnitOfWork;
 using System.Data;
@@ -25,16 +25,37 @@ namespace Cms.Application.Services.Account
             _roleRepository = roleRepository;
         }
 
-        public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
+        public async Task<LoginResponseDto> LoginAsync(LoginRequestDto dto)
         {
-            var rows = (await _accountRepository.GetAccountAuthByUsernameAsync(request.Username)).ToList();
+            // 帳號沒給
+            if (string.IsNullOrWhiteSpace(dto.Username))
+            {
+                return new LoginResponseDto
+                {
+                    Result = LoginResult.UsernameRequired
+                };
+            }
 
+            // 密碼沒給
+            if (string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return new LoginResponseDto
+                {
+                    Result = LoginResult.PasswordRequired
+                };
+            }
+
+            // 取得帳號角色權限
+            var rows = (await _accountRepository.GetAccountAuthByUsernameAsync(dto.Username)).ToList();
+
+            // 找不到帳號
             if (!rows.Any())
                 return new LoginResponseDto
                 {
                     Result = LoginResult.AccountNotFound
                 };
 
+            // Entity 轉 Dto
             var auth = new GetAccountAuthResponseDto
             {
                 AccountId = rows[0].AccountId,
@@ -53,12 +74,13 @@ namespace Cms.Application.Services.Account
             };
 
             // 驗證密碼
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, auth.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(dto.Password, auth.PasswordHash))
                 return new LoginResponseDto
                 {
                     Result = LoginResult.InvalidPassword
                 };
 
+            // 更新上一次登入時間
             await _accountRepository.UpdateLastLoginAtAsync(auth.AccountId, DateTime.UtcNow);
 
             return new LoginResponseDto
@@ -114,21 +136,23 @@ namespace Cms.Application.Services.Account
                 };
             }
 
-            // RoleCode 沒給
-            if (string.IsNullOrWhiteSpace(dto.RoleCode))
+            // RoleCodes 沒new 或裡面沒東西
+            if (dto.RoleCodes == null || !dto.RoleCodes.Any())
             {
                 return new CreateAccountResponseDto
                 {
-                    Result = CreateAccountResult.RoleRequired
+                    Result = CreateAccountResult.RoleCodesRequired
                 };
             }
 
-            // 有沒有這角色
-            if (!await _roleRepository.RoleExistsAsync(dto.RoleCode))
+            // 有沒有這角色 (一次驗)
+            var roleIds = (await _roleRepository.GetRoleIdsByRoleCodesAsync(dto.RoleCodes)).ToList();
+
+            if (roleIds.Count != dto.RoleCodes.Count)
             {
                 return new CreateAccountResponseDto
                 {
-                    Result = CreateAccountResult.RoleNotExist
+                    Result = CreateAccountResult.RoleNotFound
                 };
             }
 
@@ -137,7 +161,7 @@ namespace Cms.Application.Services.Account
             {
                 return new CreateAccountResponseDto
                 {
-                    Result = CreateAccountResult.UsernameAlreadyExists
+                    Result = CreateAccountResult.UsernameDuplicated
                 };
             }
 
@@ -150,30 +174,20 @@ namespace Cms.Application.Services.Account
 
             try
             {
-                // RoleCode 轉 RoleId
-                var roleId = await _roleRepository.GetRoleIdByCodeAsync(dto.RoleCode);
-
-                // 判斷有沒有這個RoleId
-                if (roleId == null)
-                {
-                    _unitOfWork.Rollback();
-                    return new CreateAccountResponseDto
-                    {
-                        Result = CreateAccountResult.RoleNotExist
-                    };
-                }
-
                 // 先建帳戶
                 var accountId = await _accountRepository.CreateAccountAsync(
                     dto.Username,
                     passwordHash
                 );
 
-                // 再建角色
-                await _accountRepository.CreateAccountRoleAsync(
-                    accountId,
-                    roleId.Value
-                );
+                // 建多筆 AccountRole
+                foreach (var roleId in roleIds)
+                {
+                    await _accountRepository.CreateAccountRoleAsync(
+                        accountId, 
+                        roleId
+                    );
+                }
 
                 _unitOfWork.Commit();
 
@@ -200,12 +214,12 @@ namespace Cms.Application.Services.Account
                 };
             }
 
-            // RoleCode沒給
-            if (string.IsNullOrWhiteSpace(dto.RoleCode))
+            // RoleCodes 沒new 或裡面沒東西
+            if (dto.RoleCodes == null || !dto.RoleCodes.Any())
             {
                 return new UpdateAccountResponseDto
                 {
-                    Result = UpdateAccountResult.RoleCodeRequired
+                    Result = UpdateAccountResult.RoleCodesRequired
                 };
             }
 
@@ -214,16 +228,18 @@ namespace Cms.Application.Services.Account
             {
                 return new UpdateAccountResponseDto
                 {
-                    Result = UpdateAccountResult.AccountNotExist
+                    Result = UpdateAccountResult.AccountNotFound
                 };
             }
 
-            // 有沒有這角色
-            if (!await _roleRepository.RoleExistsAsync(dto.RoleCode))
+            // 有沒有這角色 (一次驗)
+            var roleIds = (await _roleRepository.GetRoleIdsByRoleCodesAsync(dto.RoleCodes)).ToList();
+
+            if (roleIds.Count != dto.RoleCodes.Count)
             {
                 return new UpdateAccountResponseDto
                 {
-                    Result = UpdateAccountResult.RoleNotExist
+                    Result = UpdateAccountResult.RoleNotFound
                 };
             }
 
@@ -232,7 +248,7 @@ namespace Cms.Application.Services.Account
             {
                 return new UpdateAccountResponseDto
                 {
-                    Result = UpdateAccountResult.StatusNotExist
+                    Result = UpdateAccountResult.StatusNotFound
                 };
             }
 
@@ -242,19 +258,18 @@ namespace Cms.Application.Services.Account
             try
             {
                 // 更新帳戶狀態
-                var accountId = await _accountRepository.UpdateAccountStatusAsync(
+                var accountId = await _accountRepository.UpdateStatusAsync(
                     dto.Username,
-                    (short)dto.Status
+                    dto.Status
                 );
-
-                // RoleCode 轉 RoleId
-                var roleId = await _roleRepository.GetRoleIdByCodeAsync(dto.RoleCode);
 
                 // 更新帳戶角色（先清掉再加，最乾淨）
-                await _accountRepository.UpdateAccountRoleAsync(
-                    accountId,
-                    roleId.Value
-                );
+                await _accountRepository.DeleteAccountRolesAsync(accountId);
+
+                foreach (var roleId in roleIds)
+                {
+                    await _accountRepository.AddAccountRoleAsync(accountId, roleId);
+                }
 
                 _unitOfWork.Commit();
 
@@ -268,6 +283,78 @@ namespace Cms.Application.Services.Account
                 _unitOfWork.Rollback();
                 throw;
             }
+        }
+
+        public async Task<ResetPasswordResponseDto> ResetPasswordAsync(ResetPasswordRequestDto dto)
+        {
+            // 帳號沒給
+            if (string.IsNullOrWhiteSpace(dto.Username))
+            {
+                return new ResetPasswordResponseDto
+                {
+                    Result = ResetPasswordResult.UsernameRequired
+                };
+            }
+
+            // 密碼沒給
+            if (string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return new ResetPasswordResponseDto
+                {
+                    Result = ResetPasswordResult.PasswordRequired
+                };
+            }
+
+            // 帳號不存在
+            if (!await _accountRepository.AccountExistsAsync(dto.Username))
+            {
+                return new ResetPasswordResponseDto
+                {
+                    Result = ResetPasswordResult.AccountNotFound
+                };
+            }
+
+            // 加鹽撒密
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+            // 更新密碼
+            await _accountRepository.UpdatePasswordAsync(dto.Username, passwordHash);
+
+            // 更新上次更新時間
+            await _accountRepository.UpdateUpdatedAtAsync(dto.Username, DateTime.Now);
+
+            return new ResetPasswordResponseDto
+            {
+                Result = ResetPasswordResult.Success
+            };
+        }
+
+        public async Task<DeleteAccountResponseDto> DeleteAccountAsync(DeleteAccountRequestDto dto)
+        {
+            // 帳號沒給
+            if (string.IsNullOrWhiteSpace(dto.Username))
+            {
+                return new DeleteAccountResponseDto
+                {
+                    Result = DeleteAccountResult.UsernameRequired
+                };
+            }
+
+            // 有沒有這帳號
+            if (!await _accountRepository.AccountExistsAsync(dto.Username))
+            {
+                return new DeleteAccountResponseDto
+                {
+                    Result = DeleteAccountResult.AccountNotFound
+                };
+            }
+
+            await _accountRepository.DeleteAccountAsync(dto.Username);
+
+            return new DeleteAccountResponseDto
+            {
+                Result = DeleteAccountResult.Success
+            };
         }
     }
 }

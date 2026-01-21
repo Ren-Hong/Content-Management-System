@@ -12,11 +12,11 @@ namespace Cms.Infrastructure.Repositories.Role
         Task<bool> RoleExistsAsync(string roleCode);
 
         /// <summary>
-        /// 透過RoleCode找RoleId
+        /// 透過RoleCodes找RoleIds (前端傳多種角色)
         /// </summary>
         /// <param name="roleCode"></param>
         /// <returns></returns>
-        Task<Guid?> GetRoleIdByCodeAsync(string roleCode);
+        Task<IEnumerable<Guid>> GetRoleIdsByRoleCodesAsync(List<string> roleCodes);
 
         /// <summary>
         /// 給下拉用的role

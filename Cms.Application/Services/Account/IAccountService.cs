@@ -31,5 +31,19 @@ namespace Cms.Application.Services.Account
         /// <param name=""></param>
         /// <returns></returns>
         Task<UpdateAccountResponseDto> UpdateAccountAsync(UpdateAccountRequestDto req);
+
+        /// <summary>
+        /// 重設密碼
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        Task<ResetPasswordResponseDto> ResetPasswordAsync(ResetPasswordRequestDto req);
+
+        /// <summary>
+        /// 軟刪帳戶
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        Task<DeleteAccountResponseDto> DeleteAccountAsync(DeleteAccountRequestDto req);
     }
 }

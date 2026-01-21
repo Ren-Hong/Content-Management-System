@@ -16,6 +16,8 @@
     public enum LoginResult
     {
         Success,
+        UsernameRequired,
+        PasswordRequired,
         AccountNotFound,
         InvalidPassword
     }

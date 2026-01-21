@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Cms.Application.Services.Domain;
+using Cms.Infrastructure.Repositories.Account.Persistence;
 
 namespace Cms.Web.Controllers.Account.Models
 {
@@ -9,7 +9,7 @@ namespace Cms.Web.Controllers.Account.Models
         public required string Username { get; set; }
 
         [Required(ErrorMessage = "請選擇角色")]
-        public required string RoleCode { get; set; }
+        public required List<string> RoleCodes { get; set; }
 
         [Required(ErrorMessage = "請選擇狀態")]
         public AccountStatus Status { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace Cms.Application.Services.Domain
+﻿namespace Cms.Infrastructure.Repositories.Account.Persistence
 {
     public enum AccountStatus : short
     {

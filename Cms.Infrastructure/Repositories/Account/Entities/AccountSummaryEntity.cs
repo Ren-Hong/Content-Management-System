@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Cms.Infrastructure.Repositories.Account.Persistence;
 
 namespace Cms.Infrastructure.Repositories.Account.Entities
 {
@@ -12,6 +10,6 @@ namespace Cms.Infrastructure.Repositories.Account.Entities
 
         public required string RoleName { get; set; } 
 
-        public short Status { get; set; }
+        public AccountStatus Status { get; set; }
     }
 }

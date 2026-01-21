@@ -19,6 +19,7 @@ export const AccountResetPasswordModal = {
             modal: null,
             submitting: false,
             form: {
+                username: '',
                 password: ''
             }
         };
@@ -48,6 +49,7 @@ export const AccountResetPasswordModal = {
 
     methods: {
         resetForm() {
+            this.form.username = this.account.username;
             this.form.password = '';
         },
 
@@ -60,10 +62,7 @@ export const AccountResetPasswordModal = {
             this.submitting = true;
 
             try {
-                let res = await resetPassword({
-                    username: this.account.username,
-                    newPassword: this.form.password
-                });
+                let res = await resetPassword(this.form);
 
                 if (!res.success) {
                     alert(res.errorCode || '重設密碼失敗');
@@ -71,7 +70,6 @@ export const AccountResetPasswordModal = {
                 }
 
                 this.$emit('updated');
-                this.modal.hide();
             } catch (err) {
                 console.error(err);
                 alert('系統錯誤');
@@ -97,13 +95,17 @@ export const AccountResetPasswordModal = {
                     <div class="modal-body">
 
                         <div class="alert alert-warning mb-3">
-                            <strong>帳號名稱 : {{ account?.username }}</strong>
+                            <div class="mb-3">
+                                <strong>帳號 : </strong>
+                                <span>{{ account?.username }}</span>
+                            </div>
+
+                            <input class="form-control"
+                                   type="password"
+                                   placeholder="新密碼"
+                                   v-model="form.password">
                         </div>
 
-                        <input class="form-control mb-3"
-                               type="password"
-                               placeholder="新密碼"
-                               v-model="form.password">
 
                         <div class="alert alert-warning small">
                             重設後，需用新密碼登入

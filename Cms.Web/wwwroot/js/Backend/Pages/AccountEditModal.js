@@ -26,8 +26,8 @@ export const AccountEditModal = {
             roleOptions: [],
             form: {
                 username: '',
-                roleCode: '',
-                status: ''
+                status: '',
+                roleCodes: []   // ⭐ 多選
             }
         };
     },
@@ -71,13 +71,41 @@ export const AccountEditModal = {
             }
         },
 
+        onRoleSelected(event) {
+            const roleCode = event.target.value;
+            if (!roleCode) return;
+
+            // 避免重複加入
+            if (!this.form.roleCodes.includes(roleCode)) {
+                this.form.roleCodes.push(roleCode);
+            }
+
+            // 重置 select
+            event.target.value = '';
+        },
+
+        removeRole(roleCode) {
+            this.form.roleCodes =
+                this.form.roleCodes.filter(code => code !== roleCode);
+        },
+
+        getRoleName(roleCode) {
+            const role = this.roleOptions.find(r => r.roleCode === roleCode);
+            return role ? role.roleName : roleCode;
+        },
+
         fillForm() { // 填入本來的資料
             this.form.username = this.account.username;
-            this.form.roleCode = this.account.roles?.[0]?.roleCode ?? ''; // 未來可能有很多角色
+            this.form.roleCodes = this.account?.roles?.map(r => r.roleCode) ?? [];
             this.form.status = this.account.status ?? '';
         },
 
         async submit() {
+
+            if (this.form.roleCodes.length === 0) {
+                alert('請至少選擇一個角色');
+                return;
+            }
             this.submitting = true;
 
             try {
@@ -89,7 +117,6 @@ export const AccountEditModal = {
                 }
 
                 this.$emit('updated');
-                //this.modal.hide();
             } catch (err) {
                 console.error(err);
                 alert('系統錯誤');
@@ -116,30 +143,49 @@ export const AccountEditModal = {
                         <div class="row">
                             <div class="col-6">
                                 <div class="alert alert-success mb-3">
-                                    <strong>帳號名稱 : {{ account?.username }}</strong>
+                                    <strong>帳號名稱 : </strong>
+                                    <span>{{ account?.username }}</span>
                                 </div>
                             </div>
 
                             <div class="col-6">
                                 <div class="alert alert-success mb-3">
-                                    <strong>帳號狀態 : {{ account ? AccountStatusText[account.status] : '' }}</strong>
+                                    <strong>帳號狀態 : </strong>
+                                    <span>{{ account ? AccountStatusText[account.status] : '' }}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="alert alert-success mb-3">
-                            <strong>目前角色 : {{ account?.roles?.map(r => r.roleName).join(', ')}}</strong>
-                        </div>
 
-                        <div class="alert alert-success mb-3">
-                            <label class="form-label">角色</label>
-                            <select class="form-select" v-model="form.roleCode">
-                                <option v-for="role in roleOptions"
-                                        :key="role.roleCode"
-                                        :value="role.roleCode">
-                                    {{ role.roleName }}
-                                </option>
-                            </select>
+                            <div class="mb-2">
+                                <label class="form-label">角色</label>
+
+                                <select class="form-select"
+                                        @change="onRoleSelected($event)">
+                                    <option value="">請選擇角色</option>
+                                    <option v-for="role in roleOptions"
+                                            :key="role.roleCode"
+                                            :value="role.roleCode">
+                                        {{ role.roleName }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2">
+                                <span v-for="roleCode in form.roleCodes"
+                                      :key="roleCode"
+                                      class="badge bg-primary d-flex align-items-center">
+
+                                    {{ getRoleName(roleCode) }}
+
+                                    <button type="button"
+                                            class="btn-close btn-close-white ms-2"
+                                            @click="removeRole(roleCode)">
+                                    </button>
+                                </span>
+                            </div>
+
                         </div>
 
                         <div class="alert alert-success mb-3">

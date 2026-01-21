@@ -17,7 +17,10 @@ export const AccountDeleteModal = {
     data() {
         return {
             modal: null,
-            submitting: false
+            submitting: false,
+            form: {
+                username: '',
+            }
         };
     },
 
@@ -26,6 +29,7 @@ export const AccountDeleteModal = {
             if (!this.modal) return;
 
             if (val) {
+                this.resetForm();
                 this.modal.show();
             } else {
                 this.modal.hide();
@@ -46,15 +50,15 @@ export const AccountDeleteModal = {
     },
 
     methods: {
-        async submit() {
-            if (!this.account) return;
+        resetForm() {
+            this.form.username = this.account.username;
+        },
 
+        async submit() {
             this.submitting = true;
 
             try {
-                const res = await deleteAccount({
-                    accountId: this.account.id
-                });
+                let res = await deleteAccount(this.form);
 
                 if (!res.success) {
                     alert(res.errorCode || '刪除失敗');
@@ -90,7 +94,8 @@ export const AccountDeleteModal = {
                         </p>
 
                         <div class="alert alert-danger mb-3">
-                            <strong>帳號名稱 : {{ account?.username }}</strong>
+                            <strong>帳號名稱 : </strong>
+                            <span>{{ account?.username }}</span>
                         </div>
 
                         <div class="alert alert-danger small">

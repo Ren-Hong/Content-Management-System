@@ -1,4 +1,5 @@
 ﻿using Cms.Infrastructure.Repositories.Account.Entities;
+using Cms.Infrastructure.Repositories.Account.Persistence;
 
 namespace Cms.Infrastructure.Repositories.Account
 {
@@ -58,14 +59,42 @@ namespace Cms.Infrastructure.Repositories.Account
         /// <param name="username"></param>
         /// <param name="status"></param>
         /// <returns>後面要改中介表所以回傳guid</returns>
-        Task<Guid> UpdateAccountStatusAsync(string username, short status);
+        Task<Guid> UpdateStatusAsync(string username, AccountStatus status);
 
         /// <summary>
-        /// 更新帳戶對應的角色中介表 1:N的update不能直接update喔 會全部一起改
+        /// 重設帳密
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        Task UpdatePasswordAsync(string username, string password);
+
+        /// <summary>
+        /// 更新上一次更新時間
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="loginTime">登入時間（UTC）</param>
+        Task UpdateUpdatedAtAsync(string username, DateTime loginTime);
+
+        /// <summary>
+        /// 真刪帳號
+        /// </summary>
+        /// <param name="username"></param>
+        Task DeleteAccountAsync(string username);
+
+        /// <summary>
+        /// 刪掉帳戶所有對應角色
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        Task DeleteAccountRolesAsync(Guid accountId);
+
+        /// <summary>
+        /// 帳戶建立一筆與角色的對應
         /// </summary>
         /// <param name="accountId"></param>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        Task UpdateAccountRoleAsync(Guid accountId, Guid roleId);
+        Task AddAccountRoleAsync(Guid accountId, Guid roleId);
     }
 }
