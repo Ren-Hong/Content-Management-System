@@ -13,7 +13,7 @@ namespace Cms.Application.Services.Account.Dtos
 
     public class RoleResponseDto // for GetAccountSummaryResponseDto
     {
-        public required string RoleCode { get; set; }
+        public required Guid RoleId { get; set; }
         public required string RoleName { get; set; }
     }
 }

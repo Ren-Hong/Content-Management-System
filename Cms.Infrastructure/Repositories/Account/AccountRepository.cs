@@ -51,12 +51,14 @@ namespace Cms.Infrastructure.Repositories.Account
             const string sql = @"
                 SELECT
                     a.Username,
-                    r.RoleCode AS RoleCode,
-                    r.RoleName AS RoleName,
+                    r.RoleId,
+                    r.RoleName,
                     a.Status
                 FROM Accounts a
-                LEFT JOIN AccountRoles ar ON a.AccountId = ar.AccountId
-                LEFT JOIN Roles r ON ar.RoleId = r.RoleId
+                LEFT JOIN AccountRoles ar 
+                    ON a.AccountId = ar.AccountId
+                LEFT JOIN Roles r 
+                    ON ar.RoleId = r.RoleId
                 ORDER BY a.Username;
             ";
 

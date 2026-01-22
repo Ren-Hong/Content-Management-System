@@ -6,9 +6,9 @@ namespace Cms.Infrastructure.Repositories.Account.Entities
     {
         public required string Username { get; set; } 
 
-        public required string RoleCode { get; set; } 
+        public Guid? RoleId { get; set; } 
 
-        public required string RoleName { get; set; } 
+        public string? RoleName { get; set; } 
 
         public AccountStatus Status { get; set; }
     }

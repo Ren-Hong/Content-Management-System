@@ -13,6 +13,6 @@ namespace Cms.Web.Controllers.Account.Models
         public required string Password { get; set; }
 
         [Required(ErrorMessage = "請選擇角色")]
-        public required List<string> RoleCodes { get; set; }
+        public required List<Guid> RoleIds { get; set; }
     }
 }

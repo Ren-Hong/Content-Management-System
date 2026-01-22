@@ -26,7 +26,7 @@ namespace Cms.Application.Services.Role
             return rows
                 .Select(x => new GetRoleOptionsResponseDto
                 {
-                    RoleCode = x.RoleCode,
+                    RoleId = x.RoleId,
                     RoleName = x.RoleName
                 })
                 .ToList();

@@ -9,7 +9,7 @@
     {
         Success,
         UsernameRequired,
-        RoleCodesRequired,
+        RoleIdsRequired,
         AccountNotFound,
         StatusNotFound,
         RoleNotFound

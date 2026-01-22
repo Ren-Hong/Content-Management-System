@@ -6,7 +6,7 @@ namespace Cms.Application.Services.Account.Dtos
     {
         public required string Username { get; set; }
 
-        public required List<string> RoleCodes { get; set; }
+        public required List<Guid> RoleIds { get; set; }
 
         public AccountStatus Status { get; set; }
     }

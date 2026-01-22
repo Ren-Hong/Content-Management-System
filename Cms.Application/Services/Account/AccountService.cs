@@ -108,14 +108,15 @@ namespace Cms.Application.Services.Account
                 {
                     Username = g.Key.Username,
                     Status = (AccountStatus)g.Key.Status, // 從db grouping的資料型態是short, 要自己轉型
+
                     Roles = g
-                        .Where(x => !string.IsNullOrEmpty(x.RoleCode)) // 角色代碼不能為空
+                        .Where(x => x.RoleId.HasValue && x.RoleName != null)
                         .Select(x => new RoleResponseDto 
                         {
-                            RoleCode = x.RoleCode,
-                            RoleName = x.RoleName
-                        }) 
-                        .DistinctBy(r => r.RoleCode) // ⭐ 關鍵：用 RoleCode 去重
+                            RoleId = x.RoleId!.Value,
+                            RoleName = x.RoleName!
+                        })
+                        .DistinctBy(r => r.RoleId)
                         .ToList()
                 })
                 .ToList();
@@ -141,19 +142,17 @@ namespace Cms.Application.Services.Account
                 };
             }
 
-            // RoleCodes 沒new 或裡面沒東西
-            if (dto.RoleCodes == null || !dto.RoleCodes.Any())
+            // RoleIds 沒new 或裡面沒東西
+            if (dto.RoleIds == null || !dto.RoleIds.Any())
             {
                 return new CreateAccountResponseDto
                 {
-                    Result = CreateAccountResult.RoleCodesRequired
+                    Result = CreateAccountResult.RoleIdsRequired
                 };
             }
 
-            // 有沒有這角色 (一次驗)
-            var roleIds = (await _roleRepository.GetRoleIdsByRoleCodesAsync(dto.RoleCodes)).ToList();
-
-            if (roleIds.Count != dto.RoleCodes.Count)
+            //每一筆RoleIds存不存在表中
+            if (!await _roleRepository.RoleIdsExistAsync(dto.RoleIds))
             {
                 return new CreateAccountResponseDto
                 {
@@ -186,7 +185,7 @@ namespace Cms.Application.Services.Account
                 );
 
                 // 建多筆 AccountRole
-                foreach (var roleId in roleIds)
+                foreach (var roleId in dto.RoleIds)
                 {
                     await _accountRepository.CreateAccountRoleAsync(
                         accountId, 
@@ -219,12 +218,12 @@ namespace Cms.Application.Services.Account
                 };
             }
 
-            // RoleCodes 沒new 或裡面沒東西
-            if (dto.RoleCodes == null || !dto.RoleCodes.Any())
+            // RoleIds 沒new 或裡面沒東西
+            if (dto.RoleIds == null || !dto.RoleIds.Any())
             {
                 return new UpdateAccountResponseDto
                 {
-                    Result = UpdateAccountResult.RoleCodesRequired
+                    Result = UpdateAccountResult.RoleIdsRequired
                 };
             }
 
@@ -237,10 +236,8 @@ namespace Cms.Application.Services.Account
                 };
             }
 
-            // 有沒有這角色 (一次驗)
-            var roleIds = (await _roleRepository.GetRoleIdsByRoleCodesAsync(dto.RoleCodes)).ToList();
-
-            if (roleIds.Count != dto.RoleCodes.Count)
+            //每一筆RoleIds存不存在表中
+            if (!await _roleRepository.RoleIdsExistAsync(dto.RoleIds))
             {
                 return new UpdateAccountResponseDto
                 {
@@ -271,7 +268,7 @@ namespace Cms.Application.Services.Account
                 // 更新帳戶角色（先清掉再加，最乾淨）
                 await _accountRepository.DeleteAccountRolesAsync(accountId);
 
-                foreach (var roleId in roleIds)
+                foreach (var roleId in dto.RoleIds)
                 {
                     await _accountRepository.AddAccountRoleAsync(accountId, roleId);
                 }

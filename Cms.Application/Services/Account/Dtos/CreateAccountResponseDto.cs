@@ -11,7 +11,7 @@
         UsernameRequired,
         PasswordRequired,
         UsernameDuplicated,
-        RoleCodesRequired,
+        RoleIdsRequired,
         RoleNotFound
     }
 }

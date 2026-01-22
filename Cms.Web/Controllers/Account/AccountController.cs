@@ -109,11 +109,13 @@ namespace Cms.Web.Controllers.Account
             {
                 Username = x.Username,
                 Status = x.Status,
+
                 Roles = x.Roles.Select(r => new RoleResponseModel
                 {
-                    RoleCode = r.RoleCode,
+                    RoleId = r.RoleId,
                     RoleName = r.RoleName
                 }).ToList()
+
             }).ToList();
 
             return Json(new ApiResponse<IEnumerable<GetAccountSummariesResponseModel>>
@@ -145,7 +147,7 @@ namespace Cms.Web.Controllers.Account
                 {
                     Username = req.Username,
                     Password = req.Password,
-                    RoleCodes = req.RoleCodes
+                    RoleIds = req.RoleIds
                 }
             );
 
@@ -179,7 +181,7 @@ namespace Cms.Web.Controllers.Account
                 new UpdateAccountRequestDto
                 {
                     Username = req.Username,
-                    RoleCodes = req.RoleCodes,
+                    RoleIds = req.RoleIds,
                     Status   = req.Status,
                 }
             );

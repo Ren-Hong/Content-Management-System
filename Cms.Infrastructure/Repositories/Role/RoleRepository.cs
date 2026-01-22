@@ -16,48 +16,38 @@ namespace Cms.Infrastructure.Repositories.Role
         {
         }
 
-        public async Task<bool> RoleExistsAsync(string roleCode)
+        public async Task<bool> RoleIdsExistAsync(List<Guid> roleIds)
         {
             const string sql = @"
-                SELECT 1
+                SELECT COUNT(RoleId)
                 FROM Roles
-                WHERE RoleCode = @RoleCode
+                WHERE RoleId IN @RoleIds
             ";
 
-            return await _db.ExecuteScalarAsync<int?>(sql, new { RoleCode = roleCode }) != null; //ExecuteScalarAsync<T> 只回一個值
-        }
-
-        public async Task<IEnumerable<Guid>> GetRoleIdsByRoleCodesAsync(List<string> roleCodes)
-        {
-            // 這邊一次驗最棒, 不用foreach , 有Where IN語法
-            // Dapper 會幫你轉成 WHERE RoleCode IN (@RoleCodes1, @RoleCodes2, @RoleCodes3)
-            const string sql = @"
-                SELECT RoleId
-                FROM Roles
-                WHERE RoleCode IN @RoleCodes
-            ";
-
-            var roleIds = await _db.QueryAsync<Guid>(
+            var count = await _db.ExecuteScalarAsync<int>(
                 sql,
-                new { RoleCodes = roleCodes },
+                new { RoleIds = roleIds },
                 transaction: Tx
             );
 
-            return roleIds;
+            return count == roleIds.Count;
         }
 
         public async Task<IEnumerable<RoleOptionEntity>> GetRoleOptionsAsync()
         {
             const string sql = @"
                 SELECT
-                    RoleCode,
+                    RoleId,
                     RoleName
                 FROM Roles
                 WHERE Status = 1
                 ORDER BY CreatedAt
             ";
 
-            return await _db.QueryAsync<RoleOptionEntity>(sql);
+            return await _db.QueryAsync<RoleOptionEntity>(
+                sql,
+                transaction: Tx
+            );
         }
     }
 }

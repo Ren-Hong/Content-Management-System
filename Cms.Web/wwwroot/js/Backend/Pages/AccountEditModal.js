@@ -27,7 +27,7 @@ export const AccountEditModal = {
             form: {
                 username: '',
                 status: '',
-                roleCodes: []   // ⭐ 多選
+                roleIds: []   // ⭐ 多選
             }
         };
     },
@@ -72,37 +72,37 @@ export const AccountEditModal = {
         },
 
         onRoleSelected(event) {
-            const roleCode = event.target.value;
-            if (!roleCode) return;
+            const roleId = event.target.value;
+            if (!roleId) return;
 
             // 避免重複加入
-            if (!this.form.roleCodes.includes(roleCode)) {
-                this.form.roleCodes.push(roleCode);
+            if (!this.form.roleIds.includes(roleId)) {
+                this.form.roleIds.push(roleId);
             }
 
             // 重置 select
             event.target.value = '';
         },
 
-        removeRole(roleCode) {
-            this.form.roleCodes =
-                this.form.roleCodes.filter(code => code !== roleCode);
+        removeRole(roleId) {
+            this.form.roleIds =
+                this.form.roleIds.filter(id => id !== roleId);
         },
 
-        getRoleName(roleCode) {
-            const role = this.roleOptions.find(r => r.roleCode === roleCode);
-            return role ? role.roleName : roleCode;
+        getRoleName(roleId) {
+            const role = this.roleOptions.find(r => r.roleId === roleId);
+            return role ? role.roleName : roleId;
         },
 
         fillForm() { // 填入本來的資料
             this.form.username = this.account.username;
-            this.form.roleCodes = this.account?.roles?.map(r => r.roleCode) ?? [];
+            this.form.roleIds = this.account?.roles?.map(r => r.roleId) ?? [];
             this.form.status = this.account.status ?? '';
         },
 
         async submit() {
 
-            if (this.form.roleCodes.length === 0) {
+            if (this.form.roleIds.length === 0) {
                 alert('請至少選擇一個角色');
                 return;
             }
@@ -165,23 +165,23 @@ export const AccountEditModal = {
                                         @change="onRoleSelected($event)">
                                     <option value="">請選擇角色</option>
                                     <option v-for="role in roleOptions"
-                                            :key="role.roleCode"
-                                            :value="role.roleCode">
+                                            :key="role.roleId"
+                                            :value="role.roleId">
                                         {{ role.roleName }}
                                     </option>
                                 </select>
                             </div>
 
                             <div class="d-flex flex-wrap gap-2">
-                                <span v-for="roleCode in form.roleCodes"
-                                      :key="roleCode"
+                                <span v-for="roleId in form.roleIds"
+                                      :key="roleId"
                                       class="badge bg-primary d-flex align-items-center">
 
-                                    {{ getRoleName(roleCode) }}
+                                    {{ getRoleName(roleId) }}
 
                                     <button type="button"
                                             class="btn-close btn-close-white ms-2"
-                                            @click="removeRole(roleCode)">
+                                            @click="removeRole(roleId)">
                                     </button>
                                 </span>
                             </div>

@@ -13,7 +13,7 @@ namespace Cms.Web.Controllers.Account.Models
 
     public class RoleResponseModel
     {
-        public required string RoleCode { get; set; }
+        public required Guid RoleId { get; set; }
         public required string RoleName { get; set; }
     }
 }

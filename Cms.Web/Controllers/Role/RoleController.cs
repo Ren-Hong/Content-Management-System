@@ -24,7 +24,7 @@ namespace Cms.Web.Controllers.Role
             var res = rdto.Select(x => new GetRoleOptionsResponseModel
             {
                 RoleName = x.RoleName,
-                RoleCode = x.RoleCode,
+                RoleId = x.RoleId,
             }).ToList();
 
             return Json(new ApiResponse<IEnumerable<GetRoleOptionsResponseModel>>
