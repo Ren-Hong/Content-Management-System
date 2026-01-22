@@ -20,3 +20,11 @@ VALUES
 (N'Content.Create',  N'新增內容'),
 (N'Content.Edit',    N'編輯內容'),
 (N'Content.Publish', N'發佈內容');
+
+ALTER TABLE dbo.Permissions
+ADD Status SMALLINT NOT NULL
+    CONSTRAINT DF_Permissions_Status DEFAULT 1;
+-- 1 = Enable, 2 = Disabled
+
+ALTER TABLE dbo.Permissions
+ADD UpdatedAt DATETIME2(0) NULL;

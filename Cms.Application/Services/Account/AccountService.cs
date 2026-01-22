@@ -56,21 +56,26 @@ namespace Cms.Application.Services.Account
                 };
 
             // Entity 轉 Dto
-            var auth = new GetAccountAuthResponseDto
+            var auth = new GetAccountAuthResponseDto 
             {
+                
                 AccountId = rows[0].AccountId,
                 Username = rows[0].Username,
                 PasswordHash = rows[0].PasswordHash,
-                Roles = rows
-                    .Where(x => x.RoleCode != null)
-                    .Select(x => x.RoleCode!)
+
+                RoleCodes = rows
+                    .Select(x => x.RoleCode)                            // 只拿 RoleCodes
+                    .Where(code => !string.IsNullOrWhiteSpace(code))    // 去 Null 與 空字串, IEnumerable<string?>
+                    .Select(code => code!)                              // IEnumerable<string?> -> IEnumerable<string>
                     .Distinct()
-                    .ToArray(),
-                Permissions = rows
-                    .Where(x => x.PermissionCode != null)
-                    .Select(x => x.PermissionCode!)
+                    .ToList(),
+
+                PermissionCodes = rows
+                    .Select(x => x.PermissionCode)                            
+                    .Where(code => !string.IsNullOrWhiteSpace(code))    
+                    .Select(code => code!)                              
                     .Distinct()
-                    .ToArray()
+                    .ToList(),
             };
 
             // 驗證密碼
@@ -88,8 +93,8 @@ namespace Cms.Application.Services.Account
                 Result = LoginResult.Success,
                 AccountId = auth.AccountId,
                 Username = auth.Username,
-                Roles = auth.Roles,
-                Permissions = auth.Permissions
+                RoleCodes = auth.RoleCodes,
+                PermissionCodes = auth.PermissionCodes
             };
         }
 

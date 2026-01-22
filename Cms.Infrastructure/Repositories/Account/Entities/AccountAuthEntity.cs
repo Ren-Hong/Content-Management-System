@@ -7,9 +7,13 @@ namespace Cms.Infrastructure.Repositories.Account.Entities
     public class AccountAuthEntity
     {
         public Guid AccountId { get; set; }
-        public string Username { get; set; } = null!;
-        public string PasswordHash { get; set; } = null!;
+
+        public required string Username { get; set; }
+
+        public required string PasswordHash { get; set; }
+
         public string? RoleCode { get; set; }
+
         public string? PermissionCode { get; set; }
     }
 }

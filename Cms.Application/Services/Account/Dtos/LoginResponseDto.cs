@@ -8,9 +8,9 @@
 
         public string? Username { get; set; }
 
-        public string[]? Roles { get; set; }
+        public List<string>? RoleCodes { get; set; }
 
-        public string[]? Permissions { get; set; }
+        public List<string>? PermissionCodes { get; set; }
     }
 
     public enum LoginResult

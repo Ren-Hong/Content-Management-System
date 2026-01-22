@@ -63,19 +63,19 @@ namespace Cms.Web.Controllers.Account
                 new Claim(ClaimTypes.Name, rdto.Username!)
             };
 
-            if (rdto.Roles != null)
+            if (rdto.RoleCodes != null)
             {
-                foreach (var role in rdto.Roles)
+                foreach (var roleCode in rdto.RoleCodes)
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
+                    claims.Add(new Claim(ClaimTypes.Role, roleCode));
                 }
             }
 
-            if (rdto.Permissions != null)
+            if (rdto.PermissionCodes != null)
             {
-                foreach (var permission in rdto.Permissions)
+                foreach (var permissionCode in rdto.PermissionCodes)
                 {
-                    claims.Add(new Claim("permission", permission));
+                    claims.Add(new Claim("permission", permissionCode));
                 }
             }
 
@@ -95,7 +95,7 @@ namespace Cms.Web.Controllers.Account
             {
                 Success = true,
                 Data = new LoginResponseModel{
-                    IsAdmin = rdto.Roles?.Contains("Admin") == true //左邊必須是true才是true, null或false則為false
+                    IsAdmin = rdto.RoleCodes?.Contains("Admin") == true //左邊必須是true才是true, null或false則為false
                 }
             });
         }

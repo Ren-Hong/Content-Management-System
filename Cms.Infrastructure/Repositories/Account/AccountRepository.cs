@@ -23,14 +23,19 @@ namespace Cms.Infrastructure.Repositories.Account
                     a.AccountId,
                     a.Username,
                     a.PasswordHash,
-
                     r.RoleCode,
                     p.PermissionCode
                 FROM Accounts a
-                LEFT JOIN AccountRoles ar ON a.AccountId = ar.AccountId
-                LEFT JOIN Roles r ON ar.RoleId = r.RoleId
-                LEFT JOIN RolePermissions rp ON r.RoleId = rp.RoleId
-                LEFT JOIN Permissions p ON rp.PermissionId = p.PermissionId
+                LEFT JOIN AccountRoles ar 
+                    ON a.AccountId = ar.AccountId
+                LEFT JOIN Roles r 
+                    ON ar.RoleId = r.RoleId
+                    AND r.Status = 1
+                LEFT JOIN RolePermissions rp 
+                    ON r.RoleId = rp.RoleId
+                LEFT JOIN Permissions p 
+                    ON rp.PermissionId = p.PermissionId
+                    AND p.Status = 1
                 WHERE a.Username = @Username
                   AND a.Status = 1;
             ";
