@@ -1,28 +1,33 @@
 ﻿export const Sidebar = {
-    props: ['currentPage'],
+    props: [
+        'currentPage',
+        'pages'
+    ],
+
     emits: ['page-change'],
+
     template: `
         <nav class="sidebar">
             <div
                 class="sidebar-item"
-                :class="{ active: currentPage === 'accounts' }"
-                @click="$emit('page-change', 'accounts')"
+                :class="{ active: currentPage === pages.AccountManager }"
+                @click="$emit('page-change', pages.AccountManager)"
             >
                 帳戶管理
             </div>
 
             <div
                 class="sidebar-item"
-                :class="{ active: currentPage === 'roles' }"
-                @click="$emit('page-change', 'roles')"
+                :class="{ active: currentPage === pages.RoleManager }"
+                @click="$emit('page-change', pages.RoleManager)"
             >
                 角色管理
             </div>
 
             <div
                 class="sidebar-item"
-                :class="{ active: currentPage === 'permissions' }"
-                @click="$emit('page-change', 'permissions')"
+                :class="{ active: currentPage === pages.PermissionManager }"
+                @click="$emit('page-change', pages.PermissionManager)"
             >
                 權限管理
             </div>

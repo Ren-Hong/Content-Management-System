@@ -14,13 +14,6 @@ BEGIN
     CREATE UNIQUE INDEX UX_Permissions_Code ON dbo.Permissions(PermissionCode);
 END
 
-INSERT INTO dbo.Permissions(PermissionCode, Description)
-VALUES
-(N'Content.View',    N'瀏覽內容'),
-(N'Content.Create',  N'新增內容'),
-(N'Content.Edit',    N'編輯內容'),
-(N'Content.Publish', N'發佈內容');
-
 ALTER TABLE dbo.Permissions
 ADD Status SMALLINT NOT NULL
     CONSTRAINT DF_Permissions_Status DEFAULT 1;
@@ -28,3 +21,8 @@ ADD Status SMALLINT NOT NULL
 
 ALTER TABLE dbo.Permissions
 ADD UpdatedAt DATETIME2(0) NULL;
+
+EXEC sp_rename 
+    'Cms_Dev.dbo.Permissions.Description',
+    'PermissionName',
+    'COLUMN';

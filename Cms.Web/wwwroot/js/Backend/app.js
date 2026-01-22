@@ -1,24 +1,29 @@
 ﻿import { Header } from './Layout/Header.js';
 import { Sidebar } from './Layout/Sidebar.js';
 import { AccountManager } from './Pages/AccountManager.js';
-import { Roles } from './Pages/RoleManager.js';
-import { Permissions } from './Pages/PermissionManager.js';
+import { RoleManager } from './Pages/RoleManager.js';
+import { PermissionManager } from './Pages/PermissionManager.js';
 
 const { createApp } = Vue;
 
 createApp({
     components: {
         Header,
-        Sidebar,
-        AccountManager: AccountManager,
-        roles: Roles,
-        permissions: Permissions
+        Sidebar
     },
+
     data() {
         return {
-            currentPage: 'accountManager'
+            currentPage: AccountManager,
+
+            pages: {
+                AccountManager,
+                RoleManager,
+                PermissionManager
+            }
         };
     },
+
     template: `
         <div class="backend-layout min-vh-100 bg-light">
     
@@ -31,6 +36,7 @@ createApp({
                 <aside class="backend-sidebar bg-white p-3">
                     <Sidebar
                         :currentPage="currentPage"
+                        :pages="pages"
                         @page-change="currentPage = $event"
                     />
                 </aside>
