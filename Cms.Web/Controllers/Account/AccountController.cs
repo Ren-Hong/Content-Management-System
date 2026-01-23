@@ -2,6 +2,7 @@
 using Cms.Application.Services.Account.Dtos;
 using Cms.Web.Controllers.Account.Models;
 using Cms.Web.Controllers.Contracts.Api;
+using Cms.Web.Controllers.Role.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -107,10 +108,11 @@ namespace Cms.Web.Controllers.Account
 
             var res = rdto.Select(x => new GetAccountSummariesResponseModel // 跟 dto 長依樣
             {
+                AccountId = x.AccountId,
                 Username = x.Username,
                 Status = x.Status,
 
-                Roles = x.Roles.Select(r => new RoleResponseModel
+                Roles = x.Roles.Select(r => new GetRoleOptionsResponseModel
                 {
                     RoleId = r.RoleId,
                     RoleName = r.RoleName

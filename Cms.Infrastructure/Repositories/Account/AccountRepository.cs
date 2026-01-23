@@ -50,6 +50,7 @@ namespace Cms.Infrastructure.Repositories.Account
         {
             const string sql = @"
                 SELECT
+                    a.AccountId,
                     a.Username,
                     r.RoleId,
                     r.RoleName,
@@ -241,8 +242,17 @@ namespace Cms.Infrastructure.Repositories.Account
         public async Task AddAccountRoleAsync(Guid accountId, Guid roleId)
         {
             const string sql = @"
-                INSERT INTO AccountRoles (AccountId, RoleId, CreatedAt)
-                VALUES (@AccountId, @RoleId, SYSUTCDATETIME())
+                INSERT INTO AccountRoles 
+                (
+                    AccountId, 
+                    RoleId, 
+                    CreatedAt)
+                VALUES 
+                (
+                    @AccountId,
+                    @RoleId,
+                    SYSUTCDATETIME()
+                )
             ";
 
             await _db.ExecuteAsync(

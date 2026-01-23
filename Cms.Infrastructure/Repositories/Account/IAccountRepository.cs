@@ -73,8 +73,8 @@ namespace Cms.Infrastructure.Repositories.Account
         /// 更新上一次更新時間
         /// </summary>
         /// <param name="username"></param>
-        /// <param name="loginTime">登入時間（UTC）</param>
-        Task UpdateUpdatedAtAsync(string username, DateTime loginTime);
+        /// <param name="updatedTime"></param>
+        Task UpdateUpdatedAtAsync(string username, DateTime updatedTime);
 
         /// <summary>
         /// 真刪帳號

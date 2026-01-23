@@ -50,18 +50,18 @@ export const AccountManager = {
             this.showCreate = true;
         },
 
-        openEdit(acc) {
-            this.selectedAccount = acc;
+        openEdit(accountSummary) {
+            this.selectedAccount = accountSummary;
             this.showEdit = true;
         },
 
-        openResetPassword(acc) {
-            this.selectedAccount = acc;
+        openResetPassword(accountSummary) {
+            this.selectedAccount = accountSummary;
             this.showResetPassword = true;
         },
 
-        openDelete(acc) {
-            this.selectedAccount = acc;
+        openDelete(accountSummary) {
+            this.selectedAccount = accountSummary;
             this.showDelete = true;
         },
 
@@ -96,19 +96,19 @@ export const AccountManager = {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="acc in accountSummaries" :key="acc.id">
-                        <td>{{ acc.username }}</td>
-                        <td>{{ acc.roles?.map(r => r.roleName).join(', ') }}</td>
-                        <td>{{ AccountStatusText[acc.status] }}</td>
+                    <tr v-for="accountSummary in accountSummaries" :key="accountSummary.accountId">
+                        <td>{{ accountSummary.username }}</td>
+                        <td>{{ accountSummary.roles?.map(r => r.roleName).join(', ') }}</td>
+                        <td>{{ AccountStatusText[accountSummary.status] }}</td>
                         <td class="text-nowrap">
                             <button class="btn btn-success btn-sm me-1"
-                                    @click="openEdit(acc)">編輯</button>
+                                    @click="openEdit(accountSummary)">編輯</button>
 
                             <button class="btn btn-warning btn-sm me-1 text-white"
-                                    @click="openResetPassword(acc)">重設密碼</button>
+                                    @click="openResetPassword(accountSummary)">重設密碼</button>
 
                             <button class="btn btn-danger btn-sm"
-                                    @click="openDelete(acc)">刪除</button>
+                                    @click="openDelete(accountSummary)">刪除</button>
                         </td>
                     </tr>
                 </tbody>

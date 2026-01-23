@@ -4,7 +4,7 @@ import { AccountManager } from './Pages/AccountManager.js';
 import { RoleManager } from './Pages/RoleManager.js';
 import { PermissionManager } from './Pages/PermissionManager.js';
 
-const { createApp } = Vue;
+const { createApp, markRaw } = Vue;
 
 createApp({
     components: {
@@ -14,12 +14,12 @@ createApp({
 
     data() {
         return {
-            currentPage: AccountManager,
+            currentPage: markRaw(AccountManager),
 
             pages: {
-                AccountManager,
-                RoleManager,
-                PermissionManager
+                AccountManager: markRaw(AccountManager),
+                RoleManager: markRaw(RoleManager),
+                PermissionManager: markRaw(PermissionManager)
             }
         };
     },

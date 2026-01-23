@@ -40,7 +40,7 @@ namespace Cms.Application.Services.Account
         Task<ResetPasswordResponseDto> ResetPasswordAsync(ResetPasswordRequestDto req);
 
         /// <summary>
-        /// 軟刪帳戶
+        /// 真實刪除帳戶
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>

@@ -4,6 +4,8 @@ namespace Cms.Infrastructure.Repositories.Account.Entities
 {
     public class AccountSummaryEntity
     {
+        public required Guid AccountId { get; set; }
+
         public required string Username { get; set; } 
 
         public Guid? RoleId { get; set; } 

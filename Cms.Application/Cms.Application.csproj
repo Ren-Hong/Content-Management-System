@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Cms.Infrastructure\Cms.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Domain\" />
-  </ItemGroup>
-
 </Project>

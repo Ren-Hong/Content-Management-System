@@ -1,7 +1,7 @@
-﻿import { createAccount } from '../api/accountApi.js';
-import { getRoleOptions } from '../api/RoleApi.js';
+﻿import { createRole } from '../api/roleApi.js';
+import { getPermissionOptions } from '../api/PermissionApi.js';
 
-export const AccountCreateModal = {
+export const RoleCreateModal = {
     props: {
         show: {
             type: Boolean,
@@ -13,12 +13,12 @@ export const AccountCreateModal = {
 
     data() {
         return {
-            modal: null,        // Bootstrap Modal instance
-            roleOptions: [],
+            modal: null,        
+            permissionOptions: [],
             form: {
-                username: '',
-                password: '',
-                roleIds: []   // ⭐ 多選
+                roleName: '',
+                roleCode: '',
+                permissionIds: [] 
             },
             submitting: false
         };
@@ -27,7 +27,7 @@ export const AccountCreateModal = {
     watch: {                        // watch =「當某個值改變時，我要額外做一件事」
         async show(val) {                 //「只要 show 這個 prop 的值改變，如果它變成 true，我就把表單清空。」
             if (val) {
-                await this.loadRoleOptions(); 
+                await this.loadPermissionOptions(); 
 
                 this.resetForm();
                 this.modal.show();
@@ -48,62 +48,62 @@ export const AccountCreateModal = {
     },
 
     methods: {
-        async loadRoleOptions() {
+        async loadPermissionOptions() {
             try {
-                let res = await getRoleOptions();
+                let res = await getPermissionOptions();
 
                 if (!res.success) {
-                    alert(res.errorCode || '角色選單載入失敗');
+                    alert(res.errorCode || ' 權限選單載入失敗');
                     return;
                 }
 
-                this.roleOptions = res.data;
+                this.permissionOptions = res.data;
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤（角色選單載入）');
+                alert('系統錯誤（權限選單載入）');
             }
         },
 
-        onRoleSelected(event) {
-            const roleId = event.target.value;
-            if (!roleId) return;
+        onPermissionSelected(event) {
+            const permissionId = event.target.value;
+            if (!permissionId) return;
 
             // 避免重複加入
-            if (!this.form.roleIds.includes(roleId)) {
-                this.form.roleIds.push(roleId);
+            if (!this.form.permissionIds.includes(permissionId)) {
+                this.form.permissionIds.push(permissionId);
             }
 
             // 重置 select
             event.target.value = '';
         },
 
-        removeRole(roleId) {
-            this.form.roleIds = this.form.roleIds.filter(id => id !== roleId);
+        removePermission(permissionId) {
+            this.form.permissionIds = this.form.permissionIds.filter(id => id !== permissionId);
         },
 
-        getRoleName(roleId) {
-            const role = this.roleOptions.find(r => r.roleId === roleId);
-            return role ? role.roleName : roleId;
+        getPermissionName(permissionId) {
+            const permission = this.permissionOptions.find(r => r.permissionId === permissionId);
+            return permission ? permission.permissionName : permissionId;
         },
 
         resetForm() {
             this.form = {
-                username: '',
-                password: '',
-                roleIds: []   // ✅ 一定要是陣列
+                roleName: '',
+                roleCode: '',
+                permissionIds: []   
             };
         },
 
         async submit() {
-            if (this.form.roleIds.length === 0) {
-                alert('請至少選擇一個角色');
+            if (this.form.permissionIds.length === 0) {
+                alert('請至少選擇一個權限');
                 return;
             }
 
             this.submitting = true;
 
             try {
-                let res = await createAccount(this.form);
+                let res = await createRole(this.form);
 
                 if (!res.success) {
                     alert(res.errorCode || '新增失敗');
@@ -126,7 +126,7 @@ export const AccountCreateModal = {
                 <div class="modal-content border-primary">
 
                     <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title">新增帳戶</h5>
+                        <h5 class="modal-title">新增角色</h5>
                         <button type="button"
                                 class="btn-close"
                                 :disabled="submitting"
@@ -137,46 +137,45 @@ export const AccountCreateModal = {
                     <div class="modal-body">
 
                         <div class="alert alert-primary mb-3">
-                            <label class="form-label">帳號</label>
+                            <label class="form-label">角色名稱</label>
 
                             <input class="form-control"
-                                    v-model="form.username">
+                                    v-model="form.roleName">
                         </div>
 
                         <div class="alert alert-primary mb-3">
-                            <label class="form-label">密碼</label>
+                            <label class="form-label">角色代碼(程式用)</label>
 
                             <input class="form-control"
-                                    type="password"
-                                    v-model="form.password">
+                                    v-model="form.roleCode">
                         </div>
 
                         <div class="alert alert-primary mb-3">
 
                             <div class="mb-2">
-                                <label class="form-label">角色</label>
+                                <label class="form-label">權限</label>
 
                                 <select class="form-select"
-                                        @change="onRoleSelected($event)">
-                                    <option value="">請選擇角色</option>
-                                    <option v-for="role in roleOptions"
-                                            :key="role.roleId"
-                                            :value="role.roleId">
-                                        {{ role.roleName }}
+                                        @change="onPermissionSelected($event)">
+                                    <option value="">請選擇權限</option>
+                                    <option v-for="permission in permissionOptions"
+                                            :key="permission.permissionId"
+                                            :value="permission.permissionId">
+                                        {{ permission.permissionName }}
                                     </option>
                                 </select>
                             </div>
 
                             <div class="d-flex flex-wrap gap-2">
-                                <span v-for="roleId in form.roleIds"
-                                      :key="roleId"
+                                <span v-for="permissionId in form.permissionIds"
+                                      :key="permissionId"
                                       class="badge bg-primary d-flex align-items-center">
 
-                                    {{ getRoleName(roleId) }}
+                                    {{ getPermissionName(permissionId) }}
 
                                     <button type="button"
                                             class="btn-close btn-close-white ms-2"
-                                            @click="removeRole(roleId)">
+                                            @click="removePermission(permissionId)">
                                     </button>
                                 </span>
                             </div>

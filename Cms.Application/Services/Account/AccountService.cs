@@ -1,4 +1,5 @@
 ﻿using Cms.Application.Services.Account.Dtos;
+using Cms.Application.Services.Role.Dtos;
 using Cms.Infrastructure.Repositories.Account;
 using Cms.Infrastructure.Repositories.Account.Persistence;
 using Cms.Infrastructure.Repositories.Role;
@@ -103,17 +104,18 @@ namespace Cms.Application.Services.Account
             var rows = (await _accountRepository.GetAccountSummariesAsync()).ToList();
 
             return rows
-                .GroupBy(x => new { x.Username, x.Status }) // 對名稱狀態分組
+                .GroupBy(x => new { x.AccountId, x.Username, x.Status }) // 對名稱狀態分組
                 .Select(g => new GetAccountSummariesResponseDto
                 {
+                    AccountId = g.Key.AccountId,
                     Username = g.Key.Username,
                     Status = (AccountStatus)g.Key.Status, // 從db grouping的資料型態是short, 要自己轉型
 
                     Roles = g
                         .Where(x => x.RoleId.HasValue && x.RoleName != null)
-                        .Select(x => new RoleResponseDto 
+                        .Select(x => new GetRoleOptionsResponseDto
                         {
-                            RoleId = x.RoleId!.Value,
+                            RoleId = x.RoleId!.Value, //!代表告訴編譯器 放心我保證不是NULL 我不要綠色毛毛蟲
                             RoleName = x.RoleName!
                         })
                         .DistinctBy(r => r.RoleId)
