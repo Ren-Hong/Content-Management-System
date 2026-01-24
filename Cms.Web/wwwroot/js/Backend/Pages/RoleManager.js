@@ -1,20 +1,16 @@
-﻿//export const RoleManager = {
-//    template: `<div>角色管理</div>`
-//};
-
-import { getRoleSummaries } from '../api/roleApi.js';
+﻿import { getRoleSummaries } from '../api/roleApi.js';
 
 import { RoleStatusText } from '../constants/roleStatus.js';
 
 import { RoleCreateModal } from './RoleCreateModal.js';
-//import { RoleEditModal } from './RoleEditModal.js';
-//import { RoleDeleteModal } from './RoleDeleteModal.js';
+import { RoleEditModal } from './RoleEditModal.js';
+import { RoleDeleteModal } from './RoleDeleteModal.js';
 
 export const RoleManager = {
     components: {
         RoleCreateModal,
-        //RoleEditModal,
-        //RoleDeleteModal
+        RoleEditModal,
+        RoleDeleteModal
     },
 
     data() {
@@ -97,10 +93,10 @@ export const RoleManager = {
                         <td>{{ RoleStatusText[roleSummary.status] }}</td>
                         <td class="text-nowrap">
                             <button class="btn btn-success btn-sm me-1"
-                                    @click="openEdit(acc)">編輯</button>
+                                    @click="openEdit(roleSummary)">編輯</button>
 
                             <button class="btn btn-danger btn-sm"
-                                    @click="openDelete(acc)">刪除</button>
+                                    @click="openDelete(roleSummary)">刪除</button>
                         </td>
                     </tr>
                 </tbody>

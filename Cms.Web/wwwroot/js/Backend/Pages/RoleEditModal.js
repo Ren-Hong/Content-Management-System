@@ -1,15 +1,15 @@
-﻿import { updateAccount } from '../api/accountApi.js';
-import { getRoleOptions } from '../api/RoleApi.js';
+﻿import { updateRole } from '../api/roleApi.js';
+import { getPermissionOptions } from '../api/permissionApi.js';
 
-import { AccountStatusText } from '../constants/accountStatus.js';
+import { RoleStatusText } from '../constants/roleStatus.js';
 
-export const AccountEditModal = {
+export const RoleEditModal = {
     props: {
-        show: { // AccountManager 的 showEdit
+        show: { // RoleManager 的 showEdit
             type: Boolean,
             required: true
         },
-        account: { // AccountManager 的 selectedAccount
+        role: { // RolManager 的 selectedRole
             type: Object,
             default : null
         }
@@ -19,15 +19,15 @@ export const AccountEditModal = {
 
     data() {
         return {
-            AccountStatusText, 
+            RoleStatusText, 
 
             modal: null,
             submitting: false,
-            roleOptions: [],
+            permissionOptions: [],
             form: {
-                username: '',
+                roleName: '',
                 status: '',
-                roleIds: []   // ⭐ 多選
+                permissionIds: []   // ⭐ 多選
             }
         };
     },
@@ -35,7 +35,7 @@ export const AccountEditModal = {
     watch: {
         async show(val) {
             if (val) {
-                await this.loadRoleOptions(); 
+                await this.loadPermissionOptions(); 
 
                 this.fillForm();
                 this.modal.show();
@@ -55,71 +55,71 @@ export const AccountEditModal = {
     },
 
     methods: {
-        async loadRoleOptions() {
+        async loadPermissionOptions() {
             try {
-                let res = await getRoleOptions();
+                let res = await getPermissionOptions();
 
                 if (!res.success) {
-                    alert(res.errorCode || '角色選單載入失敗');
+                    alert(res.errorCode || '權限選單載入失敗');
                     return;
                 }
 
-                this.roleOptions = res.data;
+                this.permissionOptions = res.data;
             } catch (err) {
                 console.error(err);
                 alert('API路徑或Json格式不對');
             }
         },
 
-        onRoleSelected(event) {
-            const roleId = event.target.value;
-            if (!roleId) return;
+        onPermissionSelected(event) {
+            const permissionId = event.target.value;
+            if (!permissionId) return;
 
             // 避免重複加入
-            if (!this.form.roleIds.includes(roleId)) {
-                this.form.roleIds.push(roleId);
+            if (!this.form.permissionIds.includes(permissionId)) {
+                this.form.permissionIds.push(permissionId);
             }
 
             // 重置 select
             event.target.value = '';
         },
 
-        removeRole(roleId) {
-            this.form.roleIds =
-                this.form.roleIds.filter(id => id !== roleId);
+        removePermission(permissionId) {
+            this.form.permissionIds =
+                this.form.permissionIds.filter(id => id !== permissionId);
         },
 
-        getRoleName(roleId) {
-            const role = this.roleOptions.find(r => r.roleId === roleId);
-            return role ? role.roleName : roleId;
+        getPermissionName(permissionId) {
+            const permission = this.permissionOptions.find(r => r.permissionId === permissionId);
+            return permission ? permission.permissionName : permissionId;
         },
 
         fillForm() { // 填入本來的資料
-            this.form.username = this.account.username;
-            this.form.roleIds = this.account?.roles?.map(r => r.roleId) ?? [];
-            this.form.status = this.account.status ?? '';
+            this.form.roleName = this.role.roleName;
+            this.form.permissionIds = this.role?.permissions?.map(r => r.permissionId) ?? [];
+            this.form.status = this.role.status ?? '';
         },
 
         async submit() {
 
-            if (this.form.roleIds.length === 0) {
+            if (this.form.permissionIds.length === 0) {
                 alert('請至少選擇一個角色');
                 return;
             }
             this.submitting = true;
 
             try {
-                let res = await updateAccount(this.form);
+                let res = await updateRole(this.form);
 
                 if (!res.success) {
-                    alert(res.errorCode || '更新帳戶失敗');
+                    alert(res.errorCode || '更新角色失敗');
                     return;
                 }
 
                 this.$emit('updated');
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤');
+                alert('api錯誤');
             } finally {
                 this.submitting = false;
             }
@@ -132,7 +132,7 @@ export const AccountEditModal = {
                 <div class="modal-content border-success">
 
                     <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title">編輯帳戶</h5>
+                        <h5 class="modal-title">編輯角色</h5>
                         <button type="button"
                                 class="btn-close"
                                 :disabled="submitting"
@@ -143,15 +143,15 @@ export const AccountEditModal = {
                         <div class="row">
                             <div class="col-6">
                                 <div class="alert alert-success mb-3">
-                                    <strong>帳號名稱 : </strong>
-                                    <span>{{ account?.username }}</span>
+                                    <strong>角色名稱 : </strong>
+                                    <span>{{ role?.roleName }}</span>
                                 </div>
                             </div>
 
                             <div class="col-6">
                                 <div class="alert alert-success mb-3">
-                                    <strong>帳號狀態 : </strong>
-                                    <span>{{ account ? AccountStatusText[account.status] : '' }}</span>
+                                    <strong>角色狀態 : </strong>
+                                    <span>{{ role ? RoleStatusText[role.status] : '' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -159,29 +159,29 @@ export const AccountEditModal = {
                         <div class="alert alert-success mb-3">
 
                             <div class="mb-2">
-                                <label class="form-label">角色</label>
+                                <label class="form-label">權限</label>
 
                                 <select class="form-select"
-                                        @change="onRoleSelected($event)">
-                                    <option value="">請選擇角色</option>
-                                    <option v-for="role in roleOptions"
-                                            :key="role.roleId"
-                                            :value="role.roleId">
-                                        {{ role.roleName }}
+                                        @change="onPermissionSelected($event)">
+                                    <option value="">請選擇權限</option>
+                                    <option v-for="permission in permissionOptions"
+                                            :key="permission.permissionId"
+                                            :value="permission.permissionId">
+                                        {{ permission.permissionName }}
                                     </option>
                                 </select>
                             </div>
 
                             <div class="d-flex flex-wrap gap-2">
-                                <span v-for="roleId in form.roleIds"
-                                      :key="roleId"
+                                <span v-for="permissionId in form.permissionIds"
+                                      :key="permissionId"
                                       class="badge bg-primary d-flex align-items-center">
 
-                                    {{ getRoleName(roleId) }}
+                                    {{ getPermissionName(permissionId) }}
 
                                     <button type="button"
                                             class="btn-close btn-close-white ms-2"
-                                            @click="removeRole(roleId)">
+                                            @click="removePermission(permissionId)">
                                     </button>
                                 </span>
                             </div>
@@ -193,7 +193,6 @@ export const AccountEditModal = {
                             <select class="form-select" v-model="form.status">
                                 <option value="Enable">啟用</option>
                                 <option value="Disabled">停用</option>
-                                <option value="Locked">鎖帳</option>
                             </select>
                         </div>
 
