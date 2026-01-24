@@ -1,7 +1,8 @@
-﻿using Cms.Infrastructure.Repositories.Role.Persistence;
+﻿using Cms.Contract.Repositories.Role.Entities;
+using Cms.Contract.Repositories.Role.Interfaces;
+using Cms.Contract.Repositories.Role.Persistence;
+using Cms.Contract.Services.UnitOfWork.Interfaces;
 using Cms.Infrastructure.Repositories.Base;
-using Cms.Infrastructure.Repositories.Role.Entities;
-using Cms.Infrastructure.Repositories.UnitOfWork;
 using Dapper;
 using System.Data;
 

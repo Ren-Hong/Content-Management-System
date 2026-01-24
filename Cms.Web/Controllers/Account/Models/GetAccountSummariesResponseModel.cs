@@ -1,4 +1,4 @@
-﻿using Cms.Infrastructure.Repositories.Account.Persistence;
+﻿using Cms.Contract.Repositories.Account.Persistence;
 using Cms.Web.Controllers.Role.Models;
 
 namespace Cms.Web.Controllers.Account.Models

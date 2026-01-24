@@ -1,6 +1,6 @@
-﻿using Cms.Application.Services.Account;
-using Cms.Infrastructure.Repositories.Account;
-using Cms.Infrastructure.Repositories.UnitOfWork;
+﻿using Cms.Application;
+using Cms.Contract.Services.UnitOfWork.Interfaces;
+using Cms.Infrastructure;
 using Cms.Web.Authorization;
 using Cms.Web.Middlewares;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -29,8 +29,8 @@ builder.Services
 builder.Services.Scan(scan => scan
     .FromAssemblies(
         typeof(Program).Assembly,           // Cms.Web
-        typeof(IAccountService).Assembly,   // Cms.Application
-        typeof(IAccountRepository).Assembly // Cms.Infrastructure
+        typeof(ApplicationAssemblyMarker).Assembly,   // Cms.Application
+        typeof(InfrastructureAssemblyMarker).Assembly // Cms.Infrastructure
     )
     .AddClasses(c => c.Where(t =>
         t.Name.EndsWith("Service") || //只要尾巴叫 Service 都會被 DI new

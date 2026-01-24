@@ -1,4 +1,5 @@
-﻿using Cms.Infrastructure.Repositories.UnitOfWork;
+﻿using Cms.Contract.Services.UnitOfWork.Interfaces;
+
 using System.Data;
 
 public class UnitOfWork : IUnitOfWork

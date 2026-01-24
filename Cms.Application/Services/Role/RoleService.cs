@@ -1,10 +1,10 @@
-﻿using Cms.Application.Services.Account.Dtos;
-using Cms.Application.Services.Permission.Dtos;
-using Cms.Application.Services.Role.Dtos;
-using Cms.Infrastructure.Repositories.Permission;
-using Cms.Infrastructure.Repositories.Role;
-using Cms.Infrastructure.Repositories.Role.Persistence;
-using Cms.Infrastructure.Repositories.UnitOfWork;
+﻿using Cms.Contract.Repositories.Permission.Interfaces;
+using Cms.Contract.Repositories.Role.Interfaces;
+using Cms.Contract.Repositories.Role.Persistence;
+using Cms.Contract.Services.Permission.Dtos;
+using Cms.Contract.Services.Role.Dtos;
+using Cms.Contract.Services.Role.Interfaces;
+using Cms.Contract.Services.UnitOfWork.Interfaces;
 
 
 namespace Cms.Application.Services.Role

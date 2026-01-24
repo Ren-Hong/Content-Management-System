@@ -4,6 +4,7 @@
     <File Path="權限驗證時序圖.md" />
   </Folder>
   <Project Path="Cms.Application/Cms.Application.csproj" />
+  <Project Path="Cms.Contract/Cms.Contract.csproj" Id="19a7f8f3-bb14-40d6-929e-70da010f5dd5" />
   <Project Path="Cms.Database/Cms.Database.csproj" Id="c85a27f2-e5e1-4da3-9c34-b5f5e19ccb2d" />
   <Project Path="Cms.Infrastructure/Cms.Infrastructure.csproj" />
   <Project Path="Cms.Web/Cms.Web.csproj" />

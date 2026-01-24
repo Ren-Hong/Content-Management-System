@@ -1,4 +1,4 @@
-﻿using Cms.Infrastructure.Repositories.Role.Persistence;
+﻿using Cms.Contract.Repositories.Role.Persistence;
 using System.ComponentModel.DataAnnotations;
 
 namespace Cms.Web.Controllers.Role.Models

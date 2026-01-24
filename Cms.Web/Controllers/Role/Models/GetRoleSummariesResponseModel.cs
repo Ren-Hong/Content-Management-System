@@ -1,4 +1,4 @@
-﻿using Cms.Infrastructure.Repositories.Role.Persistence;
+﻿using Cms.Contract.Repositories.Role.Persistence;
 using Cms.Web.Controllers.Permission.Models;
 
 namespace Cms.Web.Controllers.Role.Models

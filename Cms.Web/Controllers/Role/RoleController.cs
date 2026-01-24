@@ -1,5 +1,5 @@
-﻿using Cms.Application.Services.Role;
-using Cms.Application.Services.Role.Dtos;
+﻿using Cms.Contract.Services.Role.Dtos;
+using Cms.Contract.Services.Role.Interfaces;
 using Cms.Web.Controllers.Contracts.Api;
 using Cms.Web.Controllers.Permission.Models;
 using Cms.Web.Controllers.Role.Models;

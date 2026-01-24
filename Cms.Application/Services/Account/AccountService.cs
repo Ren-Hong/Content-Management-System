@@ -1,9 +1,10 @@
-﻿using Cms.Application.Services.Account.Dtos;
-using Cms.Application.Services.Role.Dtos;
-using Cms.Infrastructure.Repositories.Account;
-using Cms.Infrastructure.Repositories.Account.Persistence;
-using Cms.Infrastructure.Repositories.Role;
-using Cms.Infrastructure.Repositories.UnitOfWork;
+﻿using Cms.Contract.Repositories.Account.Interfaces;
+using Cms.Contract.Repositories.Account.Persistence;
+using Cms.Contract.Repositories.Role.Interfaces;
+using Cms.Contract.Services.Account.Dtos;
+using Cms.Contract.Services.Account.Interfaces;
+using Cms.Contract.Services.Role.Dtos;
+using Cms.Contract.Services.UnitOfWork.Interfaces;
 using System.Data;
 
 

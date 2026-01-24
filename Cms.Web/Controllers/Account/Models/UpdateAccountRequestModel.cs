@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Cms.Infrastructure.Repositories.Account.Persistence;
+﻿using Cms.Contract.Repositories.Account.Persistence;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cms.Web.Controllers.Account.Models
 {

@@ -1,5 +1,5 @@
-﻿using Cms.Application.Services.Account;
-using Cms.Application.Services.Account.Dtos;
+﻿using Cms.Contract.Services.Account.Dtos;
+using Cms.Contract.Services.Account.Interfaces;
 using Cms.Web.Controllers.Account.Models;
 using Cms.Web.Controllers.Contracts.Api;
 using Cms.Web.Controllers.Role.Models;

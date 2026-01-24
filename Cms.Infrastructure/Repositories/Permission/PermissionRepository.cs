@@ -1,6 +1,7 @@
-﻿using Cms.Infrastructure.Repositories.Base;
-using Cms.Infrastructure.Repositories.Permission.Entities;
-using Cms.Infrastructure.Repositories.UnitOfWork;
+﻿using Cms.Contract.Repositories.Permission.Entities;
+using Cms.Contract.Repositories.Permission.Interfaces;
+using Cms.Contract.Services.UnitOfWork.Interfaces;
+using Cms.Infrastructure.Repositories.Base;
 using Dapper;
 using System.Data;
 

@@ -1,4 +1,4 @@
-﻿using Cms.Infrastructure.Repositories.UnitOfWork;
+﻿using Cms.Contract.Services.UnitOfWork.Interfaces;
 using System.Data;
 
 namespace Cms.Infrastructure.Repositories.Base

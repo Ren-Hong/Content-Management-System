@@ -1,7 +1,8 @@
-﻿using Cms.Infrastructure.Repositories.Account.Entities;
-using Cms.Infrastructure.Repositories.Account.Persistence;
+﻿using Cms.Contract.Repositories.Account.Entities;
+using Cms.Contract.Repositories.Account.Interfaces;
+using Cms.Contract.Repositories.Account.Persistence;
+using Cms.Contract.Services.UnitOfWork.Interfaces;
 using Cms.Infrastructure.Repositories.Base;
-using Cms.Infrastructure.Repositories.UnitOfWork;
 using Dapper;
 using System.Data;
 

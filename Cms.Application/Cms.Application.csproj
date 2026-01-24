@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Cms.Contract\Cms.Contract.csproj" />
     <ProjectReference Include="..\Cms.Infrastructure\Cms.Infrastructure.csproj" />
   </ItemGroup>
 

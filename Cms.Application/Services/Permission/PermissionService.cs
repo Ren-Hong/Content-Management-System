@@ -1,6 +1,7 @@
-﻿using Cms.Application.Services.Permission.Dtos;
-using Cms.Infrastructure.Repositories.Permission;
-using Cms.Infrastructure.Repositories.UnitOfWork;
+﻿using Cms.Contract.Repositories.Permission.Interfaces;
+using Cms.Contract.Services.Permission.Dtos;
+using Cms.Contract.Services.Permission.Interfaces;
+using Cms.Contract.Services.UnitOfWork.Interfaces;
 
 namespace Cms.Application.Services.Permission
 {
