@@ -1,8 +1,10 @@
 ﻿using Cms.Application.Services.Account;
 using Cms.Infrastructure.Repositories.Account;
 using Cms.Infrastructure.Repositories.UnitOfWork;
+using Cms.Web.Authorization;
 using Cms.Web.Middlewares;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.SqlClient;
 using Serilog;
 using System.Data;
@@ -57,6 +59,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true; // 只要使用者「持續在使用系統」Cookie 就會自動延長
     });
 
+// Authorization 擴充（Permission 系統）
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+// Serilog 設定
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()              // Info 以上才記
     .WriteTo.Console()                        // 寫到 console
