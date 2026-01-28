@@ -1,7 +1,11 @@
 CREATE TABLE dbo.Scopes
 (
-    ScopeId SMALLINT NOT NULL,
+    ScopeId UNIQUEIDENTIFIER NOT NULL
+        CONSTRAINT DF_Scopes_ScopeId
+        DEFAULT NEWSEQUENTIALID(),
+
     ScopeCode NVARCHAR(30) NOT NULL,   -- Global / Department / Self / Assigned
+
     Description NVARCHAR(100) NULL,
 
     CONSTRAINT PK_Scopes
@@ -13,7 +17,7 @@ CREATE TABLE dbo.Scopes
 
 INSERT INTO dbo.Scopes (ScopeId, ScopeCode, Description)
 VALUES
-(1, N'Global',      N'╰参絛瞅'),
-(2, N'Department',  N'┮妮场'),
-(3, N'Self',        N'度セ'),
-(4, N'Assigned',    N'絋');
+(N'Global',      N'╰参絛瞅'),
+(N'Department',  N'┮妮场'),
+(N'Self',        N'度セ'),
+(N'Assigned',    N'絋');

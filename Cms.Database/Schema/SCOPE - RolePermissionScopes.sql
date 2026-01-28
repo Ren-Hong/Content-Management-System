@@ -4,25 +4,22 @@ CREATE TABLE dbo.RolePermissionScopes
 
     PermissionId UNIQUEIDENTIFIER NOT NULL,
 
-    ScopeId SMALLINT NOT NULL,
+    ScopeId UNIQUEIDENTIFIER NOT NULL,
 
     CreatedAt DATETIME2(0) NOT NULL
         CONSTRAINT DF_RolePermissionScopes_CreatedAt
         DEFAULT SYSUTCDATETIME(),
 
     CONSTRAINT PK_RolePermissionScopes
-        PRIMARY KEY (RoleId, PermissionId),
+        PRIMARY KEY (RoleId, PermissionId, ScopeId),
 
-    CONSTRAINT FK_RolePermissionScopes_Roles
-        FOREIGN KEY (RoleId)
-        REFERENCES dbo.Roles(RoleId)
+    -- 關鍵：Scope 依附 RolePermission
+    CONSTRAINT FK_RolePermissionScopes_RolePermissions
+        FOREIGN KEY (RoleId, PermissionId)
+        REFERENCES dbo.RolePermissions(RoleId, PermissionId)
         ON DELETE CASCADE,
 
-    CONSTRAINT FK_RolePermissionScopes_Permissions
-        FOREIGN KEY (PermissionId)
-        REFERENCES dbo.Permissions(PermissionId)
-        ON DELETE CASCADE,
-
+    -- Scope 本身是字典
     CONSTRAINT FK_RolePermissionScopes_Scopes
         FOREIGN KEY (ScopeId)
         REFERENCES dbo.Scopes(ScopeId)
