@@ -159,9 +159,9 @@ export const AccountCreateModal = {
                                 <select class="form-select"
                                         @change="onRoleSelected($event)">
                                     <option value="">請選擇角色</option>
-                                    <option v-for="role in roleOptions"
-                                            :key="role.roleId"
-                                            :value="role.roleId">
+                                    <option v-for="r in roleOptions"
+                                            :key="r.roleId"
+                                            :value="r.roleId">
                                         {{ role.roleName }}
                                     </option>
                                 </select>

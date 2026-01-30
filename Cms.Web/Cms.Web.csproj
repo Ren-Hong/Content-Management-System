@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Scope\Models\" />
     <Folder Include="wwwroot\css\Frontend\" />
     <Folder Include="wwwroot\js\Frontend\" />
   </ItemGroup>

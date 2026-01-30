@@ -17,7 +17,7 @@ namespace Cms.Infrastructure.Repositories.Role
         {
         }
 
-        public async Task<bool> RoleIdsExistAsync(List<Guid> roleIds)
+        public async Task<bool> AllRolesExistAsync(List<Guid> roleIds)
         {
             const string sql = @"
                 SELECT COUNT(RoleId)
@@ -143,6 +143,35 @@ namespace Cms.Infrastructure.Repositories.Role
                 {
                     RoleId = roleId,
                     PermissionId = permissionId
+                },
+                transaction: Tx
+            );
+        }
+
+        public async Task CreateRolePermissionScopeAsync(Guid roleId, Guid permissionId, Guid scopeId)
+        {
+            const string sql = @"
+                INSERT INTO RolePermissionScopes
+                (
+                    RoleId,
+                    PermissionId,
+                    ScopeId
+                )
+                VALUES
+                (
+                    @RoleId,
+                    @PermissionId,
+                    @ScopeId
+                );
+            ";
+
+            await _db.ExecuteAsync(
+                sql,
+                new
+                {
+                    RoleId = roleId,
+                    PermissionId = permissionId,
+                    ScopeId = scopeId
                 },
                 transaction: Tx
             );

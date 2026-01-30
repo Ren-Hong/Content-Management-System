@@ -23,14 +23,6 @@
             >
                 角色管理
             </div>
-
-            <div
-                class="sidebar-item"
-                :class="{ active: currentPage === pages.PermissionManager }"
-                @click="$emit('page-change', pages.PermissionManager)"
-            >
-                權限管理
-            </div>
         </nav>
     `
 };

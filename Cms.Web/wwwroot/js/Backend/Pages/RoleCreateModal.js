@@ -1,5 +1,6 @@
 ﻿import { createRole } from '../api/roleApi.js';
 import { getPermissionOptions } from '../api/PermissionApi.js';
+import { getScopeOptions } from '../api/ScopeApi.js';
 
 export const RoleCreateModal = {
     props: {
@@ -15,11 +16,17 @@ export const RoleCreateModal = {
         return {
             modal: null,        
             permissionOptions: [],
+            scopeOptions: [],
+
+            defaultScopeCode: 'Department',
+            defaultScopeId: null,
+
             form: {
                 roleName: '',
                 roleCode: '',
-                permissionIds: [] 
+                permissionScopes: [] // PermissionId, ScopeId
             },
+
             submitting: false
         };
     },
@@ -27,7 +34,10 @@ export const RoleCreateModal = {
     watch: {                        // watch =「當某個值改變時，我要額外做一件事」
         async show(val) {                 //「只要 show 這個 prop 的值改變，如果它變成 true，我就把表單清空。」
             if (val) {
-                await this.loadPermissionOptions(); 
+                await Promise.all([
+                    this.loadPermissionOptions(),
+                    this.loadScopeOptions()
+                ]);
 
                 this.resetForm();
                 this.modal.show();
@@ -64,38 +74,81 @@ export const RoleCreateModal = {
             }
         },
 
+        async loadScopeOptions() {
+            try {
+                const res = await getScopeOptions();
+                if (!res.success) {
+                    alert(res.errorCode || 'Scope 選單載入失敗');
+                    return;
+                }
+                this.scopeOptions = res.data;
+
+                // ✅ 用 ScopeCode 找 Department 的 GUID
+                const defaultScope = this.scopeOptions.find(
+                    s => s.scopeCode === this.defaultScopeCode
+                );
+
+                this.defaultScopeId = defaultScope
+                    ? defaultScope.scopeId
+                    : null;
+
+            } catch (err) {
+                console.error(err);
+                alert('系統錯誤（Scope 選單載入）');
+            }
+        },
+
         onPermissionSelected(event) {
             const permissionId = event.target.value;
             if (!permissionId) return;
 
-            // 避免重複加入
-            if (!this.form.permissionIds.includes(permissionId)) {
-                this.form.permissionIds.push(permissionId);
+            if (!this.defaultScopeId) {
+                alert('Scope 尚未載入完成，請稍後再試');
+                event.target.value = '';
+                return;
             }
 
-            // 重置 select
+            const exists = this.form.permissionScopes.some(x => x.permissionId === permissionId);
+            if (!exists) {
+                this.form.permissionScopes.push({
+                    permissionId,
+                    scopeId: this.defaultScopeId
+                });
+            }
+
             event.target.value = '';
         },
 
         removePermission(permissionId) {
-            this.form.permissionIds = this.form.permissionIds.filter(id => id !== permissionId);
+            this.form.permissionScopes = this.form.permissionScopes.filter(x => x.permissionId !== permissionId);
+        },
+
+        updateScope(permissionId, event) {  
+            const scopeId = event.target.value; // GUID string
+            const item = this.form.permissionScopes.find(x => x.permissionId === permissionId);
+            if (item) item.scopeId = scopeId;
         },
 
         getPermissionName(permissionId) {
-            const permission = this.permissionOptions.find(r => r.permissionId === permissionId);
-            return permission ? permission.permissionName : permissionId;
+            const p = this.permissionOptions.find(r => r.permissionId === permissionId);
+            return p ? p.permissionName : permissionId;
+        },
+
+        getScopeName(scopeId) { 
+            const s = this.scopeOptions.find(x => x.scopeId === scopeId);
+            return s ? (s.scopeName || s.scopeCode) : scopeId;
         },
 
         resetForm() {
             this.form = {
                 roleName: '',
                 roleCode: '',
-                permissionIds: []   
+                permissionScopes: []  
             };
         },
 
         async submit() {
-            if (this.form.permissionIds.length === 0) {
+            if (this.form.permissionScopes.length === 0) {
                 alert('請至少選擇一個權限');
                 return;
             }
@@ -158,26 +211,45 @@ export const RoleCreateModal = {
                                 <select class="form-select"
                                         @change="onPermissionSelected($event)">
                                     <option value="">請選擇權限</option>
-                                    <option v-for="permission in permissionOptions"
-                                            :key="permission.permissionId"
-                                            :value="permission.permissionId">
-                                        {{ permission.permissionName }}
+                                    <option v-for="p in permissionOptions"
+                                            :key="p.permissionId"
+                                            :value="p.permissionId">
+                                        {{ p.permissionName }}
                                     </option>
                                 </select>
                             </div>
 
-                            <div class="d-flex flex-wrap gap-2">
-                                <span v-for="permissionId in form.permissionIds"
-                                      :key="permissionId"
-                                      class="badge bg-primary d-flex align-items-center">
+                            <div class="d-flex flex-column gap-2">
+                                <div v-for="ps in form.permissionScopes"
+                                    :key="ps.permissionId"
+                                    class="d-flex align-items-center gap-2">
 
-                                    {{ getPermissionName(permissionId) }}
+                                    <span class="badge bg-primary">
+                                        {{ getPermissionName(ps.permissionId) }}
+                                    </span>
 
+                                    <!-- ✅ Scope 下拉 -->
+                                    <select
+                                        class="form-select form-select-sm w-auto"
+                                        :value="ps.scopeId"
+                                        @change="updateScope(ps.permissionId, $event)"
+                                    >
+                                        <option v-for="s in scopeOptions"
+                                                :key="s.scopeId"
+                                                :value="s.scopeId">
+                                        {{ s.scopeName }}
+                                        </option>
+                                    </select>
+
+                                    <!-- ✅ 移除 -->
                                     <button type="button"
-                                            class="btn-close btn-close-white ms-2"
-                                            @click="removePermission(permissionId)">
+                                            class="btn btn-danger btn-sm"
+                                            :disabled="submitting"
+                                            @click="removePermission(ps.permissionId)">
+                                        移除
                                     </button>
-                                </span>
+
+                                </div>
                             </div>
 
                         </div>

@@ -9,7 +9,7 @@ namespace Cms.Contract.Repositories.Permission.Interfaces
         /// </summary>
         /// <param name="permissionIds">前端傳過來的權限Id</param>
         /// <returns>bool</returns>
-        Task<bool> PermissionIdsExistAsync(List<Guid> permissionIds);
+        Task<bool> AllPermissionsExistAsync(List<Guid> permissionIds);
 
         /// <summary>
         /// 給下拉用的permission

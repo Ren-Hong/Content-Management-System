@@ -89,7 +89,14 @@ namespace Cms.Web.Controllers.Role
                 {
                     RoleName = req.RoleName,
                     RoleCode = req.RoleCode,
-                    PermissionIds = req.PermissionIds
+
+                    PermissionScopes = req.PermissionScopes
+                        .Select(x => new PermissionScopeDto
+                        {
+                            PermissionId = x.PermissionId,
+                            ScopeId = x.ScopeId
+                        })
+                        .ToList()
                 }
             );
 

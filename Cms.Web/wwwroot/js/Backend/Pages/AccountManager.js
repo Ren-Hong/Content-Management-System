@@ -96,19 +96,19 @@ export const AccountManager = {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="accountSummary in accountSummaries" :key="accountSummary.accountId">
-                        <td>{{ accountSummary.username }}</td>
-                        <td>{{ accountSummary.roles?.map(r => r.roleName).join(', ') }}</td>
-                        <td>{{ AccountStatusText[accountSummary.status] }}</td>
+                    <tr v-for="a in accountSummaries" :key="a.accountId">
+                        <td>{{ a.username }}</td>
+                        <td>{{ a.roles?.map(r => r.roleName).join(', ') }}</td>
+                        <td>{{ AccountStatusText[a.status] }}</td>
                         <td class="text-nowrap">
                             <button class="btn btn-success btn-sm me-1"
-                                    @click="openEdit(accountSummary)">編輯</button>
+                                    @click="openEdit(a)">編輯</button>
 
                             <button class="btn btn-warning btn-sm me-1 text-white"
-                                    @click="openResetPassword(accountSummary)">重設密碼</button>
+                                    @click="openResetPassword(a)">重設密碼</button>
 
                             <button class="btn btn-danger btn-sm"
-                                    @click="openDelete(accountSummary)">刪除</button>
+                                    @click="openDelete(a)">刪除</button>
                         </td>
                     </tr>
                 </tbody>

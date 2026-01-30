@@ -71,9 +71,9 @@ export const RoleManager = {
     template: `
         <div>
             <div class="d-flex justify-content-between mb-3">
-                <h4>帳戶管理</h4>
+                <h4>角色管理</h4>
                 <button class="btn btn-primary btn-sm" @click="openCreate">
-                    新增帳戶
+                    新增角色
                 </button>
             </div>
 
@@ -87,16 +87,16 @@ export const RoleManager = {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="roleSummary in roleSummaries" :key="roleSummary.roleId">
-                        <td>{{ roleSummary.roleName }}</td>
-                        <td>{{ roleSummary.permissions?.map(p => p.permissionName).join(', ') }}</td>
-                        <td>{{ RoleStatusText[roleSummary.status] }}</td>
+                    <tr v-for="r in roleSummaries" :key="r.roleId">
+                        <td>{{ r.roleName }}</td>
+                        <td>{{ r.permissions?.map(p => p.permissionName).join(', ') }}</td>
+                        <td>{{ RoleStatusText[r.status] }}</td>
                         <td class="text-nowrap">
                             <button class="btn btn-success btn-sm me-1"
-                                    @click="openEdit(roleSummary)">編輯</button>
+                                    @click="openEdit(r)">編輯</button>
 
                             <button class="btn btn-danger btn-sm"
-                                    @click="openDelete(roleSummary)">刪除</button>
+                                    @click="openDelete(r)">刪除</button>
                         </td>
                     </tr>
                 </tbody>

@@ -1,11 +1,11 @@
 ﻿using Cms.Contract.Repositories.Permission.Interfaces;
 using Cms.Contract.Repositories.Role.Interfaces;
 using Cms.Contract.Repositories.Role.Persistence;
+using Cms.Contract.Repositories.Scope.Interfaces;
 using Cms.Contract.Services.Permission.Dtos;
 using Cms.Contract.Services.Role.Dtos;
 using Cms.Contract.Services.Role.Interfaces;
 using Cms.Contract.Services.UnitOfWork.Interfaces;
-
 
 namespace Cms.Application.Services.Role
 {
@@ -14,16 +14,21 @@ namespace Cms.Application.Services.Role
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRoleRepository _roleRepository;
         private readonly IPermissionRepository _permissionRepository;
+        private readonly IScopeRepository _scopeRepository;
 
-        public RoleService(
+
+        public RoleService
+        (
             IUnitOfWork unitOfWork,
             IRoleRepository roleRepository,
-            IPermissionRepository permissionRepository
+            IPermissionRepository permissionRepository,
+            IScopeRepository scopeRepository
         )
         {
             _unitOfWork = unitOfWork;
             _roleRepository = roleRepository;
             _permissionRepository = permissionRepository;
+            _scopeRepository = scopeRepository;
         }
 
         public async Task<List<GetRoleOptionsResponseDto>> GetRoleOptionsAsync()
@@ -38,6 +43,7 @@ namespace Cms.Application.Services.Role
                 })
                 .ToList();
         }
+
         public async Task<List<GetRoleSummariesResponseDto>> GetRoleSummariesAsync()
         {
             var rows = (await _roleRepository.GetRoleSummariesAsync()).ToList();
@@ -83,21 +89,44 @@ namespace Cms.Application.Services.Role
                 };
             }
 
-            // PermissionIds 沒new 或裡面沒東西
-            if (dto.PermissionIds == null || !dto.PermissionIds.Any())
+            // PermissionScopes 沒給
+            if (dto.PermissionScopes == null || !dto.PermissionScopes.Any())
             {
                 return new CreateRoleResponseDto
                 {
-                    Result = CreateRoleResult.PermissionIdsRequired
+                    Result = CreateRoleResult.PermissionRequired
                 };
             }
 
-            //每一筆PermissionIds存不存在表中
-            if (!await _permissionRepository.PermissionIdsExistAsync(dto.PermissionIds))
+            var normalizedScopes = dto.PermissionScopes
+                .DistinctBy(x => new { x.PermissionId, x.ScopeId })
+                .ToList();
+
+            var permissionIds = normalizedScopes
+                .Select(x => x.PermissionId)
+                .Distinct()
+                .ToList();
+
+            var scopeIds = normalizedScopes
+                .Select(x => x.ScopeId)
+                .Distinct()
+                .ToList();
+
+            // Permission 是否存在
+            if (!await _permissionRepository.AllPermissionsExistAsync(permissionIds))
             {
                 return new CreateRoleResponseDto
                 {
                     Result = CreateRoleResult.PermissionNotFound
+                };
+            }
+
+            // Scope 是否存在
+            if (!await _scopeRepository.AllScopesExistAsync(scopeIds))
+            {
+                return new CreateRoleResponseDto
+                {
+                    Result = CreateRoleResult.ScopeNotFound
                 };
             }
 
@@ -116,18 +145,28 @@ namespace Cms.Application.Services.Role
 
             try
             {
-                // 先建帳戶
-                var RoleId = await _roleRepository.CreateRoleAsync(
+                // 建立 Role
+                var roleId = await _roleRepository.CreateRoleAsync(
                     dto.RoleName,
                     dto.RoleCode
                 );
 
-                // 建多筆 RolePermission
-                foreach (var roleId in dto.PermissionIds)
+                // 建立 RolePermission（能力層）
+                foreach (var permissionId in permissionIds)
                 {
                     await _roleRepository.CreateRolePermissionAsync(
-                        RoleId,
-                        roleId
+                        roleId,
+                        permissionId
+                    );
+                }
+
+                // 建立 RolePermissionScopes（範圍層）
+                foreach (var item in dto.PermissionScopes)
+                {
+                    await _roleRepository.CreateRolePermissionScopeAsync(
+                        roleId,
+                        item.PermissionId,
+                        item.ScopeId
                     );
                 }
 
@@ -175,7 +214,7 @@ namespace Cms.Application.Services.Role
             }
 
             //每一筆PermissionIds存不存在表中
-            if (!await _permissionRepository.PermissionIdsExistAsync(dto.PermissionIds))
+            if (!await _permissionRepository.AllPermissionsExistAsync(dto.PermissionIds))
             {
                 return new UpdateRoleResponseDto
                 {

@@ -10,12 +10,12 @@ namespace Cms.Contract.Repositories.Role.Interfaces
         /// </summary>
         /// <param name="roleIds">前端傳過來的角色Id</param>
         /// <returns>bool</returns>
-        Task<bool> RoleIdsExistAsync(List<Guid> roleIds);
+        Task<bool> AllRolesExistAsync(List<Guid> roleIds);
         
         /// <summary>
         /// 給下拉用的role
         /// </summary>
-        /// <returns>拿rolename跟rolecode</returns>
+        /// <returns></returns>
         Task<IEnumerable<RoleOptionEntity>> GetRoleOptionsAsync();
 
         /// <summary>
@@ -40,6 +40,12 @@ namespace Cms.Contract.Repositories.Role.Interfaces
         /// </summary>
         /// <returns>不用回傳值, 失敗就是例外</returns>
         Task CreateRolePermissionAsync(Guid roleId, Guid permissionId);
+
+        /// <summary>
+        /// 幫角色權限加作用範圍
+        /// </summary>
+        /// <returns>不用回傳值, 失敗就是例外</returns>
+        Task CreateRolePermissionScopeAsync(Guid roleId, Guid permissionId, Guid ScopeId);
 
         /// <summary>
         /// 先改狀態後改中介表

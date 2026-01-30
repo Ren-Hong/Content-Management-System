@@ -6,7 +6,7 @@ CREATE TABLE dbo.Scopes
 
     ScopeCode NVARCHAR(30) NOT NULL,   -- Global / Department / Self / Assigned
 
-    Description NVARCHAR(100) NULL,
+    ScopeName NVARCHAR(100) NULL,
 
     CONSTRAINT PK_Scopes
         PRIMARY KEY (ScopeId),
@@ -15,7 +15,7 @@ CREATE TABLE dbo.Scopes
         UNIQUE (ScopeCode)
 );
 
-INSERT INTO dbo.Scopes (ScopeId, ScopeCode, Description)
+INSERT INTO dbo.Scopes (ScopeCode, ScopeName)
 VALUES
 (N'Global',      N'全系統範圍'),
 (N'Department',  N'所屬部門'),

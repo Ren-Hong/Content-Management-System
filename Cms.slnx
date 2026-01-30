@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Docs/">
     <File Path="CMS學習分支圖.md" />
+    <File Path="作用權限判斷.md" />
     <File Path="權限驗證時序圖.md" />
   </Folder>
   <Project Path="Cms.Application/Cms.Application.csproj" />

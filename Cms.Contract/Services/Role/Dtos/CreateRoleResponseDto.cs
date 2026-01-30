@@ -13,8 +13,8 @@ namespace Cms.Contract.Services.Role.Dtos
         RoleNameRequired,
         RoleCodeRequired,
         RoleNameDuplicated,
-        PermissionIdsRequired,
-        PermissionNotFound
+        PermissionRequired,
+        PermissionNotFound,
+        ScopeNotFound
     }
-
 }

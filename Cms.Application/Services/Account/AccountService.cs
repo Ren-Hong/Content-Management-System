@@ -155,7 +155,7 @@ namespace Cms.Application.Services.Account
             }
 
             //每一筆RoleIds存不存在表中
-            if (!await _roleRepository.RoleIdsExistAsync(dto.RoleIds))
+            if (!await _roleRepository.AllRolesExistAsync(dto.RoleIds))
             {
                 return new CreateAccountResponseDto
                 {
@@ -240,7 +240,7 @@ namespace Cms.Application.Services.Account
             }
 
             //每一筆RoleIds存不存在表中
-            if (!await _roleRepository.RoleIdsExistAsync(dto.RoleIds))
+            if (!await _roleRepository.AllRolesExistAsync(dto.RoleIds))
             {
                 return new UpdateAccountResponseDto
                 {

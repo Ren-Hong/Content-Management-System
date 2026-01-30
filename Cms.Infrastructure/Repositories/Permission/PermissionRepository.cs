@@ -16,7 +16,7 @@ namespace Cms.Infrastructure.Repositories.Permission
         {
         }
 
-        public async Task<bool> PermissionIdsExistAsync(List<Guid> permissionIds)
+        public async Task<bool> AllPermissionsExistAsync(List<Guid> permissionIds)
         {
             const string sql = @"
                 SELECT COUNT(PermissionId)

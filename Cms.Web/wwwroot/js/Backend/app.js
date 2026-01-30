@@ -2,7 +2,6 @@
 import { Sidebar } from './Layout/Sidebar.js';
 import { AccountManager } from './Pages/AccountManager.js';
 import { RoleManager } from './Pages/RoleManager.js';
-import { PermissionManager } from './Pages/PermissionManager.js';
 
 const { createApp, markRaw } = Vue;
 
@@ -19,7 +18,6 @@ createApp({
             pages: {
                 AccountManager: markRaw(AccountManager),
                 RoleManager: markRaw(RoleManager),
-                PermissionManager: markRaw(PermissionManager)
             }
         };
     },
