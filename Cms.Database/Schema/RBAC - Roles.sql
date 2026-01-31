@@ -21,3 +21,7 @@
     CONSTRAINT UQ_Roles_RoleCode
         UNIQUE (RoleCode)
 );
+
+INSERT INTO dbo.Roles (RoleCode, RoleName)
+VALUES
+(N'Admin', N'系統管理員');

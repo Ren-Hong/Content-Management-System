@@ -21,3 +21,12 @@
         REFERENCES dbo.Roles(RoleId)
         ON DELETE CASCADE
 );
+
+INSERT INTO dbo.AccountRoles (AccountId, RoleId)
+SELECT
+    a.AccountId,
+    r.RoleId
+FROM dbo.Accounts a
+JOIN dbo.Roles r
+    ON r.RoleCode = N'Admin'
+WHERE a.Username = N'admin';

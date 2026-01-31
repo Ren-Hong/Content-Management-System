@@ -22,3 +22,16 @@
     CONSTRAINT UQ_Accounts_Username
         UNIQUE (Username)
 );
+
+INSERT INTO dbo.Accounts
+(
+    Username,
+    PasswordHash,
+    Status
+)
+VALUES
+(
+    N'admin',
+    N'$2a$11$fp9EDc/tghYChbRxOh9rEO9mcy/akdOTAyK2lm2NzmCzI9RaLnS3q',
+    1
+);

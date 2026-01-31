@@ -22,3 +22,10 @@
     CONSTRAINT UQ_Permissions_PermissionCode
         UNIQUE (PermissionCode)
 );
+
+INSERT INTO dbo.Permissions (PermissionCode, PermissionName)
+VALUES
+(N'Content.View',   N'內容查閱'),
+(N'Content.Create', N'內容新增'),
+(N'Content.Edit',   N'內容編輯'),
+(N'Content.Delete', N'內容刪除');

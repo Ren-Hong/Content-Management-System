@@ -21,3 +21,12 @@
         REFERENCES dbo.Permissions(PermissionId)
         ON DELETE CASCADE
 );
+
+INSERT INTO dbo.RolePermissions (RoleId, PermissionId)
+SELECT
+    r.RoleId,
+    p.PermissionId
+FROM dbo.Roles r
+JOIN dbo.Permissions p
+    ON p.PermissionCode LIKE N'Content.%'
+WHERE r.RoleCode = N'Admin';

@@ -22,3 +22,18 @@ CREATE TABLE dbo.AccountDepartments
         REFERENCES dbo.Departments(DepartmentId)
         ON DELETE CASCADE
 );
+
+INSERT INTO dbo.AccountDepartments
+(
+    AccountId,
+    DepartmentId,
+    IsPrimary
+)
+SELECT
+    a.AccountId,
+    d.DepartmentId,
+    1 -- IsPrimary
+FROM dbo.Accounts a
+JOIN dbo.Departments d
+    ON d.DepartmentCode = N'IT'
+WHERE a.Username = N'admin';
