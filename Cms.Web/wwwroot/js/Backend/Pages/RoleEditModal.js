@@ -1,6 +1,6 @@
 ﻿import { updateRole } from '../api/roleApi.js';
 import { getPermissionOptions } from '../api/permissionApi.js';
-
+import { getScopeOptions } from '../api/ScopeApi.js';
 import { RoleStatusText } from '../constants/roleStatus.js';
 
 export const RoleEditModal = {
@@ -22,20 +22,31 @@ export const RoleEditModal = {
             RoleStatusText, 
 
             modal: null,
-            submitting: false,
+
             permissionOptions: [],
+
+            scopeOptions: [],
+            defaultScopeCode: 'Department',
+            defaultScopeId: null,
+
             form: {
                 roleName: '',
                 status: '',
-                permissionIds: []   // ⭐ 多選
-            }
+                permissionScopes: [] // PermissionId, ScopeId
+            },
+
+            submitting: false
+
         };
     },
 
     watch: {
         async show(val) {
             if (val) {
-                await this.loadPermissionOptions(); 
+                await Promise.all([
+                    this.loadPermissionOptions(),
+                    this.loadScopeOptions()
+                ]);
 
                 this.fillForm();
                 this.modal.show();
@@ -71,22 +82,53 @@ export const RoleEditModal = {
             }
         },
 
+        async loadScopeOptions() {
+            const res = await getScopeOptions();
+            if (!res.success) {
+                alert('Scope 選單載入失敗');
+                return;
+            }
+
+            this.scopeOptions = res.data;
+
+            const defaultScope = this.scopeOptions.find(
+                s => s.scopeCode === this.defaultScopeCode
+            );
+
+            this.defaultScopeId = defaultScope?.scopeId ?? null;
+        },
+
         onPermissionSelected(event) {
             const permissionId = event.target.value;
             if (!permissionId) return;
 
-            // 避免重複加入
-            if (!this.form.permissionIds.includes(permissionId)) {
-                this.form.permissionIds.push(permissionId);
+            if (!this.defaultScopeId) {
+                alert('Scope 尚未載入');
+                return;
             }
 
-            // 重置 select
+            const exists = this.form.permissionScopes.some(
+                x => x.permissionId === permissionId
+            );
+
+            if (!exists) {
+                this.form.permissionScopes.push({
+                    permissionId,
+                    scopeId: this.defaultScopeId
+                });
+            }
+
             event.target.value = '';
         },
 
         removePermission(permissionId) {
-            this.form.permissionIds =
-                this.form.permissionIds.filter(id => id !== permissionId);
+            this.form.permissionIds = this.form.permissionIds.filter(id => id !== permissionId);
+        },
+
+        updateScope(permissionId, event) {
+            const scopeId = event.target.value;
+            const item = this.form.permissionScopes.find(x => x.permissionId === permissionId);
+            if (item) item.scopeId = scopeId;
         },
 
         getPermissionName(permissionId) {
@@ -94,18 +136,24 @@ export const RoleEditModal = {
             return permission ? permission.permissionName : permissionId;
         },
 
-        fillForm() { // 填入本來的資料
+        fillForm() {
             this.form.roleName = this.role.roleName;
-            this.form.permissionIds = this.role?.permissions?.map(r => r.permissionId) ?? [];
-            this.form.status = this.role.status ?? '';
+            this.form.status = this.role.status;
+
+            this.form.permissionScopes = this.role.permissionScopes.flatMap(p =>
+                p.scopes.map(s => ({
+                    permissionId: p.permissionId,
+                    scopeId: s.scopeId
+                }))
+            );
         },
 
         async submit() {
-
-            if (this.form.permissionIds.length === 0) {
-                alert('請至少選擇一個角色');
+            if (this.form.permissionScopes.length === 0) {
+                alert('請至少選擇一個權限');
                 return;
             }
+
             this.submitting = true;
 
             try {
@@ -172,18 +220,31 @@ export const RoleEditModal = {
                                 </select>
                             </div>
 
-                            <div class="d-flex flex-wrap gap-2">
-                                <span v-for="permissionId in form.permissionIds"
-                                      :key="permissionId"
-                                      class="badge bg-primary d-flex align-items-center">
+                            <div class="d-flex flex-column gap-2">
+                                <div v-for="ps in form.permissionScopes"
+                                     :key="ps.permissionId"
+                                     class="d-flex align-items-center gap-2">
 
-                                    {{ getPermissionName(permissionId) }}
+                                    <span class="badge bg-primary">
+                                        {{ getPermissionName(ps.permissionId) }}
+                                    </span>
+
+                                    <select class="form-select form-select-sm w-auto"
+                                            :value="ps.scopeId"
+                                            @change="updateScope(ps.permissionId, $event)">
+                                        <option v-for="s in scopeOptions"
+                                                :key="s.scopeId"
+                                                :value="s.scopeId">
+                                            {{ s.scopeName }}
+                                        </option>
+                                    </select>
 
                                     <button type="button"
-                                            class="btn-close btn-close-white ms-2"
-                                            @click="removePermission(permissionId)">
+                                            class="btn btn-danger btn-sm"
+                                            @click="removePermission(ps.permissionId)">
+                                        移除
                                     </button>
-                                </span>
+                                </div>
                             </div>
 
                         </div>

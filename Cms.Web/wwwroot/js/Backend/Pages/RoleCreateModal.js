@@ -15,9 +15,10 @@ export const RoleCreateModal = {
     data() {
         return {
             modal: null,        
-            permissionOptions: [],
-            scopeOptions: [],
 
+            permissionOptions: [],
+
+            scopeOptions: [],
             defaultScopeCode: 'Department',
             defaultScopeId: null,
 
@@ -159,7 +160,7 @@ export const RoleCreateModal = {
                 let res = await createRole(this.form);
 
                 if (!res.success) {
-                    alert(res.errorCode || '新增失敗');
+                    alert(res.errorCode || '新增角色失敗');
                     return;
                 }
 
