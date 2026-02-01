@@ -80,8 +80,8 @@ export const RoleManager = {
             <table class="table table-bordered bg-white">
                 <thead>
                     <tr>
-                        <th>帳號</th>
                         <th>角色</th>
+                        <th>權限</th>
                         <th>狀態</th>
                         <th style="width:180px">操作</th>
                     </tr>
@@ -89,7 +89,31 @@ export const RoleManager = {
                 <tbody>
                     <tr v-for="r in roleSummaries" :key="r.roleId">
                         <td>{{ r.roleName }}</td>
-                        <td>{{ r.permissions?.map(p => p.permissionName).join(', ') }}</td>
+
+                        <td>
+                            <div v-if="r.permissionScopes?.length">
+                                <div v-for="p in r.permissionScopes"
+                                     :key="p.permissionId"
+                                     class="mb-1">
+
+                                    <strong>{{ p.permissionName }}</strong>
+
+                                    <span v-for="s in p.scopes"
+                                          :key="s.scopeId"
+                                          class="badge ms-1"
+                                          :class="{
+                                            'bg-success': s.scopeName === '所屬部門',
+                                            'bg-warning text-dark': s.scopeName === '明確指派',
+                                            'bg-primary': s.scopeName === '全系統範圍',
+                                            'bg-danger': s.scopeName === '僅限本人'
+                                          }"
+                                    >
+                                        {{ s.scopeName }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+
                         <td>{{ RoleStatusText[r.status] }}</td>
                         <td class="text-nowrap">
                             <button class="btn btn-success btn-sm me-1"

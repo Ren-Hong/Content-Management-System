@@ -12,6 +12,10 @@ namespace Cms.Contract.Repositories.Role.Entities
 
         public string? PermissionName { get; set; }
 
+        public Guid? ScopeId { get; set; }
+
+        public string? ScopeName { get; set; }
+
         public RoleStatus Status { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Cms.Contract.Services.Role.Dtos;
 using Cms.Contract.Services.Role.Interfaces;
 using Cms.Web.Controllers.Contracts.Api;
-using Cms.Web.Controllers.Permission.Models;
 using Cms.Web.Controllers.Role.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,21 +43,33 @@ namespace Cms.Web.Controllers.Role
         [HttpPost("summaries")]
         public async Task<IActionResult> GetRoleSummaries()
         {
-            var rdto = await _roleService.GetRoleSummariesAsync();
+            var dtos = await _roleService.GetRoleSummariesAsync();
 
-            var res = rdto.Select(x => new GetRoleSummariesResponseModel // 跟 dto 長依樣
-            {
-                RoleId = x.RoleId,
-                RoleName = x.RoleName,
-                Status = x.Status,
-
-                Permissions = x.Permissions.Select(r => new GetPermissionOptionsResponseModel
+            var res = dtos
+                .Select(x => new GetRoleSummariesResponseModel
                 {
-                    PermissionId = r.PermissionId,
-                    PermissionName = r.PermissionName
-                }).ToList()
+                    RoleId = x.RoleId,
+                    RoleName = x.RoleName,
+                    Status = x.Status,
 
-            }).ToList();
+                    PermissionScopes = x.PermissionScopes
+                        .Select(p => new PermissionScopesSummaryModel
+                        {
+                            PermissionId = p.PermissionId,
+                            PermissionName = p.PermissionName,
+
+                            Scopes = p.Scopes
+                                .Select(s => new ScopeSummaryModel
+                                {
+                                    ScopeId = s.ScopeId,
+                                    ScopeName = s.ScopeName
+                                })
+                                .ToList()
+
+                        })
+                        .ToList()
+                })
+                .ToList();
 
             return Json(new ApiResponse<IEnumerable<GetRoleSummariesResponseModel>>
             {

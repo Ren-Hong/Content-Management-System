@@ -12,6 +12,22 @@ namespace Cms.Web.Controllers.Role.Models
 
             public RoleStatus Status { get; set; }
 
-            public List<GetPermissionOptionsResponseModel>? Permissions { get; set; }
+            public List<PermissionScopesSummaryModel>? PermissionScopes { get; set; }
+    }
+
+    public class PermissionScopesSummaryModel
+    {
+        public required Guid PermissionId { get; set; }
+
+        public required string PermissionName { get; set; }
+
+        public required List<ScopeSummaryModel> Scopes { get; set; }
+    }
+
+    public class ScopeSummaryModel
+    {
+        public required Guid ScopeId { get; set; }
+
+        public required string ScopeName { get; set; }
     }
 }

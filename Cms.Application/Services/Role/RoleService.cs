@@ -49,21 +49,29 @@ namespace Cms.Application.Services.Role
             var rows = (await _roleRepository.GetRoleSummariesAsync()).ToList();
 
             return rows
-                .GroupBy(x => new { x.RoleId, x.RoleName, x.Status }) // 對名稱狀態分組
-                .Select(g => new GetRoleSummariesResponseDto
+                .GroupBy(r => new { r.RoleId, r.RoleName, r.Status })
+                .Select(roleGroup => new GetRoleSummariesResponseDto
                 {
-                    RoleId = g.Key.RoleId,
-                    RoleName = g.Key.RoleName,
-                    Status = (RoleStatus)g.Key.Status, // 從db grouping的資料型態是short, 要自己轉型
+                    RoleId = roleGroup.Key.RoleId,
+                    RoleName = roleGroup.Key.RoleName,
+                    Status = roleGroup.Key.Status,
 
-                    Permissions = g
-                        .Where(x => x.PermissionId.HasValue && x.PermissionName != null)
-                        .Select(x => new GetPermissionOptionsResponseDto
+                    PermissionScopes = roleGroup
+                        .GroupBy(x => new { x.PermissionId, x.PermissionName })
+                        .Select(pGroup => new PermissionScopesSummaryDto
                         {
-                            PermissionId = x.PermissionId!.Value,
-                            PermissionName = x.PermissionName!
+                            PermissionId = pGroup.Key.PermissionId!.Value,
+                            PermissionName = pGroup.Key.PermissionName!,
+
+                            Scopes = pGroup
+                                .Select(s => new ScopeSummaryDto
+                                {
+                                    ScopeId = s.ScopeId!.Value,
+                                    ScopeName = s.ScopeName!
+                                })
+                                .DistinctBy(s => s.ScopeId)
+                                .ToList()
                         })
-                        .DistinctBy(r => r.PermissionId)
                         .ToList()
                 })
                 .ToList();

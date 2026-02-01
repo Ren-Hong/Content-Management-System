@@ -1,5 +1,4 @@
 ﻿using Cms.Contract.Repositories.Role.Persistence;
-using Cms.Contract.Services.Permission.Dtos;
 
 namespace Cms.Contract.Services.Role.Dtos
 {
@@ -11,6 +10,22 @@ namespace Cms.Contract.Services.Role.Dtos
 
         public RoleStatus Status { get; set; }
 
-        public required List<GetPermissionOptionsResponseDto> Permissions { get; set; }
+        public required List<PermissionScopesSummaryDto> PermissionScopes { get; set; }
+    }
+
+    public class PermissionScopesSummaryDto
+    {
+        public required Guid PermissionId { get; set; }
+
+        public required string PermissionName { get; set; }
+
+        public required List<ScopeSummaryDto> Scopes { get; set; }
+    }
+
+    public class ScopeSummaryDto
+    {
+        public required Guid ScopeId { get; set; }
+
+        public required string ScopeName { get; set; }
     }
 }

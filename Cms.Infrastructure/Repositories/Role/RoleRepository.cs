@@ -57,15 +57,23 @@ namespace Cms.Infrastructure.Repositories.Role
                 SELECT
                     r.RoleId,
                     r.RoleName,
+
                     p.PermissionId,
                     p.PermissionName,
+
+                    s.ScopeId,
+                    s.ScopeCode,
+                    s.ScopeName,
+
                     r.Status
                 FROM Roles r
-                LEFT JOIN RolePermissions rp 
-                    ON r.RoleId = rp.RoleId
-                LEFT JOIN Permissions p 
-                    ON rp.PermissionId = p.PermissionId
-                ORDER BY r.RoleName;
+                LEFT JOIN RolePermissionScopes rps
+                    ON r.RoleId = rps.RoleId
+                LEFT JOIN Permissions p
+                    ON rps.PermissionId = p.PermissionId
+                LEFT JOIN Scopes s
+                    ON rps.ScopeId = s.ScopeId
+                ORDER BY r.RoleName, p.PermissionName;
             ";
 
             return await _db.QueryAsync<RoleSummaryEntity>(sql);
