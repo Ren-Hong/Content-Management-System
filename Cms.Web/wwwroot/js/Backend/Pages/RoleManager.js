@@ -93,20 +93,20 @@ export const RoleManager = {
                         <td>
                             <div v-if="r.permissionScopes?.length">
                                 <div v-for="p in r.permissionScopes"
-                                     :key="p.permissionId"
-                                     class="mb-1">
+                                    :key="p.permissionId"
+                                    class="mb-1">
 
                                     <strong>{{ p.permissionName }}</strong>
 
                                     <span v-for="s in p.scopes"
-                                          :key="s.scopeId"
-                                          class="badge ms-1"
-                                          :class="{
+                                        :key="s.scopeId"
+                                        class="badge ms-1"
+                                        :class="{
                                             'bg-success': s.scopeName === '所屬部門',
                                             'bg-warning text-dark': s.scopeName === '明確指派',
                                             'bg-primary': s.scopeName === '全系統範圍',
                                             'bg-danger': s.scopeName === '僅限本人'
-                                          }"
+                                        }"
                                     >
                                         {{ s.scopeName }}
                                     </span>

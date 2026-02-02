@@ -38,7 +38,7 @@ namespace Cms.Infrastructure.Repositories.Account
                     ON rp.PermissionId = p.PermissionId
                     AND p.Status = 1
                 WHERE a.Username = @Username
-                  AND a.Status = 1;
+                    AND a.Status = 1;
             ";
 
             return await _db.QueryAsync<AccountAuthEntity>(

@@ -6,7 +6,7 @@ namespace Cms.Contract.Services.Role.Dtos
     {
         public required string RoleName { get; set; }
 
-        public required List<Guid> PermissionIds { get; set; }
+        public required List<PermissionScopeDto> PermissionScopes { get; set; }
 
         public RoleStatus Status { get; set; }
     }

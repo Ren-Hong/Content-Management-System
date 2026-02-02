@@ -250,29 +250,6 @@ namespace Cms.Infrastructure.Repositories.Role
                 transaction: Tx
             );
         }
-
-        public async Task AddRolePermissionAsync(Guid roleId, Guid permissionId)
-        {
-            const string sql = @"
-                INSERT INTO RolePermissions 
-                (
-                    RoleId,
-                    PermissionId, 
-                    CreatedAt
-                )
-                VALUES 
-                (
-                    @RoleId,
-                    @PermissionId, 
-                    SYSUTCDATETIME()
-                )
-            ";
-
-            await _db.ExecuteAsync(
-                sql,
-                new { RoleId = roleId, PermissionId = permissionId },
-                transaction: Tx
-            );
-        }
+        
     }
 }

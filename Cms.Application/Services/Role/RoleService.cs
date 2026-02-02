@@ -203,30 +203,53 @@ namespace Cms.Application.Services.Role
                 };
             }
 
-            // PermissionIds 沒new 或裡面沒東西
-            if (dto.PermissionIds == null || !dto.PermissionIds.Any())
+            // PermissionScopes 沒給
+            if (dto.PermissionScopes == null || !dto.PermissionScopes.Any())
             {
                 return new UpdateRoleResponseDto
                 {
-                    Result = UpdateRoleResult.PermissionIdsRequired
+                    Result = UpdateRoleResult.PermissionRequired
                 };
             }
 
-            // 有沒有這角色名稱
+            var normalizedScopes = dto.PermissionScopes
+                .DistinctBy(x => new { x.PermissionId, x.ScopeId })
+                .ToList();
+
+            var permissionIds = normalizedScopes
+                .Select(x => x.PermissionId)
+                .Distinct()
+                .ToList();
+
+            var scopeIds = normalizedScopes
+                .Select(x => x.ScopeId)
+                .Distinct()
+                .ToList();
+
+            // Permission 是否存在
+            if (!await _permissionRepository.AllPermissionsExistAsync(permissionIds))
+            {
+                return new UpdateRoleResponseDto
+                {
+                    Result = UpdateRoleResult.PermissionNotFound
+                };
+            }
+
+            // Scope 是否存在
+            if (!await _scopeRepository.AllScopesExistAsync(scopeIds))
+            {
+                return new UpdateRoleResponseDto
+                {
+                    Result = UpdateRoleResult.ScopeNotFound
+                };
+            }
+
+            // 角色名稱是否重複
             if (!await _roleRepository.RoleNameExistsAsync(dto.RoleName))
             {
                 return new UpdateRoleResponseDto
                 {
                     Result = UpdateRoleResult.RoleNameNotFound
-                };
-            }
-
-            //每一筆PermissionIds存不存在表中
-            if (!await _permissionRepository.AllPermissionsExistAsync(dto.PermissionIds))
-            {
-                return new UpdateRoleResponseDto
-                {
-                    Result = UpdateRoleResult.PermissionNotFound
                 };
             }
 
@@ -245,17 +268,30 @@ namespace Cms.Application.Services.Role
             try
             {
                 // 更新帳戶狀態
-                var RoleId = await _roleRepository.UpdateStatusAsync(
+                var roleId = await _roleRepository.UpdateStatusAsync(
                     dto.RoleName,
                     dto.Status
                 );
 
-                // 更新帳戶角色（先清掉再加，最乾淨）
-                await _roleRepository.DeleteRolePermissionsAsync(RoleId);
+                // 更新帳戶角色（先清掉再加，最乾淨）, SQL 有下 DELETE CASCADE 不用額外去刪Scope
+                await _roleRepository.DeleteRolePermissionsAsync(roleId);
 
-                foreach (var permissionId in dto.PermissionIds)
+                foreach (var permissionId in permissionIds)
                 {
-                    await _roleRepository.AddRolePermissionAsync(RoleId, permissionId);
+                    await _roleRepository.CreateRolePermissionAsync(
+                        roleId, 
+                        permissionId
+                    );
+                }
+
+                // 建立 RolePermissionScopes（範圍層）
+                foreach (var item in dto.PermissionScopes)
+                {
+                    await _roleRepository.CreateRolePermissionScopeAsync(
+                        roleId,
+                        item.PermissionId,
+                        item.ScopeId
+                    );
                 }
 
                 _unitOfWork.Commit();

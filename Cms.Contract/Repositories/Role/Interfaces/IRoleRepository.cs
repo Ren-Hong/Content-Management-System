@@ -67,10 +67,5 @@ namespace Cms.Contract.Repositories.Role.Interfaces
         /// 刪掉帳戶所有對應角色
         /// </summary>
         Task DeleteRolePermissionsAsync(Guid roleId);
-
-        /// <summary>
-        /// 帳戶建立一筆與角色的對應
-        /// </summary>
-        Task AddRolePermissionAsync(Guid roleId, Guid permissionId);
     }
 }

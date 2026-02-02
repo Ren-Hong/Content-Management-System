@@ -9,9 +9,10 @@
     {
         Success,
         RoleNameRequired,
-        PermissionIdsRequired,
+        PermissionRequired,
         RoleNameNotFound,
         StatusNotFound,
-        PermissionNotFound
+        PermissionNotFound,
+        ScopeNotFound
     }
 }

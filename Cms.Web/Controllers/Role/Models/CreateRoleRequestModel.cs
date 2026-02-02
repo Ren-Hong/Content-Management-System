@@ -12,10 +12,10 @@ namespace Cms.Web.Controllers.Role.Models
 
         [Required(ErrorMessage = "請選擇權限")]
         [MinLength(1, ErrorMessage = "請至少選擇一個權限")]
-        public required List<PermissionScopeCreateModel> PermissionScopes { get; set; }
+        public required List<PermissionScopeModel> PermissionScopes { get; set; }
     }
 
-    public class PermissionScopeCreateModel
+    public class PermissionScopeModel
     {
         public required Guid PermissionId { get; set; }
 

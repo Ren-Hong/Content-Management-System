@@ -7,7 +7,6 @@
         public required string RoleCode { get; set; }
 
         public required List<PermissionScopeDto> PermissionScopes { get; set; }
-
     }
 
     public class PermissionScopeDto

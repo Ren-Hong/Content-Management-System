@@ -141,7 +141,15 @@ namespace Cms.Web.Controllers.Role
                 new UpdateRoleRequestDto
                 {
                     RoleName = req.RoleName,
-                    PermissionIds = req.PermissionIds,
+
+                    PermissionScopes = req.PermissionScopes
+                        .Select(x => new PermissionScopeDto
+                        {
+                            PermissionId = x.PermissionId,
+                            ScopeId = x.ScopeId
+                        })
+                        .ToList(),
+
                     Status = req.Status,
                 }
             );

@@ -222,8 +222,8 @@ export const RoleEditModal = {
 
                             <div class="d-flex flex-column gap-2">
                                 <div v-for="ps in form.permissionScopes"
-                                     :key="ps.permissionId"
-                                     class="d-flex align-items-center gap-2">
+                                    :key="ps.permissionId"
+                                    class="d-flex align-items-center gap-2">
 
                                     <span class="badge bg-primary">
                                         {{ getPermissionName(ps.permissionId) }}
