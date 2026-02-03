@@ -9,7 +9,7 @@ export const RoleEditModal = {
             type: Boolean,
             required: true
         },
-        role: { // RolManager 的 selectedRole
+        role: { // RoleManager 的 selectedRole
             type: Object,
             default : null
         }

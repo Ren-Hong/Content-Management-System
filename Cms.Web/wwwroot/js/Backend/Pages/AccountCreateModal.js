@@ -1,5 +1,5 @@
 ﻿import { createAccount } from '../api/accountApi.js';
-import { getRoleOptions } from '../api/RoleApi.js';
+import { getRoleOptions } from '../api/roleApi.js';
 
 export const AccountCreateModal = {
     props: {
@@ -162,15 +162,15 @@ export const AccountCreateModal = {
                                     <option v-for="r in roleOptions"
                                             :key="r.roleId"
                                             :value="r.roleId">
-                                        {{ role.roleName }}
+                                        {{ r.roleName }}
                                     </option>
                                 </select>
                             </div>
 
                             <div class="d-flex flex-wrap gap-2">
                                 <span v-for="roleId in form.roleIds"
-                                      :key="roleId"
-                                      class="badge bg-primary d-flex align-items-center">
+                                    :key="roleId"
+                                    class="badge bg-primary d-flex align-items-center">
 
                                     {{ getRoleName(roleId) }}
 
