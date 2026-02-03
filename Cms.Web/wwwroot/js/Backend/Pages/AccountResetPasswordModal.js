@@ -65,14 +65,14 @@ export const AccountResetPasswordModal = {
                 let res = await resetPassword(this.form);
 
                 if (!res.success) {
-                    alert(res.errorCode || '重設密碼失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.$emit('updated');
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤');
+                alert('系統錯誤 -> 重設密碼');
             } finally {
                 this.submitting = false;
             }

@@ -61,14 +61,14 @@ export const AccountDeleteModal = {
                 let res = await deleteAccount(this.form);
 
                 if (!res.success) {
-                    alert(res.errorCode || '刪除失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.$emit('deleted');
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤');
+                alert('系統錯誤 -> 刪除帳戶');
             } finally {
                 this.submitting = false;
             }

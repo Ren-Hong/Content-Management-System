@@ -60,7 +60,7 @@ export const AccountEditModal = {
                 let res = await getRoleOptions();
 
                 if (!res.success) {
-                    alert(res.errorCode || '角色選單載入失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
@@ -112,14 +112,14 @@ export const AccountEditModal = {
                 let res = await updateAccount(this.form);
 
                 if (!res.success) {
-                    alert(res.errorCode || '更新帳戶失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.$emit('updated');
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤');
+                alert('系統錯誤 -> 更新帳戶');
             } finally {
                 this.submitting = false;
             }

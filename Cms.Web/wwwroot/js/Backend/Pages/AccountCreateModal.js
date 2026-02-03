@@ -53,14 +53,14 @@ export const AccountCreateModal = {
                 let res = await getRoleOptions();
 
                 if (!res.success) {
-                    alert(res.errorCode || '角色選單載入失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.roleOptions = res.data;
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤（角色選單載入）');
+                alert('系統錯誤 -> 角色選單載入');
             }
         },
 
@@ -106,14 +106,14 @@ export const AccountCreateModal = {
                 let res = await createAccount(this.form);
 
                 if (!res.success) {
-                    alert(res.errorCode || '新增失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.$emit('created');
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤');
+                alert('系統錯誤 -> 創建帳戶');
             } finally {
                 this.submitting = false;
             }

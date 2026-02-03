@@ -61,14 +61,14 @@ export const RoleDeleteModal = {
                 let res = await deleteRole(this.form);
 
                 if (!res.success) {
-                    alert(res.errorCode || '刪除失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.$emit('deleted');
             } catch (err) {
                 console.error(err);
-                alert('api路徑或json格式錯誤');
+                alert('系統錯誤 -> 刪除角色');
             } finally {
                 this.submitting = false;
             }

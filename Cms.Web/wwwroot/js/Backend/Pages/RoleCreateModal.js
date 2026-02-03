@@ -1,6 +1,6 @@
 ﻿import { createRole } from '../api/roleApi.js';
-import { getPermissionOptions } from '../api/PermissionApi.js';
-import { getScopeOptions } from '../api/ScopeApi.js';
+import { getPermissionOptions } from '../api/permissionApi.js';
+import { getScopeOptions } from '../api/scopeApi.js';
 
 export const RoleCreateModal = {
     props: {
@@ -32,8 +32,8 @@ export const RoleCreateModal = {
         };
     },
 
-    watch: {                        // watch =「當某個值改變時，我要額外做一件事」
-        async show(val) {                 //「只要 show 這個 prop 的值改變，如果它變成 true，我就把表單清空。」
+    watch: {                        
+        async show(val) {                
             if (val) {
                 await Promise.all([
                     this.loadPermissionOptions(),
@@ -49,10 +49,8 @@ export const RoleCreateModal = {
     },
 
     mounted() {
-        // Bootstrap 5 Modal 初始化
         this.modal = new bootstrap.Modal(this.$refs.modal);
 
-        // 當使用者用 ESC / X 關閉 modal
         this.$refs.modal.addEventListener('hidden.bs.modal', () => {
             this.$emit('close');
         });
@@ -64,14 +62,14 @@ export const RoleCreateModal = {
                 let res = await getPermissionOptions();
 
                 if (!res.success) {
-                    alert(res.errorCode || ' 權限選單載入失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.permissionOptions = res.data;
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤（權限選單載入）');
+                alert('系統錯誤 -> 權限選單載入');
             }
         },
 
@@ -79,7 +77,7 @@ export const RoleCreateModal = {
             try {
                 const res = await getScopeOptions();
                 if (!res.success) {
-                    alert(res.errorCode || 'Scope 選單載入失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
                 this.scopeOptions = res.data;
@@ -95,7 +93,7 @@ export const RoleCreateModal = {
 
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤（Scope 選單載入）');
+                alert('系統錯誤 -> 範圍選單載入');
             }
         },
 
@@ -160,14 +158,14 @@ export const RoleCreateModal = {
                 let res = await createRole(this.form);
 
                 if (!res.success) {
-                    alert(res.errorCode || '新增角色失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.$emit('created');
             } catch (err) {
                 console.error(err);
-                alert('系統錯誤');
+                alert('系統錯誤 -> 創建角色');
             } finally {
                 this.submitting = false;
             }

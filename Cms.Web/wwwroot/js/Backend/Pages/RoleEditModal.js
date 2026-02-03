@@ -71,14 +71,14 @@ export const RoleEditModal = {
                 let res = await getPermissionOptions();
 
                 if (!res.success) {
-                    alert(res.errorCode || '權限選單載入失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.permissionOptions = res.data;
             } catch (err) {
                 console.error(err);
-                alert('API路徑或Json格式不對');
+                alert('系統錯誤 -> 權限選單載入');
             }
         },
 
@@ -160,14 +160,14 @@ export const RoleEditModal = {
                 let res = await updateRole(this.form);
 
                 if (!res.success) {
-                    alert(res.errorCode || '更新角色失敗');
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
                     return;
                 }
 
                 this.$emit('updated');
             } catch (err) {
                 console.error(err);
-                alert('api錯誤');
+                alert('系統錯誤 -> 更新角色');
             } finally {
                 this.submitting = false;
             }
