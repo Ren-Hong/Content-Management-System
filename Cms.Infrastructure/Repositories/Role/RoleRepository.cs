@@ -1,4 +1,5 @@
-﻿using Cms.Contract.Repositories.Role.Entities;
+﻿using Cms.Contract.Common.Pagination;
+using Cms.Contract.Repositories.Role.Entities;
 using Cms.Contract.Repositories.Role.Interfaces;
 using Cms.Contract.Repositories.Role.Persistence;
 using Cms.Contract.Services.UnitOfWork.Interfaces;
@@ -51,9 +52,26 @@ namespace Cms.Infrastructure.Repositories.Role
             );
         }
 
-        public async Task<IEnumerable<RoleSummaryEntity>> GetRoleSummariesAsync()
+        public async Task<PagedResult<RoleSummaryEntity>> GetRoleSummariesPagedAsync(PageRequest preq)
         {
-            const string sql = @"
+            var page = preq.Page <= 0 ? 1 : preq.Page;
+            var pageSize = preq.PageSize <= 0 ? 10 : preq.PageSize;
+            var offset = (page - 1) * pageSize;
+
+            const string countSql = @"
+                SELECT COUNT(*)
+                FROM Roles;
+            ";
+
+            const string dataSql = @"
+                -- 建立一張暫時存在的虛擬表:PagedRoles
+                -- 這張表「只負責決定這一頁有哪些 Role」
+                WITH PagedRoles AS (
+                    SELECT RoleId
+                    FROM Roles
+                    ORDER BY RoleName
+                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY -- offset前一定要orderby
+                )
                 SELECT
                     r.RoleId,
                     r.RoleName,
@@ -67,17 +85,35 @@ namespace Cms.Infrastructure.Repositories.Role
 
                     r.Status
                 FROM Roles r
-                LEFT JOIN RolePermissionScopes rps
-                    ON r.RoleId = rps.RoleId
-                LEFT JOIN Permissions p
-                    ON rps.PermissionId = p.PermissionId
-                LEFT JOIN Scopes s
-                    ON rps.ScopeId = s.ScopeId
+                -- 只留下剛剛分頁選中的 Role
+                -- 等於說：只處理這一頁的 Role
+                JOIN PagedRoles pr ON r.RoleId = pr.RoleId
+                LEFT JOIN RolePermissionScopes rps ON r.RoleId = rps.RoleId
+                LEFT JOIN Permissions p ON rps.PermissionId = p.PermissionId
+                LEFT JOIN Scopes s ON rps.ScopeId = s.ScopeId
                 ORDER BY r.RoleName, p.PermissionName;
             ";
 
-            return await _db.QueryAsync<RoleSummaryEntity>(sql);
+            var totalCount = await _db.ExecuteScalarAsync<int>(countSql);
+
+            var items = (await _db.QueryAsync<RoleSummaryEntity>(
+                dataSql,
+                new
+                {
+                    Offset = offset,
+                    PageSize = pageSize
+                }
+            )).ToList();
+
+            return new PagedResult<RoleSummaryEntity>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                Items = items
+            };
         }
+
 
         public async Task<bool> RoleNameExistsAsync(string roleName)
         {

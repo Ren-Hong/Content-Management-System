@@ -1,8 +1,8 @@
-﻿export async function getAccountSummaries() {
+﻿export async function getAccountSummaries(payload) {
     return await fetch('/api/account/summaries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify(payload)
     }).then(r => r.json());
 }
 

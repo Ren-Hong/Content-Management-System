@@ -1,5 +1,5 @@
+using Cms.Contract.Controllers.Api;
 using Cms.Contract.Services.Department.Interfaces;
-using Cms.Web.Controllers.Contracts.Api;
 using Cms.Web.Controllers.Department.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

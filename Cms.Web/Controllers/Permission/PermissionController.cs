@@ -1,5 +1,5 @@
-﻿using Cms.Contract.Services.Permission.Interfaces;
-using Cms.Web.Controllers.Contracts.Api;
+﻿using Cms.Contract.Controllers.Api;
+using Cms.Contract.Services.Permission.Interfaces;
 using Cms.Web.Controllers.Permission.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

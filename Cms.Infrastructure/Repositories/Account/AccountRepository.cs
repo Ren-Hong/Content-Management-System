@@ -1,4 +1,5 @@
-﻿using Cms.Contract.Repositories.Account.Entities;
+﻿using Cms.Contract.Common.Pagination;
+using Cms.Contract.Repositories.Account.Entities;
 using Cms.Contract.Repositories.Account.Interfaces;
 using Cms.Contract.Repositories.Account.Persistence;
 using Cms.Contract.Services.UnitOfWork.Interfaces;
@@ -47,9 +48,22 @@ namespace Cms.Infrastructure.Repositories.Account
             );
         }
 
-        public async Task<IEnumerable<AccountSummaryEntity>> GetAccountSummariesAsync()
+        public async Task<PagedResult<AccountSummaryEntity>> GetAccountSummariesPagedAsync(PageRequest preq)
         {
-            const string sql = @"
+            var offset = (preq.Page - 1) * preq.PageSize;
+
+            const string countSql = @"
+                SELECT COUNT(DISTINCT a.AccountId)
+                FROM Accounts a;
+            ";
+
+            const string dataSql = @" 
+                WITH PagedAccounts AS (
+                    SELECT AccountId
+                    FROM Accounts
+                    ORDER BY Username
+                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
+                )
                 SELECT
                     a.AccountId,
                     a.Username,
@@ -57,14 +71,43 @@ namespace Cms.Infrastructure.Repositories.Account
                     r.RoleName,
                     a.Status
                 FROM Accounts a
-                LEFT JOIN AccountRoles ar 
-                    ON a.AccountId = ar.AccountId
-                LEFT JOIN Roles r 
-                    ON ar.RoleId = r.RoleId
+                JOIN PagedAccounts p ON a.AccountId = p.AccountId
+                LEFT JOIN AccountRoles ar ON a.AccountId = ar.AccountId
+                LEFT JOIN Roles r ON ar.RoleId = r.RoleId
                 ORDER BY a.Username;
             ";
 
-            return await _db.QueryAsync<AccountSummaryEntity>(sql);
+            // 下面這段是標準錯誤寫法, 這是對join做offset不是對account, 千萬不能寫成下面這樣, 有機會把join的資料切割
+            // const string dataSql = @" 
+            //     SELECT
+            //         a.AccountId,
+            //         a.Username,
+            //         r.RoleId,
+            //         r.RoleName,
+            //         a.Status
+            //     FROM Accounts a
+            //     LEFT JOIN AccountRoles ar 
+            //         ON a.AccountId = ar.AccountId
+            //     LEFT JOIN Roles r 
+            //         ON ar.RoleId = r.RoleId
+            //     ORDER BY a.Username
+            //     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+            // ";
+
+            var totalCount = await _db.ExecuteScalarAsync<int>(countSql);
+
+            var items = (await _db.QueryAsync<AccountSummaryEntity>(
+                dataSql,
+                new { Offset = offset, PageSize = preq.PageSize }
+            )).ToList();
+
+            return new PagedResult<AccountSummaryEntity>
+            {
+                Page = preq.Page,
+                PageSize = preq.PageSize,
+                TotalCount = totalCount,
+                Items = items
+            };
         }
 
         public async Task<bool> AccountExistsAsync(string username)

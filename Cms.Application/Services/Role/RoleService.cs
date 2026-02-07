@@ -1,4 +1,5 @@
-﻿using Cms.Contract.Repositories.Permission.Interfaces;
+﻿using Cms.Contract.Common.Pagination;
+using Cms.Contract.Repositories.Permission.Interfaces;
 using Cms.Contract.Repositories.Role.Interfaces;
 using Cms.Contract.Repositories.Role.Persistence;
 using Cms.Contract.Repositories.Scope.Interfaces;
@@ -44,11 +45,11 @@ namespace Cms.Application.Services.Role
                 .ToList();
         }
 
-        public async Task<List<GetRoleSummariesResponseDto>> GetRoleSummariesAsync()
+        public async Task<PagedResult<GetRoleSummariesResponseDto>> GetRoleSummariesAsync(PageRequest preq)
         {
-            var rows = (await _roleRepository.GetRoleSummariesAsync()).ToList();
+            var pagedRows = await _roleRepository.GetRoleSummariesPagedAsync(preq);
 
-            return rows
+            var grouped = pagedRows.Items
                 .GroupBy(r => new { r.RoleId, r.RoleName, r.Status })
                 .Select(roleGroup => new GetRoleSummariesResponseDto
                 {
@@ -57,6 +58,7 @@ namespace Cms.Application.Services.Role
                     Status = roleGroup.Key.Status,
 
                     PermissionScopes = roleGroup
+                        .Where(x => x.PermissionId.HasValue)
                         .GroupBy(x => new { x.PermissionId, x.PermissionName })
                         .Select(pGroup => new PermissionScopesSummaryDto
                         {
@@ -64,6 +66,7 @@ namespace Cms.Application.Services.Role
                             PermissionName = pGroup.Key.PermissionName!,
 
                             Scopes = pGroup
+                                .Where(s => s.ScopeId.HasValue)
                                 .Select(s => new ScopeSummaryDto
                                 {
                                     ScopeId = s.ScopeId!.Value,
@@ -75,7 +78,16 @@ namespace Cms.Application.Services.Role
                         .ToList()
                 })
                 .ToList();
+
+            return new PagedResult<GetRoleSummariesResponseDto>
+            {
+                Page = pagedRows.Page,
+                PageSize = pagedRows.PageSize,
+                TotalCount = pagedRows.TotalCount,
+                Items = grouped
+            };
         }
+
 
         public async Task<CreateRoleResponseDto> CreateRoleAsync(CreateRoleRequestDto dto)
         {

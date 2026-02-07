@@ -1,6 +1,7 @@
+using Cms.Contract.Controllers.Api;
+
 using Cms.Contract.Services.PermissionAssignment.Dtos;
 using Cms.Contract.Services.PermissionAssignment.Interfaces;
-using Cms.Web.Controllers.Contracts.Api;
 using Cms.Web.Controllers.PermissionAssignment.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

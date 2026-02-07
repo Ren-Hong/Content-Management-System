@@ -1,7 +1,8 @@
-﻿using Cms.Contract.Services.Account.Dtos;
+﻿using Cms.Contract.Common.Pagination;
+using Cms.Contract.Controllers.Api;
+using Cms.Contract.Services.Account.Dtos;
 using Cms.Contract.Services.Account.Interfaces;
 using Cms.Web.Controllers.Account.Models;
-using Cms.Web.Controllers.Contracts.Api;
 using Cms.Web.Controllers.Role.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -101,29 +102,37 @@ namespace Cms.Web.Controllers.Account
             });
         }
 
+        
         [HttpPost("summaries")]
-        public async Task<IActionResult> GetAccountSummaries()
+        public async Task<IActionResult> GetAccountSummaries([FromBody] PageRequest req)
         {
-            var rdto = await _accountService.GetAccountSummariesAsync();
+            var rdto = await _accountService.GetAccountSummariesAsync(req);
 
-            var res = rdto.Select(x => new GetAccountSummariesResponseModel // 跟 dto 長依樣
+            var res = new PagedResult<GetAccountSummariesResponseModel>
             {
-                AccountId = x.AccountId,
-                Username = x.Username,
-                Status = x.Status,
+                Page = rdto.Page,
+                PageSize = rdto.PageSize,
+                TotalCount = rdto.TotalCount,
 
-                Roles = x.Roles.Select(r => new GetRoleOptionsResponseModel
+                Items = rdto.Items.Select(x => new GetAccountSummariesResponseModel
                 {
-                    RoleId = r.RoleId,
-                    RoleName = r.RoleName
+                    AccountId = x.AccountId,
+                    Username = x.Username,
+                    Status = x.Status,
+
+                    Roles = x.Roles.Select(r => new GetRoleOptionsResponseModel
+                    {
+                        RoleId = r.RoleId,
+                        RoleName = r.RoleName
+                    }).ToList()
+
                 }).ToList()
+            };
 
-            }).ToList();
-
-            return Json(new ApiResponse<IEnumerable<GetAccountSummariesResponseModel>>
+            return Json(new ApiResponse<PagedResult<GetAccountSummariesResponseModel>>
             {
                 Success = true,
-                Data = res 
+                Data = res
             });
         }
 

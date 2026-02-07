@@ -18,6 +18,11 @@ export const RoleManager = {
             RoleStatusText,
 
             roleSummaries: [],
+
+            page: 1,
+            pageSize: 10,
+            totalCount: 0,
+
             loading: false,
 
             showCreate: false,
@@ -36,11 +41,29 @@ export const RoleManager = {
         async loadRoleSummaries() {
             this.loading = true;
             try {
-                const res = await getRoleSummaries();
-                this.roleSummaries = res.data;
+                const res = await getRoleSummaries({
+                    page: this.page,
+                    pageSize: this.pageSize
+                });
+
+                console.log('first item:', res.data.items?.[0]);
+
+                this.roleSummaries = res.data.items;
+                this.totalCount = res.data.totalCount;
+
             } finally {
                 this.loading = false;
             }
+        },
+
+        changePage(p) {
+            if (p < 1) return;
+
+            const maxPage = Math.ceil(this.totalCount / this.pageSize);
+            if (p > maxPage) return;
+
+            this.page = p;
+            this.loadRoleSummaries();
         },
 
         openCreate() {
@@ -125,6 +148,30 @@ export const RoleManager = {
                     </tr>
                 </tbody>
             </table>
+
+            <nav class="mt-3">
+                <ul class="pagination pagination-sm">
+
+                    <li class="page-item" :class="{ disabled: page === 1 }">
+                        <a class="page-link" href="#" @click.prevent="changePage(page - 1)">
+                            上一頁
+                        </a>
+                    </li>
+
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            第 {{ page }} 頁 / 共 {{ Math.ceil(totalCount / pageSize) }} 頁
+                        </span>
+                    </li>
+
+                    <li class="page-item" :class="{ disabled: page >= Math.ceil(totalCount / pageSize) }">
+                        <a class="page-link" href="#" @click.prevent="changePage(page + 1)">
+                            下一頁
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
 
             <RoleCreateModal
                 :show="showCreate"

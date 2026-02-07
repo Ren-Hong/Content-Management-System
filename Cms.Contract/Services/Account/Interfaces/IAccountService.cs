@@ -1,4 +1,5 @@
-﻿using Cms.Contract.Services.Account.Dtos;
+﻿using Cms.Contract.Common.Pagination;
+using Cms.Contract.Services.Account.Dtos;
 
 namespace Cms.Contract.Services.Account.Interfaces
 {
@@ -16,7 +17,7 @@ namespace Cms.Contract.Services.Account.Interfaces
         /// 取得所有帳戶摘要
         /// </summary>
         /// <returns></returns>
-        Task<List<GetAccountSummariesResponseDto>> GetAccountSummariesAsync();
+        Task<PagedResult<GetAccountSummariesResponseDto>> GetAccountSummariesAsync(PageRequest preq);
 
         /// <summary>
         /// 建立帳戶

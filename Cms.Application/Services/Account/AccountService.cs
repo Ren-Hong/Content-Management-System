@@ -1,4 +1,5 @@
-﻿using Cms.Contract.Repositories.Account.Interfaces;
+﻿using Cms.Contract.Common.Pagination;
+using Cms.Contract.Repositories.Account.Interfaces;
 using Cms.Contract.Repositories.Account.Persistence;
 using Cms.Contract.Repositories.Role.Interfaces;
 using Cms.Contract.Services.Account.Dtos;
@@ -100,30 +101,39 @@ namespace Cms.Application.Services.Account
             };
         }
 
-        public async Task<List<GetAccountSummariesResponseDto>> GetAccountSummariesAsync()
+        public async Task<PagedResult<GetAccountSummariesResponseDto>> GetAccountSummariesAsync(PageRequest preq)
         {
-            var rows = (await _accountRepository.GetAccountSummariesAsync()).ToList();
+            var pagedRows = await _accountRepository.GetAccountSummariesPagedAsync(preq);
 
-            return rows
-                .GroupBy(x => new { x.AccountId, x.Username, x.Status }) // 對名稱狀態分組
+            var grouped = pagedRows.Items
+                .GroupBy(x => new { x.AccountId, x.Username, x.Status })
                 .Select(g => new GetAccountSummariesResponseDto
                 {
                     AccountId = g.Key.AccountId,
                     Username = g.Key.Username,
-                    Status = (AccountStatus)g.Key.Status, // 從db grouping的資料型態是short, 要自己轉型
+                    Status = (AccountStatus)g.Key.Status,
 
                     Roles = g
                         .Where(x => x.RoleId.HasValue && x.RoleName != null)
                         .Select(x => new GetRoleOptionsResponseDto
                         {
-                            RoleId = x.RoleId!.Value, //!代表告訴編譯器 放心我保證不是NULL 我不要綠色毛毛蟲
+                            RoleId = x.RoleId!.Value,
                             RoleName = x.RoleName!
                         })
                         .DistinctBy(r => r.RoleId)
                         .ToList()
                 })
                 .ToList();
+
+            return new PagedResult<GetAccountSummariesResponseDto>
+            {
+                Page = pagedRows.Page,
+                PageSize = pagedRows.PageSize,
+                TotalCount = pagedRows.TotalCount,
+                Items = grouped
+            };
         }
+
 
         public async Task<CreateAccountResponseDto> CreateAccountAsync(CreateAccountRequestDto dto)
         {

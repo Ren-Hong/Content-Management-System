@@ -1,5 +1,6 @@
 ﻿using Cms.Contract.Repositories.Account.Entities;
 using Cms.Contract.Repositories.Account.Persistence;
+using Cms.Contract.Common.Pagination;
 
 namespace Cms.Contract.Repositories.Account.Interfaces
 {
@@ -30,7 +31,7 @@ namespace Cms.Contract.Repositories.Account.Interfaces
         /// <summary>
         /// 取得所有帳戶摘要
         /// </summary>
-        Task<IEnumerable<AccountSummaryEntity>> GetAccountSummariesAsync();
+        Task<PagedResult<AccountSummaryEntity>> GetAccountSummariesPagedAsync(PageRequest preq);
 
         /// <summary>
         /// 判斷帳號是否已存在

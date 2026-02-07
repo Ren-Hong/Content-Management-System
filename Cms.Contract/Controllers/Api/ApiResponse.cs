@@ -1,4 +1,4 @@
-﻿namespace Cms.Web.Controllers.Contracts.Api
+﻿namespace Cms.Contract.Controllers.Api
 {
     public class ApiResponse
     {

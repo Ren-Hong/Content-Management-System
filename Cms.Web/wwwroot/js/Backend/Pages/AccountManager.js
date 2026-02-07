@@ -20,6 +20,11 @@ export const AccountManager = {
             AccountStatusText,   // 👈 關鍵在這一行
 
             accountSummaries: [],
+
+            page: 1,
+            pageSize: 10,
+            totalCount: 0,
+
             loading: false,
 
             showCreate: false,
@@ -39,11 +44,27 @@ export const AccountManager = {
         async loadAccountSummaries() {
             this.loading = true;
             try {
-                const res = await getAccountSummaries();
-                this.accountSummaries = res.data;
+                const res = await getAccountSummaries({
+                    page: this.page,
+                    pageSize: this.pageSize,
+                    keyword: document.getElementById('accountSearch').value
+                });
+
+                this.accountSummaries = res.data.items;
+                this.totalCount = res.data.totalCount;
             } finally {
                 this.loading = false;
             }
+        },
+        
+        changePage(p) {
+            if (p < 1) return;
+
+            const maxPage = Math.ceil(this.totalCount / this.pageSize);
+            if (p > maxPage) return;
+
+            this.page = p;
+            this.loadAccountSummaries();
         },
 
         openCreate() {
@@ -79,9 +100,26 @@ export const AccountManager = {
 
     template: `
         <div>
-            <div class="d-flex justify-content-between mb-3">
-                <h4>帳戶管理</h4>
-                <button class="btn btn-primary btn-sm" @click="openCreate">
+            <h1 class="text-center">帳戶管理</h1>
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="input-group w-25">
+
+                    <input
+                        id="accountSearch"
+                        type="text"
+                        class="form-control"
+                        placeholder="搜尋帳號或角色名稱" />
+
+                    <button
+                        class="btn btn-outline-secondary"
+                        onclick="searchAccounts()">
+                        🔍 搜尋
+                    </button>
+
+                </div>
+
+                <button class="btn btn-primary">
                     新增帳戶
                 </button>
             </div>
@@ -113,6 +151,30 @@ export const AccountManager = {
                     </tr>
                 </tbody>
             </table>
+
+            <nav class="mt-3">
+                <ul class="pagination pagination-sm">
+
+                    <li class="page-item" :class="{ disabled: page === 1 }">
+                        <a class="page-link" href="#" @click.prevent="changePage(page - 1)">
+                            上一頁
+                        </a>
+                    </li>
+
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            第 {{ page }} 頁 / 共 {{ Math.ceil(totalCount / pageSize) }} 頁
+                        </span>
+                    </li>
+
+                    <li class="page-item" :class="{ disabled: page >= Math.ceil(totalCount / pageSize) }">
+                        <a class="page-link" href="#" @click.prevent="changePage(page + 1)">
+                            下一頁
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
 
             <AccountCreateModal
                 :show="showCreate"

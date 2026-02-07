@@ -1,4 +1,5 @@
-﻿using Cms.Contract.Repositories.Role.Persistence;
+﻿using Cms.Contract.Common.Pagination;
+using Cms.Contract.Repositories.Role.Persistence;
 using Cms.Contract.Repositories.Role.Entities;
 
 namespace Cms.Contract.Repositories.Role.Interfaces
@@ -22,7 +23,7 @@ namespace Cms.Contract.Repositories.Role.Interfaces
         /// 拿角色摘要
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<RoleSummaryEntity>> GetRoleSummariesAsync();
+        Task<PagedResult<RoleSummaryEntity>> GetRoleSummariesPagedAsync(PageRequest preq);
 
         /// <summary>
         /// 判斷角色名稱是否已存在

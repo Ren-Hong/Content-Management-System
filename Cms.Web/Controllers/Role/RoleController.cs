@@ -1,6 +1,7 @@
-﻿using Cms.Contract.Services.Role.Dtos;
+﻿using Cms.Contract.Common.Pagination;
+using Cms.Contract.Controllers.Api;
+using Cms.Contract.Services.Role.Dtos;
 using Cms.Contract.Services.Role.Interfaces;
-using Cms.Web.Controllers.Contracts.Api;
 using Cms.Web.Controllers.Role.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,12 +42,17 @@ namespace Cms.Web.Controllers.Role
         }
 
         [HttpPost("summaries")]
-        public async Task<IActionResult> GetRoleSummaries()
+        public async Task<IActionResult> GetRoleSummaries([FromBody] PageRequest req)
         {
-            var dtos = await _roleService.GetRoleSummariesAsync();
+            var rdto = await _roleService.GetRoleSummariesAsync(req);
 
-            var res = dtos
-                .Select(x => new GetRoleSummariesResponseModel
+            var res = new PagedResult<GetRoleSummariesResponseModel>
+            {
+                Page = rdto.Page,
+                PageSize = rdto.PageSize,
+                TotalCount = rdto.TotalCount,
+
+                Items = rdto.Items.Select(x => new GetRoleSummariesResponseModel
                 {
                     RoleId = x.RoleId,
                     RoleName = x.RoleName,
@@ -68,10 +74,10 @@ namespace Cms.Web.Controllers.Role
 
                         })
                         .ToList()
-                })
-                .ToList();
+                }).ToList()
+            };
 
-            return Json(new ApiResponse<IEnumerable<GetRoleSummariesResponseModel>>
+            return Json(new ApiResponse<PagedResult<GetRoleSummariesResponseModel>>
             {
                 Success = true,
                 Data = res

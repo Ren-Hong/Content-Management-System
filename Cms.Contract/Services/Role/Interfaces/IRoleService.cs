@@ -1,4 +1,5 @@
-﻿using Cms.Contract.Services.Role.Dtos;
+﻿using Cms.Contract.Common.Pagination;
+using Cms.Contract.Services.Role.Dtos;
 
 namespace Cms.Contract.Services.Role.Interfaces
 {
@@ -14,7 +15,7 @@ namespace Cms.Contract.Services.Role.Interfaces
         /// 角色摘要table
         /// </summary>
         /// <returns></returns>
-        Task<List<GetRoleSummariesResponseDto>> GetRoleSummariesAsync();
+        Task<PagedResult<GetRoleSummariesResponseDto>> GetRoleSummariesAsync(PageRequest preq);
 
         /// <summary>
         /// 建立角色
