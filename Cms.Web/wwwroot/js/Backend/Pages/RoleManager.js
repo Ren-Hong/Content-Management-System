@@ -46,8 +46,6 @@ export const RoleManager = {
                     pageSize: this.pageSize
                 });
 
-                console.log('first item:', res.data.items?.[0]);
-
                 this.roleSummaries = res.data.items;
                 this.totalCount = res.data.totalCount;
 

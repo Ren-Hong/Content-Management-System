@@ -1,3 +1,4 @@
+using Cms.Contract.Common.Pagination;
 using Cms.Contract.Controllers.Api;
 
 using Cms.Contract.Services.PermissionAssignment.Dtos;
@@ -23,11 +24,11 @@ namespace Cms.Web.Controllers.PermissionAssignment
         }
 
         [HttpPost("summaries")]
-        public async Task<IActionResult> GetPermissionAssignmentSummaries()
+        public async Task<IActionResult> GetPermissionAssignmentSummaries([FromBody] PageRequest req)
         {
-            var dtos = await _permissionAssignmentService.GetPermissionAssignmentSummariesAsync();
+            var paged = await _permissionAssignmentService.GetPermissionAssignmentSummariesAsync(req);
 
-            var res = dtos
+            var res = paged.Items
                 .Select(x => new GetPermissionAssignmentSummariesResponseModel
                 {
                     AccountId = x.AccountId,
@@ -51,13 +52,19 @@ namespace Cms.Web.Controllers.PermissionAssignment
 
                         })
                         .ToList()
-                    })
-                    .ToList();
+                })
+                .ToList();
 
-            return Json(new ApiResponse<IEnumerable<GetPermissionAssignmentSummariesResponseModel>>
+            return Json(new ApiResponse<PagedResult<GetPermissionAssignmentSummariesResponseModel>>
             {
                 Success = true,
-                Data = res
+                Data = new PagedResult<GetPermissionAssignmentSummariesResponseModel>
+                {
+                    Page = paged.Page,
+                    PageSize = paged.PageSize,
+                    TotalCount = paged.TotalCount,
+                    Items = res
+                }
             });
         }
     }

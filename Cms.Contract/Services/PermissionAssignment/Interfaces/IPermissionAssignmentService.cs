@@ -1,3 +1,4 @@
+using Cms.Contract.Common.Pagination;
 using Cms.Contract.Services.PermissionAssignment.Dtos;
 
 namespace Cms.Contract.Services.PermissionAssignment.Interfaces
@@ -8,6 +9,6 @@ namespace Cms.Contract.Services.PermissionAssignment.Interfaces
         /// 專給下拉用的Permission
         /// </summary>
         /// <returns></returns>
-        Task<List<GetPermissionAssignmentSummariesResponseDto>> GetPermissionAssignmentSummariesAsync();
+        Task<PagedResult<GetPermissionAssignmentSummariesResponseDto>> GetPermissionAssignmentSummariesAsync(PageRequest req);
     }
 }

@@ -1,3 +1,4 @@
+using Cms.Contract.Common.Pagination;
 using Cms.Contract.Repositories.PermissionAssignment.Entities;
 
 namespace Cms.Contract.Repositories.PermissionAssignment.Interfaces
@@ -8,7 +9,7 @@ namespace Cms.Contract.Repositories.PermissionAssignment.Interfaces
         /// 拿特殊指派摘要
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<PermissionAssignmentSummaryEntity>> GetPermissionAssignmentSummariesAsync();
+        Task<PagedResult<PermissionAssignmentSummaryEntity>> GetPermissionAssignmentSummariesPagedAsync(PageRequest preq);
 
     }
 }

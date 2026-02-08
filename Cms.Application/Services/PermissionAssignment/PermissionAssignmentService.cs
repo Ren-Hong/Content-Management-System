@@ -1,3 +1,4 @@
+using Cms.Contract.Common.Pagination;
 using Cms.Contract.Repositories.PermissionAssignment.Interfaces;
 using Cms.Contract.Services.PermissionAssignment.Dtos;
 using Cms.Contract.Services.PermissionAssignment.Interfaces;
@@ -19,11 +20,12 @@ namespace Cms.Application.Services.PermissionAssignment
             _permissionAssignmentRepository = permissionAssignmentRepository;
         }
 
-        public async Task<List<GetPermissionAssignmentSummariesResponseDto>> GetPermissionAssignmentSummariesAsync()
+        public async Task<PagedResult<GetPermissionAssignmentSummariesResponseDto>> GetPermissionAssignmentSummariesAsync(PageRequest req)
         {
-            var rows = (await _permissionAssignmentRepository.GetPermissionAssignmentSummariesAsync()).ToList();
+            var paged = await _permissionAssignmentRepository
+                .GetPermissionAssignmentSummariesPagedAsync(req);
 
-            return rows
+            var grouped = paged.Items
                 .GroupBy(x => new { x.AccountId, x.Username })
                 .Select(accountGroup => new GetPermissionAssignmentSummariesResponseDto
                 {
@@ -52,7 +54,14 @@ namespace Cms.Application.Services.PermissionAssignment
                         .ToList()
                 })
                 .ToList();
-        
+
+            return new PagedResult<GetPermissionAssignmentSummariesResponseDto>
+            {
+                Page = paged.Page,
+                PageSize = paged.PageSize,
+                TotalCount = paged.TotalCount,
+                Items = grouped
+            };
         }
     }
 }
