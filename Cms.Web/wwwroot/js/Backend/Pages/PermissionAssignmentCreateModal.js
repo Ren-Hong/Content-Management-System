@@ -8,10 +8,7 @@ export const PermissionAssignmentCreateModal = {
             type: Boolean,
             required: true
         },
-        accountId: {                // ✅ 由外部帶入
-            type: String,
-            required: true
-        }
+        permissionAssignment: Object
     },
 
     emits: ['close', 'created'],
@@ -90,7 +87,7 @@ export const PermissionAssignmentCreateModal = {
 
         resetForm() {
             this.form = {
-                accountId: this.accountId,   // ✅ 綁定外部帳號
+                accountId: this.permissionAssignment.accountId ?? '',
                 departmentId: '',
                 permissionId: '',
                 validFrom: '',
@@ -144,6 +141,10 @@ export const PermissionAssignmentCreateModal = {
                     </div>
 
                     <div class="modal-body">
+
+                        <div class="mb-2 text-muted small">
+                            帳戶：{{ permissionAssignment?.username }}
+                        </div>
 
                         <div class="mb-3">
                             <label class="form-label">部門</label>

@@ -60,8 +60,9 @@ export const PermissionAssignmentManager = {
             this.loadPermissionAssignmentSummaries();
         },
 
-        openCreate() {
+        openCreate(permissionAssignmentSummary) {
             this.showCreate = true;
+            this.selectedPermissionAssignment = permissionAssignmentSummary;
         },
 
         openEdit(permissionAssignmentSummary) {
@@ -89,9 +90,6 @@ export const PermissionAssignmentManager = {
         <div>
             <div class="d-flex justify-content-between mb-3">
                 <h4>權限指派管理</h4>
-                <button class="btn btn-primary btn-sm" @click="openCreate">
-                    新增權限指派
-                </button>
             </div>
 
             <table class="table table-bordered bg-white">
@@ -142,6 +140,9 @@ export const PermissionAssignmentManager = {
                         </td>
 
                         <td class="text-nowrap">
+                            <button class="btn btn-primary btn-sm me-1"
+                                    @click="openCreate(u)">新增</button>
+
                             <button class="btn btn-success btn-sm me-1"
                                     @click="openEdit(u)">編輯</button>
 
@@ -185,6 +186,7 @@ export const PermissionAssignmentManager = {
 
             <PermissionAssignmentCreateModal
                 :show="showCreate"
+                :permissionAssignment="selectedPermissionAssignment"
                 @close="showCreate=false"
                 @created="onPermissionAssignmentChanged"
             />

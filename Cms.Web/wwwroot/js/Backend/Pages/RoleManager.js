@@ -1,5 +1,4 @@
 ﻿import { getRoleSummaries } from '../api/roleApi.js';
-
 import { RoleStatusText } from '../constants/roleStatus.js';
 
 import { RoleCreateModal } from './RoleCreateModal.js';
@@ -43,7 +42,8 @@ export const RoleManager = {
             try {
                 const res = await getRoleSummaries({
                     page: this.page,
-                    pageSize: this.pageSize
+                    pageSize: this.pageSize,
+                    keyword: document.getElementById('roleSearch')?.value
                 });
 
                 this.roleSummaries = res.data.items;
@@ -91,9 +91,25 @@ export const RoleManager = {
 
     template: `
         <div>
-            <div class="d-flex justify-content-between mb-3">
-                <h4>角色管理</h4>
-                <button class="btn btn-primary btn-sm" @click="openCreate">
+            <h1 class="text-center">角色管理</h1>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <div class="input-group w-25">
+                    <input
+                        id="roleSearch"
+                        type="text"
+                        class="form-control"
+                        placeholder="搜尋角色名稱" />
+
+                    <button
+                        class="btn btn-outline-secondary"
+                        @click="loadRoleSummaries">
+                        🔍 搜尋
+                    </button>
+                </div>
+
+                <button class="btn btn-primary" @click="openCreate">
                     新增角色
                 </button>
             </div>
@@ -107,8 +123,10 @@ export const RoleManager = {
                         <th style="width:180px">操作</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <tr v-for="r in roleSummaries" :key="r.roleId">
+
                         <td>{{ r.roleName }}</td>
 
                         <td>
@@ -136,6 +154,7 @@ export const RoleManager = {
                         </td>
 
                         <td>{{ RoleStatusText[r.status] }}</td>
+
                         <td class="text-nowrap">
                             <button class="btn btn-success btn-sm me-1"
                                     @click="openEdit(r)">編輯</button>

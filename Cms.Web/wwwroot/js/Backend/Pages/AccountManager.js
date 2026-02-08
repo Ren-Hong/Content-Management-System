@@ -47,7 +47,7 @@ export const AccountManager = {
                 const res = await getAccountSummaries({
                     page: this.page,
                     pageSize: this.pageSize,
-                    keyword: document.getElementById('accountSearch').value
+                    keyword: document.getElementById('accountSearch')?.value
                 });
 
                 this.accountSummaries = res.data.items;
