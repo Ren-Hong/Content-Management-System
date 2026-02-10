@@ -4,6 +4,7 @@ using Cms.Contract.Repositories.Account.Persistence;
 using Cms.Contract.Repositories.Role.Interfaces;
 using Cms.Contract.Services.Account.Dtos;
 using Cms.Contract.Services.Account.Interfaces;
+using Cms.Contract.Services.Department.Dtos;
 using Cms.Contract.Services.Role.Dtos;
 using Cms.Contract.Services.UnitOfWork.Interfaces;
 using System.Data;
@@ -112,6 +113,14 @@ namespace Cms.Application.Services.Account
                     AccountId = g.Key.AccountId,
                     Username = g.Key.Username,
                     Status = (AccountStatus)g.Key.Status,
+
+                    Departments = g
+                        .Where(x => x.DepartmentId.HasValue && x.DepartmentName != null)
+                        .Select(x => new GetDepartmentOptionsResponseDto
+                        {
+                            DepartmentId = x.DepartmentId!.Value,
+                            DepartmentName = x.DepartmentName!
+                        }).ToList(),
 
                     Roles = g
                         .Where(x => x.RoleId.HasValue && x.RoleName != null)

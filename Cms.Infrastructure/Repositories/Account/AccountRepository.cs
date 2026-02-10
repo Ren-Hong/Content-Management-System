@@ -67,11 +67,15 @@ namespace Cms.Infrastructure.Repositories.Account
                 SELECT
                     a.AccountId,
                     a.Username,
+                    d.DepartmentId,
+                    d.DepartmentName,
                     r.RoleId,
                     r.RoleName,
                     a.Status
                 FROM Accounts a
                 JOIN PagedAccounts p ON a.AccountId = p.AccountId
+                LEFT JOIN AccountDepartments ad ON a.AccountId = ad.AccountId
+                LEFT JOIN Departments d ON ad.departmentId = d.departmentId
                 LEFT JOIN AccountRoles ar ON a.AccountId = ar.AccountId
                 LEFT JOIN Roles r ON ar.RoleId = r.RoleId
                 ORDER BY a.Username;

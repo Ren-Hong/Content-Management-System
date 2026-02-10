@@ -88,9 +88,9 @@ namespace Cms.Infrastructure.Repositories.Role
                 -- 只留下剛剛分頁選中的 Role
                 -- 等於說：只處理這一頁的 Role
                 JOIN PagedRoles pr ON r.RoleId = pr.RoleId
-                LEFT JOIN RolePermissionScopes rps ON r.RoleId = rps.RoleId
-                LEFT JOIN Permissions p ON rps.PermissionId = p.PermissionId
-                LEFT JOIN Scopes s ON rps.ScopeId = s.ScopeId
+                LEFT JOIN RolePermissions rp ON r.RoleId = rp.RoleId
+                LEFT JOIN Permissions p ON rp.PermissionId = p.PermissionId
+                LEFT JOIN Scopes s ON rp.ScopeId = s.ScopeId
                 ORDER BY r.RoleName, p.PermissionName;
             ";
 
@@ -195,7 +195,7 @@ namespace Cms.Infrastructure.Repositories.Role
         public async Task CreateRolePermissionScopeAsync(Guid roleId, Guid permissionId, Guid scopeId)
         {
             const string sql = @"
-                INSERT INTO RolePermissionScopes
+                INSERT INTO RolePermissions
                 (
                     RoleId,
                     PermissionId,

@@ -92,8 +92,8 @@ export const PermissionAssignmentManager = {
                 <h4>權限指派管理</h4>
             </div>
 
-            <table class="table table-bordered bg-white">
-                <thead>
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-dark">
                     <tr>
                         <th style="width:200px">帳戶</th>
                         <th>權限 / 部門</th>

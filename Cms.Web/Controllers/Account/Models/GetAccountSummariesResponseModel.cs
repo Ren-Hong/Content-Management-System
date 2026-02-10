@@ -1,4 +1,5 @@
 ﻿using Cms.Contract.Repositories.Account.Persistence;
+using Cms.Web.Controllers.Department.Models;
 using Cms.Web.Controllers.Role.Models;
 
 namespace Cms.Web.Controllers.Account.Models
@@ -11,6 +12,7 @@ namespace Cms.Web.Controllers.Account.Models
 
         public AccountStatus Status { get; set; }
 
+        public required List<GetDepartmentOptionsResponseModel> Departments { get; set; }
         public required List<GetRoleOptionsResponseModel> Roles { get; set; }
     }
 }

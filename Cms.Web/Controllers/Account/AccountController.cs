@@ -3,6 +3,7 @@ using Cms.Contract.Controllers.Api;
 using Cms.Contract.Services.Account.Dtos;
 using Cms.Contract.Services.Account.Interfaces;
 using Cms.Web.Controllers.Account.Models;
+using Cms.Web.Controllers.Department.Models;
 using Cms.Web.Controllers.Role.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -119,6 +120,12 @@ namespace Cms.Web.Controllers.Account
                     AccountId = x.AccountId,
                     Username = x.Username,
                     Status = x.Status,
+
+                    Departments = x.Departments.Select(d => new GetDepartmentOptionsResponseModel
+                    {
+                        DepartmentId = d.DepartmentId,
+                        DepartmentName = d.DepartmentName
+                    }).ToList(),
 
                     Roles = x.Roles.Select(r => new GetRoleOptionsResponseModel
                     {

@@ -171,16 +171,7 @@ namespace Cms.Application.Services.Role
                     dto.RoleCode
                 );
 
-                // 建立 RolePermission（能力層）
-                foreach (var permissionId in permissionIds)
-                {
-                    await _roleRepository.CreateRolePermissionAsync(
-                        roleId,
-                        permissionId
-                    );
-                }
-
-                // 建立 RolePermissionScopes（範圍層）
+                // 建立 RolePermissionScope
                 foreach (var item in dto.PermissionScopes)
                 {
                     await _roleRepository.CreateRolePermissionScopeAsync(
@@ -285,18 +276,7 @@ namespace Cms.Application.Services.Role
                     dto.Status
                 );
 
-                // 更新帳戶角色（先清掉再加，最乾淨）, SQL 有下 DELETE CASCADE 不用額外去刪Scope
-                await _roleRepository.DeleteRolePermissionsAsync(roleId);
-
-                foreach (var permissionId in permissionIds)
-                {
-                    await _roleRepository.CreateRolePermissionAsync(
-                        roleId, 
-                        permissionId
-                    );
-                }
-
-                // 建立 RolePermissionScopes（範圍層）
+                // 建立 RolePermissionScope
                 foreach (var item in dto.PermissionScopes)
                 {
                     await _roleRepository.CreateRolePermissionScopeAsync(

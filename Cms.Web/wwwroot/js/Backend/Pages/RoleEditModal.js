@@ -1,6 +1,6 @@
 ﻿import { updateRole } from '../api/roleApi.js';
 import { getPermissionOptions } from '../api/permissionApi.js';
-import { getScopeOptions } from '../api/ScopeApi.js';
+import { getScopeOptions } from '../api/scopeApi.js';
 import { RoleStatusText } from '../constants/roleStatus.js';
 
 export const RoleEditModal = {

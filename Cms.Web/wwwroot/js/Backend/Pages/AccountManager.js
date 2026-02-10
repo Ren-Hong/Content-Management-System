@@ -124,10 +124,11 @@ export const AccountManager = {
                 </button>
             </div>
 
-            <table class="table table-bordered bg-white">
-                <thead>
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-dark">
                     <tr>
                         <th>帳號</th>
+                        <th>部門</th>
                         <th>角色</th>
                         <th>狀態</th>
                         <th style="width:180px">操作</th>
@@ -136,6 +137,7 @@ export const AccountManager = {
                 <tbody>
                     <tr v-for="a in accountSummaries" :key="a.accountId">
                         <td>{{ a.username }}</td>
+                        <td>{{ a.departments?.map(d => d.departmentName).join(', ') }}</td>
                         <td>{{ a.roles?.map(r => r.roleName).join(', ') }}</td>
                         <td>{{ AccountStatusText[a.status] }}</td>
                         <td class="text-nowrap">

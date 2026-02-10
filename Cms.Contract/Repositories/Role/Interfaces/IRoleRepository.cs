@@ -37,12 +37,6 @@ namespace Cms.Contract.Repositories.Role.Interfaces
         Task<Guid> CreateRoleAsync(string roleName, string roleCode);
 
         /// <summary>
-        /// 幫角色加權限
-        /// </summary>
-        /// <returns>不用回傳值, 失敗就是例外</returns>
-        Task CreateRolePermissionAsync(Guid roleId, Guid permissionId);
-
-        /// <summary>
         /// 幫角色權限加作用範圍
         /// </summary>
         /// <returns>不用回傳值, 失敗就是例外</returns>

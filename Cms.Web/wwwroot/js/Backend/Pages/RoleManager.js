@@ -114,8 +114,8 @@ export const RoleManager = {
                 </button>
             </div>
 
-            <table class="table table-bordered bg-white">
-                <thead>
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-dark">
                     <tr>
                         <th>角色</th>
                         <th>權限</th>

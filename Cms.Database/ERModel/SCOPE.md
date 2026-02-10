@@ -8,7 +8,7 @@
                                │
                                │
 ┌──────────────────────────┐   │
-│ RolePermissionScopes     │   │   ←「策略層」
+│ RolePermissions          │   ←「策略層」
 │──────────────────────────│   │
 │ RoleId        (PK, FK) ──┼───┼──────► Roles.RoleId
 │ PermissionId  (PK, FK) ──┼───┼──────► Permissions.PermissionId

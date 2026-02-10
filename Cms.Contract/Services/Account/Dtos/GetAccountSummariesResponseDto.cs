@@ -1,5 +1,6 @@
 ﻿using Cms.Contract.Services.Role.Dtos;
 using Cms.Contract.Repositories.Account.Persistence;
+using Cms.Contract.Services.Department.Dtos;
 
 namespace Cms.Contract.Services.Account.Dtos
 {
@@ -11,6 +12,8 @@ namespace Cms.Contract.Services.Account.Dtos
 
         public AccountStatus Status { get; set; }
 
+        public required List<GetDepartmentOptionsResponseDto> Departments { get; set; }
+        
         public required List<GetRoleOptionsResponseDto> Roles { get; set; }
     }
 }

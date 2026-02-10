@@ -8,6 +8,10 @@ namespace Cms.Contract.Repositories.Account.Entities
 
         public required string Username { get; set; } 
 
+        public Guid? DepartmentId { get; set; }
+
+        public string? DepartmentName { get; set; }
+
         public Guid? RoleId { get; set; } 
 
         public string? RoleName { get; set; } 
