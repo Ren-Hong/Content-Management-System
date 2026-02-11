@@ -39,7 +39,8 @@ export const PermissionAssignmentManager = {
             try {
                 const res = await getPermissionAssignmentSummaries({
                     page: this.page,
-                    pageSize: this.pageSize
+                    pageSize: this.pageSize,
+                    keyword: document.getElementById('permissionAssignmentSearch')?.value
                 });
 
                 this.permissionAssignmentSummaries = res.data.items;
@@ -88,8 +89,24 @@ export const PermissionAssignmentManager = {
 
     template: `
         <div>
-            <div class="d-flex justify-content-between mb-3">
-                <h4>權限指派管理</h4>
+            <h1 class="text-center">權限指派管理</h1>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="input-group w-25">
+                    <input
+                        id="permissionAssignmentSearch"
+                        type="text"
+                        class="form-control"
+                        placeholder="搜尋帳戶名稱" />
+
+                    <button
+                        class="btn btn-outline-secondary"
+                        @click="loadPermissionAssignmentSummaries">
+                        🔍 搜尋
+                    </button>
+                </div>
+
+                <div></div>
             </div>
 
             <table class="table table-bordered table-striped table-hover">

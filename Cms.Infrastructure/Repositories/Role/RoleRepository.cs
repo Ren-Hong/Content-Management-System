@@ -245,21 +245,6 @@ namespace Cms.Infrastructure.Repositories.Role
             return roleId;
         }
 
-        public async Task UpdateUpdatedAtAsync(string roleName, DateTime updatedTime)
-        {
-            const string sql = @"
-                UPDATE Roles
-                SET UpdatedAt = @UpdatedAt
-                WHERE RoleName = @RoleName
-            ";
-
-            await _db.ExecuteAsync(sql, new
-            {
-                RoleName = roleName,
-                UpdatedAt = updatedTime
-            });
-        }
-
         public async Task DeleteRoleAsync(string roleName)
         {
             const string sql = @"

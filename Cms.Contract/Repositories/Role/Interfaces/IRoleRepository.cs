@@ -49,11 +49,6 @@ namespace Cms.Contract.Repositories.Role.Interfaces
         Task<Guid> UpdateStatusAsync(string roleName, RoleStatus status);
 
         /// <summary>
-        /// 更新上一次更新時間
-        /// </summary>
-        Task UpdateUpdatedAtAsync(string roleName, DateTime updatedTime);
-
-        /// <summary>
         /// 真刪角色
         /// </summary>
         Task DeleteRoleAsync(string roleName);

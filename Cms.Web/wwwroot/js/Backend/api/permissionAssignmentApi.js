@@ -2,7 +2,7 @@ export async function getPermissionAssignmentSummaries(payload) {
     return await fetch('/api/PermissionAssignment/summaries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({payload})
+        body: JSON.stringify(payload)
     }).then(r => r.json());
 }
 
