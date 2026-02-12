@@ -23,25 +23,20 @@ namespace Cms.Infrastructure.Repositories.PermissionAssignment
             var pageSize = preq.PageSize <= 0 ? 10 : preq.PageSize;
             var offset = (page - 1) * pageSize;
 
-            // ================== 計算 Account 總數 ==================
             const string countSql = @"
-                SELECT COUNT(DISTINCT AccountId)
-                FROM DepartmentPermissionAssignments
+                SELECT COUNT(*)
+                FROM Accounts;
             ";
 
-            // ================== 分頁 Account ==================
             const string dataSql = @"
                 WITH PagedAccounts AS (
-                    SELECT DISTINCT 
-                        dpa.AccountId,
-                        a.Username
-                    FROM DepartmentPermissionAssignments dpa
-                    JOIN Accounts a ON a.AccountId = dpa.AccountId
-                    ORDER BY a.Username
+                    SELECT AccountId
+                    FROM Accounts
+                    ORDER BY Username
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
                 )
                 SELECT
-                    dpa.AccountId,
+                    a.AccountId,
                     a.Username,
 
                     dpa.PermissionId,
@@ -52,12 +47,12 @@ namespace Cms.Infrastructure.Repositories.PermissionAssignment
 
                     dpa.ValidFrom,
                     dpa.ValidTo
-                FROM DepartmentPermissionAssignments dpa
-                JOIN PagedAccounts pa ON pa.AccountId = dpa.AccountId
-                JOIN Accounts a ON a.AccountId = dpa.AccountId
-                JOIN Permissions p ON p.PermissionId = dpa.PermissionId
-                JOIN Departments d ON d.DepartmentId = dpa.DepartmentId
-                ORDER BY a.Username, p.PermissionName
+                FROM PagedAccounts pa
+                JOIN Accounts a ON pa.AccountId = a.AccountId
+                LEFT JOIN DepartmentPermissionAssignments dpa ON a.AccountId = dpa.AccountId
+                LEFT JOIN Permissions p ON p.PermissionId = dpa.PermissionId
+                LEFT JOIN Departments d ON d.DepartmentId = dpa.DepartmentId
+                ORDER BY a.Username, p.PermissionName;
             ";
 
             var totalCount = await _db.ExecuteScalarAsync<int>(countSql);

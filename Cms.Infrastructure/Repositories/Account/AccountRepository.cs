@@ -73,9 +73,9 @@ namespace Cms.Infrastructure.Repositories.Account
                     r.RoleName,
                     a.Status
                 FROM Accounts a
-                JOIN PagedAccounts p ON a.AccountId = p.AccountId
+                JOIN PagedAccounts pa ON a.AccountId = pa.AccountId
                 LEFT JOIN AccountDepartments ad ON a.AccountId = ad.AccountId
-                LEFT JOIN Departments d ON ad.departmentId = d.departmentId
+                LEFT JOIN Departments d ON ad.DepartmentId = d.DepartmentId
                 LEFT JOIN AccountRoles ar ON a.AccountId = ar.AccountId
                 LEFT JOIN Roles r ON ar.RoleId = r.RoleId
                 ORDER BY a.Username;
