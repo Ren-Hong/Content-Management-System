@@ -28,7 +28,7 @@ namespace Cms.Infrastructure.Repositories.Account
                     r.RoleCode,
                     p.PermissionCode
                 FROM Accounts a
-                LEFT JOIN AccountRoles ar 
+                LEFT JOIN AccountRoleAssignments ar 
                     ON a.AccountId = ar.AccountId
                 LEFT JOIN Roles r 
                     ON ar.RoleId = r.RoleId
@@ -74,9 +74,8 @@ namespace Cms.Infrastructure.Repositories.Account
                     a.Status
                 FROM Accounts a
                 JOIN PagedAccounts pa ON a.AccountId = pa.AccountId
-                LEFT JOIN AccountDepartments ad ON a.AccountId = ad.AccountId
-                LEFT JOIN Departments d ON ad.DepartmentId = d.DepartmentId
-                LEFT JOIN AccountRoles ar ON a.AccountId = ar.AccountId
+                LEFT JOIN AccountRoleAssignments ar ON a.AccountId = ar.AccountId
+                LEFT JOIN Departments d ON ar.DepartmentId = d.DepartmentId
                 LEFT JOIN Roles r ON ar.RoleId = r.RoleId
                 ORDER BY a.Username;
             ";
@@ -90,7 +89,7 @@ namespace Cms.Infrastructure.Repositories.Account
             //         r.RoleName,
             //         a.Status
             //     FROM Accounts a
-            //     LEFT JOIN AccountRoles ar 
+            //     LEFT JOIN AccountRoleAssignments ar 
             //         ON a.AccountId = ar.AccountId
             //     LEFT JOIN Roles r 
             //         ON ar.RoleId = r.RoleId
@@ -165,18 +164,20 @@ namespace Cms.Infrastructure.Repositories.Account
             return accountId;
         }
 
-        public async Task CreateAccountRoleAsync(Guid accountId, Guid roleId)
+        public async Task CreateAccountRoleAssignmentAsync(Guid accountId, Guid roleId, Guid departmentId)
         {
             const string sql = @"
-                INSERT INTO AccountRoles
+                INSERT INTO AccountRoleAssignments
                 (
                     AccountId,
-                    RoleId
+                    RoleId,
+                    DepartmentId
                 )
                 VALUES
                 (
                     @AccountId,
-                    @RoleId
+                    @RoleId,
+                    @DepartmentId
                 );
             ";
 
@@ -185,10 +186,31 @@ namespace Cms.Infrastructure.Repositories.Account
                 new
                 {
                     AccountId = accountId,
-                    RoleId = roleId
+                    RoleId = roleId,
+                    DepartmentId = departmentId
                 },
                 transaction: Tx  // 🔥 一樣要
             );
+        }
+
+        public async Task CreateAccountRoleAssignmentsAsync(IEnumerable<object> rows)
+        {
+            const string sql = @"
+                INSERT INTO AccountRoleAssignments
+                (
+                    AccountId,
+                    RoleId, 
+                    DepartmentId
+                )
+                VALUES 
+                (
+                    @AccountId,
+                    @RoleId, 
+                    @DepartmentId
+                );
+            ";
+
+            await _db.ExecuteAsync(sql, rows, transaction: Tx);
         }
 
         public async Task UpdateLastLoginAtAsync(Guid accountId, DateTime loginTime)
@@ -287,18 +309,20 @@ namespace Cms.Infrastructure.Repositories.Account
             );
         }
 
-        public async Task AddAccountRoleAsync(Guid accountId, Guid roleId)
+        public async Task AddAccountRoleAssignmentAsync(Guid accountId, Guid roleId, Guid departmentId)
         {
             const string sql = @"
-                INSERT INTO AccountRoles 
+                INSERT INTO AccountRoleAssignments 
                 (
                     AccountId, 
                     RoleId, 
+                    DepartmentId,
                     CreatedAt)
                 VALUES 
                 (
                     @AccountId,
                     @RoleId,
+                    @DepartmentId,
                     SYSUTCDATETIME()
                 )
             ";

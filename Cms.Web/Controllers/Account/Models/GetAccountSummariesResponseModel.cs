@@ -12,7 +12,15 @@ namespace Cms.Web.Controllers.Account.Models
 
         public AccountStatus Status { get; set; }
 
+        public required List<AccountRoleAssignmentResponseModel> RoleAssignments { get; set; }
+    }
+
+    public class AccountRoleAssignmentResponseModel
+    {
+        public required Guid RoleId { get; set; }
+        
+        public required string RoleName { get; set; }
+
         public required List<GetDepartmentOptionsResponseModel> Departments { get; set; }
-        public required List<GetRoleOptionsResponseModel> Roles { get; set; }
     }
 }

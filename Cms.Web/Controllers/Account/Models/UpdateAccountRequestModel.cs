@@ -8,8 +8,8 @@ namespace Cms.Web.Controllers.Account.Models
         [Required(ErrorMessage = "請輸入使用者名稱")]
         public required string Username { get; set; }
 
-        [Required(ErrorMessage = "請選擇角色")]
-        public required List<Guid> RoleIds { get; set; }
+        [Required(ErrorMessage = "請選擇角色部門指派")]
+        public required List<AccountRoleAssignmentRequestModel> RoleAssignments { get; set; }
 
         [Required(ErrorMessage = "請選擇狀態")]
         public AccountStatus Status { get; set; }

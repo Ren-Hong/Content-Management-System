@@ -12,7 +12,16 @@ namespace Cms.Web.Controllers.Account.Models
         [StringLength(20, MinimumLength = 8, ErrorMessage = "密碼長度需介於 8~20 字")]
         public required string Password { get; set; }
 
+        [Required(ErrorMessage = "請選擇角色部門指派")]
+        public required List<AccountRoleAssignmentRequestModel> RoleAssignments { get; set; }
+    }
+
+    public class AccountRoleAssignmentRequestModel
+    {
         [Required(ErrorMessage = "請選擇角色")]
-        public required List<Guid> RoleIds { get; set; }
+        public required Guid RoleId { get; set; }
+
+        [Required(ErrorMessage = "請選擇部門")]
+        public required Guid DepartmentId { get; set; }
     }
 }

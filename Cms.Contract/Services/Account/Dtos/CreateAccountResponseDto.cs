@@ -11,7 +11,8 @@
         UsernameRequired,
         PasswordRequired,
         UsernameDuplicated,
-        RoleIdsRequired,
-        RoleNotFound
+        RoleAssignmentsRequired,
+        RoleNotFound,
+        DepartmentNotFound,
     }
 }

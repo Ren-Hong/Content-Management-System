@@ -6,7 +6,7 @@ namespace Cms.Contract.Services.Account.Dtos
     {
         public required string Username { get; set; }
 
-        public required List<Guid> RoleIds { get; set; }
+        public required List<AccountRoleAssignmentRequestDto> RoleAssignments { get; set; }
 
         public AccountStatus Status { get; set; }
     }

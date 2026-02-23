@@ -2,6 +2,7 @@
 using Cms.Contract.Repositories.Account.Interfaces;
 using Cms.Contract.Repositories.Account.Persistence;
 using Cms.Contract.Repositories.Role.Interfaces;
+using Cms.Contract.Repositories.Department.Interfaces;
 using Cms.Contract.Services.Account.Dtos;
 using Cms.Contract.Services.Account.Interfaces;
 using Cms.Contract.Services.Department.Dtos;
@@ -17,16 +18,19 @@ namespace Cms.Application.Services.Account
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAccountRepository _accountRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly IDepartmentRepository _departmentRepository;
 
         public AccountService(
             IUnitOfWork unitOfWork,
             IAccountRepository accountRepository,
-            IRoleRepository roleRepository
+            IRoleRepository roleRepository,
+            IDepartmentRepository departmentRepository
         )
         {
             _unitOfWork = unitOfWork;
             _accountRepository = accountRepository;
             _roleRepository = roleRepository;
+            _departmentRepository = departmentRepository;
         }
 
         public async Task<LoginResponseDto> LoginAsync(LoginRequestDto dto)
@@ -111,25 +115,27 @@ namespace Cms.Application.Services.Account
                 .Select(g => new GetAccountSummariesResponseDto
                 {
                     AccountId = g.Key.AccountId,
-                    Username = g.Key.Username,
-                    Status = (AccountStatus)g.Key.Status,
+                    Username  = g.Key.Username,
+                    Status    = (AccountStatus)g.Key.Status,
 
-                    Departments = g
-                        .Where(x => x.DepartmentId.HasValue && x.DepartmentName != null)
-                        .Select(x => new GetDepartmentOptionsResponseDto
+                    RoleAssignments = g
+                        .Where(r => r.RoleId.HasValue && r.RoleName != null)
+                        .GroupBy(r => new { RoleId = r.RoleId!.Value, RoleName = r.RoleName! })
+                        .Select(roleGroup => new AccountRoleAssignmentResponseDto
                         {
-                            DepartmentId = x.DepartmentId!.Value,
-                            DepartmentName = x.DepartmentName!
-                        }).ToList(),
+                            RoleId = roleGroup.Key.RoleId,
+                            RoleName = roleGroup.Key.RoleName,
 
-                    Roles = g
-                        .Where(x => x.RoleId.HasValue && x.RoleName != null)
-                        .Select(x => new GetRoleOptionsResponseDto
-                        {
-                            RoleId = x.RoleId!.Value,
-                            RoleName = x.RoleName!
+                            Departments = roleGroup
+                                .Where(r => r.DepartmentId.HasValue && r.DepartmentName != null)
+                                .GroupBy(r => new { DeptId = r.DepartmentId!.Value, DeptName = r.DepartmentName! })
+                                .Select(dg => new GetDepartmentOptionsResponseDto
+                                {
+                                    DepartmentId = dg.Key.DeptId,
+                                    DepartmentName = dg.Key.DeptName
+                                })
+                                .ToList()
                         })
-                        .DistinctBy(r => r.RoleId)
                         .ToList()
                 })
                 .ToList();
@@ -142,7 +148,6 @@ namespace Cms.Application.Services.Account
                 Items = grouped
             };
         }
-
 
         public async Task<CreateAccountResponseDto> CreateAccountAsync(CreateAccountRequestDto dto)
         {
@@ -164,21 +169,40 @@ namespace Cms.Application.Services.Account
                 };
             }
 
-            // RoleIds 沒new 或裡面沒東西
-            if (dto.RoleIds == null || !dto.RoleIds.Any())
+            // RoleAssignments 沒給
+            if (dto.RoleAssignments == null || !dto.RoleAssignments.Any())
             {
                 return new CreateAccountResponseDto
                 {
-                    Result = CreateAccountResult.RoleIdsRequired
+                    Result = CreateAccountResult.RoleAssignmentsRequired
                 };
             }
 
-            //每一筆RoleIds存不存在表中
-            if (!await _roleRepository.AllRolesExistAsync(dto.RoleIds))
+            // 檢查 Role 是否存在
+            var roleIds = dto.RoleAssignments
+                .Select(x => x.RoleId)
+                .Distinct()
+                .ToList();
+
+            if (!await _roleRepository.AllRolesExistAsync(roleIds))
             {
                 return new CreateAccountResponseDto
                 {
                     Result = CreateAccountResult.RoleNotFound
+                };
+            }
+
+            // 檢查 Department 是否存在
+            var departmentIds = dto.RoleAssignments
+                .SelectMany(x => x.DepartmentIds) // 因為一個 RoleAssignment 可能對多個 Department, 所以要 SelectMany 展平
+                .Distinct()
+                .ToList();
+
+            if (!await _departmentRepository.AllDepartmentsExistAsync(departmentIds))
+            {
+                return new CreateAccountResponseDto
+                {
+                    Result = CreateAccountResult.DepartmentNotFound
                 };
             }
 
@@ -206,14 +230,17 @@ namespace Cms.Application.Services.Account
                     passwordHash
                 );
 
-                // 建多筆 AccountRole
-                foreach (var roleId in dto.RoleIds)
-                {
-                    await _accountRepository.CreateAccountRoleAsync(
-                        accountId, 
-                        roleId
-                    );
-                }
+                // 建多筆 AccountRoleAssignment
+                var rows = dto.RoleAssignments
+                    .SelectMany(r => r.DepartmentIds.Select(d => new //心法：SelectMany(RoleId) + Select(DepartmentId) 就是雙層foreach
+                    {
+                        AccountId = accountId,
+                        RoleId = r.RoleId,
+                        DepartmentId = d
+                    }))
+                    .ToList();
+
+                await _accountRepository.CreateAccountRoleAssignmentsAsync(rows);
 
                 _unitOfWork.Commit();
 
@@ -240,12 +267,40 @@ namespace Cms.Application.Services.Account
                 };
             }
 
-            // RoleIds 沒new 或裡面沒東西
-            if (dto.RoleIds == null || !dto.RoleIds.Any())
+            // RoleAssignments 沒給
+            if (dto.RoleAssignments == null || !dto.RoleAssignments.Any())
             {
                 return new UpdateAccountResponseDto
                 {
-                    Result = UpdateAccountResult.RoleIdsRequired
+                    Result = UpdateAccountResult.RoleAssignmentsRequired
+                };
+            }
+
+            // 檢查 Role 是否存在
+            var roleIds = dto.RoleAssignments
+                .Select(x => x.RoleId)
+                .Distinct()
+                .ToList();
+
+            if (!await _roleRepository.AllRolesExistAsync(roleIds))
+            {
+                return new UpdateAccountResponseDto
+                {
+                    Result = UpdateAccountResult.RoleNotFound
+                };
+            }
+
+            // 檢查 Department 是否存在
+            var departmentIds = dto.RoleAssignments
+                .SelectMany(x => x.DepartmentIds)
+                .Distinct()
+                .ToList();
+
+            if (!await _departmentRepository.AllDepartmentsExistAsync(departmentIds))
+            {
+                return new UpdateAccountResponseDto
+                {
+                    Result = UpdateAccountResult.DepartmentNotFound
                 };
             }
 
@@ -255,15 +310,6 @@ namespace Cms.Application.Services.Account
                 return new UpdateAccountResponseDto
                 {
                     Result = UpdateAccountResult.AccountNotFound
-                };
-            }
-
-            //每一筆RoleIds存不存在表中
-            if (!await _roleRepository.AllRolesExistAsync(dto.RoleIds))
-            {
-                return new UpdateAccountResponseDto
-                {
-                    Result = UpdateAccountResult.RoleNotFound
                 };
             }
 
@@ -290,10 +336,17 @@ namespace Cms.Application.Services.Account
                 // 更新帳戶角色（先清掉再加，最乾淨）
                 await _accountRepository.DeleteAccountRolesAsync(accountId);
 
-                foreach (var roleId in dto.RoleIds)
-                {
-                    await _accountRepository.AddAccountRoleAsync(accountId, roleId);
-                }
+                // 建多筆 AccountRoleAssignment
+                var rows = dto.RoleAssignments
+                    .SelectMany(r => r.DepartmentIds.Select(d => new
+                    {
+                        AccountId = accountId,
+                        RoleId = r.RoleId,
+                        DepartmentId = d
+                    }))
+                    .ToList();
+
+                await _accountRepository.CreateAccountRoleAssignmentsAsync(rows);
 
                 _unitOfWork.Commit();
 

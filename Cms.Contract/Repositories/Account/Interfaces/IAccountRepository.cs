@@ -52,7 +52,15 @@ namespace Cms.Contract.Repositories.Account.Interfaces
         /// <param name="accountId"></param>
         /// <param name="roleCode"></param>
         /// <returns>不用回傳值, 失敗就是例外</returns>
-        Task CreateAccountRoleAsync(Guid accountId, Guid roleId);
+        Task CreateAccountRoleAssignmentAsync(Guid accountId, Guid roleId, Guid departmentId);
+
+        /// <summary>
+        /// 幫帳戶加角色(batch版)
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="roleCode"></param>
+        /// <returns>不用回傳值, 失敗就是例外</returns>
+        Task CreateAccountRoleAssignmentsAsync(IEnumerable<object> rows);
 
         /// <summary>
         /// 先改狀態後改中介表
@@ -95,7 +103,8 @@ namespace Cms.Contract.Repositories.Account.Interfaces
         /// </summary>
         /// <param name="accountId"></param>
         /// <param name="roleId"></param>
+        /// <param name="departmentId"></param>
         /// <returns></returns>
-        Task AddAccountRoleAsync(Guid accountId, Guid roleId);
+        Task AddAccountRoleAssignmentAsync(Guid accountId, Guid roleId, Guid departmentId);
     }
 }

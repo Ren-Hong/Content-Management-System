@@ -18,7 +18,12 @@ export const AccountCreateModal = {
             form: {
                 username: '',
                 password: '',
-                roleIds: []   // ⭐ 多選
+                roleAssignments: [
+                    {
+                        roleId: null,
+                        departmentIds: []
+                    }
+                ]
             },
             submitting: false
         };

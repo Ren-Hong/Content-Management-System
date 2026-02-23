@@ -9,9 +9,11 @@
     {
         Success,
         UsernameRequired,
-        RoleIdsRequired,
+        PasswordRequired,
         AccountNotFound,
         StatusNotFound,
-        RoleNotFound
+        RoleAssignmentsRequired,
+        RoleNotFound,
+        DepartmentNotFound,
     }
 }

@@ -119,7 +119,7 @@ export const AccountManager = {
 
                 </div>
 
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" @click="openCreate">
                     新增帳戶
                 </button>
             </div>

@@ -121,16 +121,15 @@ namespace Cms.Web.Controllers.Account
                     Username = x.Username,
                     Status = x.Status,
 
-                    Departments = x.Departments.Select(d => new GetDepartmentOptionsResponseModel
+                    RoleAssignments = x.RoleAssignments.Select(d => new AccountRoleAssignmentResponseModel
                     {
-                        DepartmentId = d.DepartmentId,
-                        DepartmentName = d.DepartmentName
-                    }).ToList(),
-
-                    Roles = x.Roles.Select(r => new GetRoleOptionsResponseModel
-                    {
-                        RoleId = r.RoleId,
-                        RoleName = r.RoleName
+                        RoleId = d.RoleId,
+                        RoleName = d.RoleName,
+                        Departments = d.Departments.Select(dep => new GetDepartmentOptionsResponseModel
+                        {
+                            DepartmentId = dep.DepartmentId,
+                            DepartmentName = dep.DepartmentName
+                        }).ToList()
                     }).ToList()
 
                 }).ToList()
@@ -165,7 +164,11 @@ namespace Cms.Web.Controllers.Account
                 {
                     Username = req.Username,
                     Password = req.Password,
-                    RoleIds = req.RoleIds
+                    RoleAssignments = req.RoleAssignments.Select(x => new AccountRoleAssignmentRequestDto
+                    {
+                        RoleId = x.RoleId,
+                        DepartmentIds = new List<Guid> { x.DepartmentId }   // 🔥 包成 List
+                    }).ToList(),
                 }
             );
 
@@ -199,7 +202,13 @@ namespace Cms.Web.Controllers.Account
                 new UpdateAccountRequestDto
                 {
                     Username = req.Username,
-                    RoleIds = req.RoleIds,
+
+                    RoleAssignments = req.RoleAssignments.Select(x => new AccountRoleAssignmentRequestDto
+                    {
+                        RoleId = x.RoleId,
+                        DepartmentIds = new List<Guid> { x.DepartmentId }   // 🔥 包成 List
+                    }).ToList(),
+
                     Status   = req.Status,
                 }
             );
