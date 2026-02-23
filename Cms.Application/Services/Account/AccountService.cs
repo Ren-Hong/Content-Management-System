@@ -6,7 +6,6 @@ using Cms.Contract.Repositories.Department.Interfaces;
 using Cms.Contract.Services.Account.Dtos;
 using Cms.Contract.Services.Account.Interfaces;
 using Cms.Contract.Services.Department.Dtos;
-using Cms.Contract.Services.Role.Dtos;
 using Cms.Contract.Services.UnitOfWork.Interfaces;
 using System.Data;
 
@@ -334,7 +333,7 @@ namespace Cms.Application.Services.Account
                 );
 
                 // 更新帳戶角色（先清掉再加，最乾淨）
-                await _accountRepository.DeleteAccountRolesAsync(accountId);
+                await _accountRepository.DeleteAccountRoleAssignmentsAsync(accountId);
 
                 // 建多筆 AccountRoleAssignment
                 var rows = dto.RoleAssignments

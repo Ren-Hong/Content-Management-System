@@ -127,30 +127,81 @@ export const AccountManager = {
             <table class="table table-bordered table-striped table-hover">
                 <thead class="table-dark">
                     <tr>
-                        <th>帳號</th>
-                        <th>部門</th>
-                        <th>角色</th>
-                        <th>狀態</th>
-                        <th style="width:180px">操作</th>
+                    <th>帳號</th>
+                    <th>角色</th>
+                    <th>部門</th>
+                    <th>狀態</th>
+                    <th style="width:180px">操作</th>
                     </tr>
                 </thead>
+                
                 <tbody>
-                    <tr v-for="a in accountSummaries" :key="a.accountId">
-                        <td>{{ a.username }}</td>
-                        <td>{{ a.departments?.map(d => d.departmentName).join(', ') }}</td>
-                        <td>{{ a.roles?.map(r => r.roleName).join(', ') }}</td>
-                        <td>{{ AccountStatusText[a.status] }}</td>
-                        <td class="text-nowrap">
-                            <button class="btn btn-success btn-sm me-1"
-                                    @click="openEdit(a)">編輯</button>
+                    <template v-for="a in accountSummaries" :key="a.accountId">
 
-                            <button class="btn btn-warning btn-sm me-1 text-white"
-                                    @click="openResetPassword(a)">重設密碼</button>
+                        <!-- 有 roleAssignments：用 rowspan 顯示 -->
+                        <template v-if="a.roleAssignments && a.roleAssignments.length > 0">
+                            <tr v-for="(ra, idx) in a.roleAssignments" :key="a.accountId + '-' + ra.roleId">
 
-                            <button class="btn btn-danger btn-sm"
-                                    @click="openDelete(a)">刪除</button>
-                        </td>
-                    </tr>
+                                <!-- 帳號：只在第一列顯示一次 -->
+                                <td v-if="idx === 0" :rowspan="a.roleAssignments.length">
+                                    {{ a.username }}
+                                </td>
+
+                                <!-- 角色 -->
+                                <td>
+                                    {{ ra.roleName }}
+                                </td>
+
+                                <!-- 這個角色的部門（badge 方式最清楚） -->
+                                <td>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span v-for="d in ra.departments"
+                                            :key="d.departmentId"
+                                            class="badge bg-secondary">
+                                            {{ d.departmentName }}
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <!-- 狀態：也只顯示一次 -->
+                                <td v-if="idx === 0" :rowspan="a.roleAssignments.length">
+                                    {{ AccountStatusText[a.status] }}
+                                </td>
+
+                                <!-- 操作：也只顯示一次 -->
+                                <td v-if="idx === 0" :rowspan="a.roleAssignments.length" class="text-nowrap">
+                                    <button class="btn btn-success btn-sm me-1"
+                                            @click="openEdit(a)">編輯</button>
+
+                                    <button class="btn btn-warning btn-sm me-1 text-white"
+                                            @click="openResetPassword(a)">重設密碼</button>
+
+                                    <button class="btn btn-danger btn-sm"
+                                            @click="openDelete(a)">刪除</button>
+                                </td>
+
+                            </tr>
+                        </template>
+
+                        <!-- 沒有 roleAssignments：顯示一列空白 -->
+                        <tr v-else>
+                            <td>{{ a.username }}</td>
+                            <td class="text-muted">—</td>
+                            <td class="text-muted">—</td>
+                            <td>{{ AccountStatusText[a.status] }}</td>
+                            <td class="text-nowrap">
+                                <button class="btn btn-success btn-sm me-1"
+                                        @click="openEdit(a)">編輯</button>
+
+                                <button class="btn btn-warning btn-sm me-1 text-white"
+                                        @click="openResetPassword(a)">重設密碼</button>
+
+                                <button class="btn btn-danger btn-sm"
+                                        @click="openDelete(a)">刪除</button>
+                            </td>
+                        </tr>
+
+                    </template>
                 </tbody>
             </table>
 

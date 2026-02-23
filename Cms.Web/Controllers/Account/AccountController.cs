@@ -167,7 +167,7 @@ namespace Cms.Web.Controllers.Account
                     RoleAssignments = req.RoleAssignments.Select(x => new AccountRoleAssignmentRequestDto
                     {
                         RoleId = x.RoleId,
-                        DepartmentIds = new List<Guid> { x.DepartmentId }   // 🔥 包成 List
+                        DepartmentIds = x.DepartmentIds
                     }).ToList(),
                 }
             );
@@ -206,7 +206,7 @@ namespace Cms.Web.Controllers.Account
                     RoleAssignments = req.RoleAssignments.Select(x => new AccountRoleAssignmentRequestDto
                     {
                         RoleId = x.RoleId,
-                        DepartmentIds = new List<Guid> { x.DepartmentId }   // 🔥 包成 List
+                        DepartmentIds = x.DepartmentIds   // 🔥 包成 List
                     }).ToList(),
 
                     Status   = req.Status,

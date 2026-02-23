@@ -96,7 +96,7 @@ namespace Cms.Contract.Repositories.Account.Interfaces
         /// </summary>
         /// <param name="accountId"></param>
         /// <returns></returns>
-        Task DeleteAccountRolesAsync(Guid accountId);
+        Task DeleteAccountRoleAssignmentsAsync(Guid accountId);
 
         /// <summary>
         /// 帳戶建立一筆與角色的對應

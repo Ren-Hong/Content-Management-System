@@ -1,5 +1,6 @@
 ﻿import { updateAccount } from '../api/accountApi.js';
 import { getRoleOptions } from '../api/roleApi.js';
+import { getDepartmentOptions } from '../api/departmentApi.js';
 
 import { AccountStatusText } from '../constants/accountStatus.js';
 
@@ -22,13 +23,19 @@ export const AccountEditModal = {
             AccountStatusText, 
 
             modal: null,
-            submitting: false,
             roleOptions: [],
+            departmentOptions: [],
             form: {
                 username: '',
                 status: '',
-                roleIds: []   // ⭐ 多選
-            }
+                roleAssignments: [
+                    {
+                        roleId: '',
+                        departmentIds: []
+                    }
+                ]
+            },
+            submitting: false,
         };
     },
 
@@ -36,6 +43,7 @@ export const AccountEditModal = {
         async show(val) {
             if (val) {
                 await this.loadRoleOptions(); 
+                await this.loadDepartmentOptions();
 
                 this.fillForm();
                 this.modal.show();
@@ -71,22 +79,40 @@ export const AccountEditModal = {
             }
         },
 
+        async loadDepartmentOptions() {
+            try {
+                let res = await getDepartmentOptions();
+
+                if (!res.success) {
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
+                    return;
+                }
+
+                this.departmentOptions = res.data;
+            } catch (err) {
+                console.error(err);
+                alert('系統錯誤 -> 部門選單載入');
+            }
+        },
+
         onRoleSelected(event) {
             const roleId = event.target.value;
             if (!roleId) return;
 
-            // 避免重複加入
-            if (!this.form.roleIds.includes(roleId)) {
-                this.form.roleIds.push(roleId);
+            // 避免重複加入：檢查 roleAssignments 是否已有此 roleId
+            const exists = this.form.roleAssignments.some(x => x.roleId === roleId);
+            if (!exists) {
+                this.form.roleAssignments.push({
+                    roleId: roleId,
+                    departmentIds: []   // 先空陣列（之後你要加部門 UI 來填）
+                });
             }
 
-            // 重置 select
             event.target.value = '';
         },
 
         removeRole(roleId) {
-            this.form.roleIds =
-                this.form.roleIds.filter(id => id !== roleId);
+            this.form.roleAssignments = this.form.roleAssignments.filter(x => x.roleId !== roleId);
         },
 
         getRoleName(roleId) {
@@ -94,16 +120,25 @@ export const AccountEditModal = {
             return role ? role.roleName : roleId;
         },
 
-        fillForm() { // 填入本來的資料
+        fillForm() { // 填入本來的資料, 原始資料來自AccountManager
             this.form.username = this.account.username;
-            this.form.roleIds = this.account?.roles?.map(r => r.roleId) ?? [];
-            this.form.status = this.account.status ?? '';
+            this.form.status = this.account.status;
+
+            this.form.roleAssignments =
+                this.account.roleAssignments.map(ra => ({
+                    roleId: ra.roleId,
+                    departmentIds: ra.departments.map(d => d.departmentId)
+                }));
         },
 
         async submit() {
-
-            if (this.form.roleIds.length === 0) {
+            if (!this.form.roleAssignments || this.form.roleAssignments.length === 0) {
                 alert('請至少選擇一個角色');
+                return;
+            }
+
+            if (this.form.roleAssignments.some(r => !r.departmentIds || r.departmentIds.length === 0)) {
+                alert('每個角色至少選一個部門');
                 return;
             }
             this.submitting = true;
@@ -172,18 +207,30 @@ export const AccountEditModal = {
                                 </select>
                             </div>
 
-                            <div class="d-flex flex-wrap gap-2">
-                                <span v-for="roleId in form.roleIds"
-                                    :key="roleId"
-                                    class="badge bg-primary d-flex align-items-center">
+                            <div class="d-flex flex-wrap gap-3 mb-3"
+                                v-for="ra in form.roleAssignments" 
+                                :key="ra.roleId">
 
-                                    {{ getRoleName(roleId) }}
+                                <strong>{{ getRoleName(ra.roleId) }}</strong>
 
-                                    <button type="button"
-                                            class="btn-close btn-close-white ms-2"
-                                            @click="removeRole(roleId)">
-                                    </button>
-                                </span>
+                                <button type="button"
+                                        class="btn-close"
+                                        @click="removeRole(ra.roleId)">
+                                </button>
+
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div v-for="d in departmentOptions"
+                                        :key="d.departmentId">
+
+                                        <label>
+                                            <input type="checkbox"
+                                                    :value="d.departmentId"
+                                                    v-model="ra.departmentIds">
+
+                                            {{ d.departmentName }}
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>

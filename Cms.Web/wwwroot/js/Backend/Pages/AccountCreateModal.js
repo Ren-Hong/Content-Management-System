@@ -1,5 +1,6 @@
 ﻿import { createAccount } from '../api/accountApi.js';
 import { getRoleOptions } from '../api/roleApi.js';
+import { getDepartmentOptions } from '../api/departmentApi.js';
 
 export const AccountCreateModal = {
     props: {
@@ -15,6 +16,7 @@ export const AccountCreateModal = {
         return {
             modal: null,        // Bootstrap Modal instance
             roleOptions: [],
+            departmentOptions: [],
             form: {
                 username: '',
                 password: '',
@@ -33,6 +35,7 @@ export const AccountCreateModal = {
         async show(val) {                 //「只要 show 這個 prop 的值改變，如果它變成 true，我就把表單清空。」
             if (val) {
                 await this.loadRoleOptions(); 
+                await this.loadDepartmentOptions();
 
                 this.resetForm();
                 this.modal.show();
@@ -69,21 +72,40 @@ export const AccountCreateModal = {
             }
         },
 
+        async loadDepartmentOptions() {
+            try {
+                let res = await getDepartmentOptions();
+
+                if (!res.success) {
+                    alert(`錯誤代碼 -> ${res.errorCode}`);
+                    return;
+                }
+
+                this.departmentOptions = res.data;
+            } catch (err) {
+                console.error(err);
+                alert('系統錯誤 -> 部門選單載入');
+            }
+        },
+
         onRoleSelected(event) {
             const roleId = event.target.value;
             if (!roleId) return;
 
-            // 避免重複加入
-            if (!this.form.roleIds.includes(roleId)) {
-                this.form.roleIds.push(roleId);
+            // 避免重複加入：檢查 roleAssignments 是否已有此 roleId
+            const exists = this.form.roleAssignments.some(x => x.roleId === roleId);
+            if (!exists) {
+                this.form.roleAssignments.push({
+                    roleId: roleId,
+                    departmentIds: []   // 先空陣列（之後你要加部門 UI 來填）
+                });
             }
 
-            // 重置 select
             event.target.value = '';
         },
 
         removeRole(roleId) {
-            this.form.roleIds = this.form.roleIds.filter(id => id !== roleId);
+            this.form.roleAssignments = this.form.roleAssignments.filter(x => x.roleId !== roleId);
         },
 
         getRoleName(roleId) {
@@ -95,13 +117,18 @@ export const AccountCreateModal = {
             this.form = {
                 username: '',
                 password: '',
-                roleIds: []   // ✅ 一定要是陣列
+                roleAssignments: []
             };
         },
 
         async submit() {
-            if (this.form.roleIds.length === 0) {
+            if (!this.form.roleAssignments || this.form.roleAssignments.length === 0) {
                 alert('請至少選擇一個角色');
+                return;
+            }
+
+            if (this.form.roleAssignments.some(r => !r.departmentIds || r.departmentIds.length === 0)) {
+                alert('每個角色至少選一個部門');
                 return;
             }
 
@@ -172,18 +199,30 @@ export const AccountCreateModal = {
                                 </select>
                             </div>
 
-                            <div class="d-flex flex-wrap gap-2">
-                                <span v-for="roleId in form.roleIds"
-                                    :key="roleId"
-                                    class="badge bg-primary d-flex align-items-center">
+                            <div class="d-flex flex-wrap gap-3 mb-3"
+                                v-for="ra in form.roleAssignments" 
+                                :key="ra.roleId">
 
-                                    {{ getRoleName(roleId) }}
+                                <strong>{{ getRoleName(ra.roleId) }}</strong>
 
-                                    <button type="button"
-                                            class="btn-close btn-close-white ms-2"
-                                            @click="removeRole(roleId)">
-                                    </button>
-                                </span>
+                                <button type="button"
+                                        class="btn-close"
+                                        @click="removeRole(ra.roleId)">
+                                </button>
+
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div v-for="d in departmentOptions"
+                                        :key="d.departmentId">
+
+                                        <label>
+                                            <input type="checkbox"
+                                                    :value="d.departmentId"
+                                                    v-model="ra.departmentIds">
+
+                                            {{ d.departmentName }}
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>

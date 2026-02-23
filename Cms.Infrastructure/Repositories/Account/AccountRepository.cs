@@ -295,10 +295,10 @@ namespace Cms.Infrastructure.Repositories.Account
             });
         }
 
-        public async Task DeleteAccountRolesAsync(Guid accountId)
+        public async Task DeleteAccountRoleAssignmentsAsync(Guid accountId)
         {
             const string sql = @"
-                DELETE FROM AccountRoles
+                DELETE FROM AccountRoleAssignments
                 WHERE AccountId = @AccountId
             ";
 

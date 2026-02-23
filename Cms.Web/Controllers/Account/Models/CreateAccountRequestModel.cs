@@ -21,7 +21,7 @@ namespace Cms.Web.Controllers.Account.Models
         [Required(ErrorMessage = "請選擇角色")]
         public required Guid RoleId { get; set; }
 
-        [Required(ErrorMessage = "請選擇部門")]
-        public required Guid DepartmentId { get; set; }
+        [Required]
+        public List<Guid> DepartmentIds { get; set; } = [];
     }
 }
