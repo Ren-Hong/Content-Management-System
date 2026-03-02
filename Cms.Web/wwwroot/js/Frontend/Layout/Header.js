@@ -21,7 +21,7 @@ export const Header = {
                 />
 
                 <div class="fw-bold">
-                    亞東紀念醫院 — 內容管理系統 (後台)
+                    亞東紀念醫院 — 表單管理系統
                 </div>
             </div>
 

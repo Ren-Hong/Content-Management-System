@@ -9,29 +9,24 @@
     data() {
         return {
             menus: [
-                {
-                    key: 'AccountManager',
-                    title: '帳戶管理'
-                },
-                {
-                    key: 'RoleManager',
-                    title: '角色管理'
-                },
-                {
-                    key: 'PermissionAssignmentManager',
-                    title: '權限指派'
-                }
+                { key: 'Dashboard', title: '儀表板' },
+
+                { key: 'InternalMedicine', title: '內科' },
+                { key: 'Surgery', title: '外科' },
+                { key: 'Emergency', title: '急診科' },
+                { key: 'Pediatrics', title: '小兒科' },
+                { key: 'Nursing', title: '護理部' }
             ]
         };
     },
 
     template: `
-        <nav class="backend-sidebar">
+        <nav class="frontend-sidebar">
 
             <div
                 v-for="menu in menus"
                 :key="menu.key"
-                class="backend-sidebar-item"
+                class="frontend-sidebar-item"
                 :class="{ active: currentPage === pages[menu.key] }"
                 @click="$emit('page-change', pages[menu.key])"
             >

@@ -37,3 +37,13 @@ export async function deleteAccount(payload) {
         body: JSON.stringify(payload)
     }).then(r => r.json());
 }
+
+export async function logout() {
+    const res = await fetch('/api/account/logout', {
+        method: 'POST'
+    });
+
+    if (!res.ok) {
+        throw new Error('Logout failed');
+    }
+}

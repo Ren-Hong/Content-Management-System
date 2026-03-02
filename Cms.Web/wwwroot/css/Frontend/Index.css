@@ -1,35 +1,35 @@
-﻿/* ===========================
-    Root layout
+/* ===========================
+    Frontend Root
 =========================== */
 
-.backend-layout {
+.frontend-layout {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 
-    background: #0f172a;        /* 主背景 */
-    color: #e5e7eb;
+    background: #f3faf6;
+    color: #064e3b;
 }
 
 /* ===========================
     Header
 =========================== */
 
-.backend-header {
+.frontend-header {
     height: 64px;
     display: flex;
+    overflow: hidden;
     align-items: center;
-    padding: 0 20px;
 
-    background: #020617;
-    border-bottom: 1px solid #1e293b;
+    background: #bad8cc;
+    border-bottom: 1px solid #cce6d8;
 }
 
 /* ===========================
     Body
 =========================== */
 
-.backend-body {
+.frontend-body {
     flex: 1;
     display: flex;
     overflow: hidden;
@@ -39,62 +39,59 @@
     Sidebar
 =========================== */
 
-.backend-sidebar {
+.frontend-sidebar {
     width: 130px;
-    background: #020617;
-    border-right: 1px solid #1e293b;
-    padding: 8px;
+    background: #e6f4ec;
+    border-right: 1px solid #cce6d8;
 }
 
 /* ===========================
     Content
 =========================== */
 
-.backend-content {
+.frontend-content {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
-
-    background: #0f172a;
+    background: #f3faf6;
 }
 
 /* ===========================
     Sidebar items
 =========================== */
 
-.backend-sidebar-item {
-    padding: 10px 12px;
-    border-radius: 8px;
+.frontend-sidebar-item {
+    padding: 8px 12px;
+    border-radius: 6px;
     cursor: pointer;
 
-    color: #cbd5f5;
+    color: #065f46;
     transition: all .15s ease;
 }
 
-.backend-sidebar-item:hover {
-    background: #1e293b;
+.frontend-sidebar-item:hover {
+    background: #064e3b;
     color: white;
 }
 
-.backend-sidebar-item.active {
-    background: #2563eb;
+.frontend-sidebar-item.active {
+    background: #064e3b;
     color: white;
     font-weight: 600;
 }
 
 /* ===========================
-    Scrollbar (optional but sexy)
+    Scrollbar
 =========================== */
 
-.backend-content::-webkit-scrollbar {
+.frontend-content::-webkit-scrollbar {
     width: 8px;
 }
 
-.backend-content::-webkit-scrollbar-track {
-    background: #020617;
+.frontend-content::-webkit-scrollbar-track {
+    background: #e6f4ec;
 }
 
-.backend-content::-webkit-scrollbar-thumb {
-    background: #334155;
+.frontend-content::-webkit-scrollbar-thumb {
+    background: #9fdcbf;
     border-radius: 4px;
 }

@@ -25,8 +25,8 @@ namespace Cms.Web.Controllers.Account
             _accountService = accountService;
         }
 
-        [HttpPost("login")]
         [AllowAnonymous]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestModel req)
         {
             if (!ModelState.IsValid)
@@ -103,7 +103,20 @@ namespace Cms.Web.Controllers.Account
             });
         }
 
-        
+        [AllowAnonymous]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
+            return Json(new ApiResponse
+            {
+                Success = true
+            });
+        }
+
         [HttpPost("summaries")]
         public async Task<IActionResult> GetAccountSummaries([FromBody] PageRequest req)
         {

@@ -1,5 +1,6 @@
 ﻿import { Header } from './Layout/Header.js';
 import { Sidebar } from './Layout/Sidebar.js';
+
 import { AccountManager } from './Pages/AccountManager.js';
 import { RoleManager } from './Pages/RoleManager.js';
 import { PermissionAssignmentManager } from './Pages/PermissionAssignmentManager.js';
@@ -25,15 +26,15 @@ createApp({
     },
 
     template: `
-        <div class="backend-layout min-vh-100 bg-light">
+        <div class="backend-layout min-vh-100">
     
-            <header class="backend-header bg-white shadow-sm px-4 py-3">
+            <header class="backend-header shadow-sm px-4 py-3">
                 <Header />
             </header>
 
             <div class="backend-body d-flex">
             
-                <aside class="backend-sidebar bg-white p-3">
+                <aside class="backend-sidebar p-3">
                     <Sidebar
                         :currentPage="currentPage"
                         :pages="pages"
@@ -41,7 +42,7 @@ createApp({
                     />
                 </aside>
 
-                <main class="backend-content p-4 bg-light">
+                <main class="backend-content p-4">
                     <component :is="currentPage" />
                 </main>
 
