@@ -113,7 +113,7 @@ export const AccountManager = {
 
                     <button
                         class="btn btn-outline-secondary"
-                        onclick="searchAccounts()">
+                        @click="searchAccounts()">
                         🔍 搜尋
                     </button>
 

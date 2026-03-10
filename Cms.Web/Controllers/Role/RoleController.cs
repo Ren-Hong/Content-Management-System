@@ -2,7 +2,7 @@
 using Cms.Contract.Controllers.Api;
 using Cms.Contract.Services.Role.Dtos;
 using Cms.Contract.Services.Role.Interfaces;
-using Cms.Web.Controllers.Role.Models;
+using Cms.Contract.Controllers.Role.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

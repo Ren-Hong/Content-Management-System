@@ -9,5 +9,11 @@ namespace Cms.Contract.Services.Department.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<List<GetDepartmentOptionsResponseDto>> GetDepartmentOptionsAsync();
+
+        /// <summary>
+        /// 專給側邊欄用的Department
+        /// </summary>
+        /// <returns></returns>
+        Task<List<GetDepartmentsForSidebarResponseDto>> GetDepartmentsForSidebarAsync();
     }
 }

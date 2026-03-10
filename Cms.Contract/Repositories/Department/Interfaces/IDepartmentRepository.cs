@@ -16,5 +16,11 @@ namespace Cms.Contract.Repositories.Department.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<DepartmentOptionEntity>> GetDepartmentOptionsAsync();
+
+        /// <summary>
+        /// 給Sidebar用的Department
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<DepartmentSidebarEntity>> GetDepartmentsForSidebarAsync();
     }
 }

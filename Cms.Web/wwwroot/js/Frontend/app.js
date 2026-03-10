@@ -19,16 +19,28 @@ createApp({
     data() {
         return {
             currentPage: markRaw(Dashboard),
+            currentDepartmentCode: 'DASH',
+            currentDepartmentId: null,
 
             pages: {
-                Dashboard: markRaw(Dashboard),
-                InternalMedicine: markRaw(InternalMedicine),
-                Surgery: markRaw(Surgery),
-                Emergency: markRaw(Emergency),
-                Pediatrics: markRaw(Pediatrics),
-                Nursing: markRaw(Nursing)
+                DASH: markRaw(Dashboard),
+                MED: markRaw(InternalMedicine),
+                SUR: markRaw(Surgery),
+                ER: markRaw(Emergency),
+                PED: markRaw(Pediatrics),
+                NUR: markRaw(Nursing)
             }
         };
+    },
+
+    methods: {
+        changePage(payload) {
+
+            this.currentPage = payload.component;
+            this.currentDepartmentCode = payload.departmentCode;
+            this.currentDepartmentId = payload.departmentId;
+
+        }
     },
 
     template: `
@@ -44,12 +56,16 @@ createApp({
                     <Sidebar
                         :currentPage="currentPage"
                         :pages="pages"
-                        @page-change="currentPage = $event"
+                        :currentDepartmentCode="currentDepartmentCode"
+                        @page-change="changePage"
                     />
                 </aside>
 
                 <main class="frontend-content p-4">
-                    <component :is="currentPage" />
+                    <component
+                        :is="currentPage"
+                        :department-id="currentDepartmentId"
+                    />
                 </main>
 
             </div>

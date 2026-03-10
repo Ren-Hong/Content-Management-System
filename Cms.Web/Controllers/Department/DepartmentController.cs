@@ -1,6 +1,6 @@
 using Cms.Contract.Controllers.Api;
 using Cms.Contract.Services.Department.Interfaces;
-using Cms.Web.Controllers.Department.Models;
+using Cms.Contract.Controllers.Department.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +8,6 @@ namespace Cms.Web.Controllers.Department
 {
     [ApiController]
     [Route("api/department")]
-    [Authorize(Roles = "Admin")]
     public class DepartmentController : Controller
     {
         private readonly IDepartmentService _departmentService;
@@ -21,7 +20,6 @@ namespace Cms.Web.Controllers.Department
         }
 
         [HttpPost("options")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetDepartmentOptions()
         {
             var rdto = await _departmentService.GetDepartmentOptionsAsync();
@@ -33,6 +31,25 @@ namespace Cms.Web.Controllers.Department
             }).ToList();
 
             return Json(new ApiResponse<IEnumerable<GetDepartmentOptionsResponseModel>>
+            {
+                Success = true,
+                Data = res
+            });
+        }
+
+        [HttpPost("sidebar")]
+        public async Task<IActionResult> GetDepartmentsForSidebar()
+        {
+            var rdto = await _departmentService.GetDepartmentsForSidebarAsync();
+
+            var res = rdto.Select(x => new GetDepartmentsForSidebarResponseModel
+            {
+                DepartmentId = x.DepartmentId,
+                DepartmentName = x.DepartmentName,
+                DepartmentCode = x.DepartmentCode,
+            }).ToList();
+
+            return Json(new ApiResponse<IEnumerable<GetDepartmentsForSidebarResponseModel>>
             {
                 Success = true,
                 Data = res

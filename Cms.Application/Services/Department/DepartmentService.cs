@@ -31,5 +31,19 @@ namespace Cms.Application.Services.Department
                 })
                 .ToList();
         }
+
+        public async Task<List<GetDepartmentsForSidebarResponseDto>> GetDepartmentsForSidebarAsync()
+        {
+            var rows = await _departmentRepository.GetDepartmentsForSidebarAsync();
+
+            return rows
+                .Select(x => new GetDepartmentsForSidebarResponseDto
+                {
+                    DepartmentId = x.DepartmentId,
+                    DepartmentCode = x.DepartmentCode,
+                    DepartmentName = x.DepartmentName
+                })
+                .ToList();
+        }
     }
 }

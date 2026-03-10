@@ -1,8 +1,8 @@
 ﻿export const Sidebar = {
-    props: [
-        'currentPage',
-        'pages'
-    ],
+    props: {
+        currentPage: Object,
+        pages: Object
+    },
 
     emits: ['page-change'],
 

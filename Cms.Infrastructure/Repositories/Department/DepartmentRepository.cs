@@ -49,5 +49,24 @@ namespace Cms.Infrastructure.Repositories.Department
                 transaction: Tx
             );
         }
+
+        public async Task<IEnumerable<DepartmentSidebarEntity>> GetDepartmentsForSidebarAsync()
+        {
+
+            const string sql = @"
+                SELECT
+                    DepartmentId,
+                    DepartmentCode,
+                    DepartmentName
+                FROM Departments
+                WHERE Status = 1
+                ORDER BY DepartmentCode
+            ";
+
+            return await _db.QueryAsync<DepartmentSidebarEntity>(
+                sql,
+                transaction: Tx
+            );
+        }
     }
 }

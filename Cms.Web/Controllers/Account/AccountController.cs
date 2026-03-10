@@ -2,9 +2,8 @@
 using Cms.Contract.Controllers.Api;
 using Cms.Contract.Services.Account.Dtos;
 using Cms.Contract.Services.Account.Interfaces;
-using Cms.Web.Controllers.Account.Models;
-using Cms.Web.Controllers.Department.Models;
-using Cms.Web.Controllers.Role.Models;
+using Cms.Contract.Controllers.Account.Models;
+using Cms.Contract.Controllers.Department.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;

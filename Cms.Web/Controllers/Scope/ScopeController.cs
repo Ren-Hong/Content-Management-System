@@ -1,8 +1,8 @@
 ﻿using Cms.Contract.Services.Scope.Dtos;
 using Cms.Contract.Services.Scope.Interfaces;
 using Cms.Contract.Controllers.Api;
-using Cms.Web.Controllers.Role.Models;
-using Cms.Web.Controllers.Scope.Models;
+using Cms.Contract.Controllers.Role.Models;
+using Cms.Contract.Controllers.Scope.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
