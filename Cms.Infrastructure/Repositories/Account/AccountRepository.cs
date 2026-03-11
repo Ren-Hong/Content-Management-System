@@ -48,6 +48,72 @@ namespace Cms.Infrastructure.Repositories.Account
             );
         }
 
+        public async Task<bool> HasGlobalPermissionScopeAsync(Guid accountId, string permissionCode)
+        {
+            const string sql = @"
+                SELECT TOP 1 1
+                FROM AccountRoleAssignments ara
+                INNER JOIN Roles r
+                    ON r.RoleId = ara.RoleId
+                    AND r.Status = 1
+                INNER JOIN RolePermissions rp
+                    ON rp.RoleId = r.RoleId
+                INNER JOIN Permissions p
+                    ON p.PermissionId = rp.PermissionId
+                    AND p.Status = 1
+                INNER JOIN Scopes s
+                    ON s.ScopeId = rp.ScopeId
+                WHERE ara.AccountId = @AccountId
+                    AND p.PermissionCode = @PermissionCode
+                    AND s.ScopeCode = N'Global';
+            ";
+
+            var result = await _db.ExecuteScalarAsync<int?>(
+                sql,
+                new
+                {
+                    AccountId = accountId,
+                    PermissionCode = permissionCode
+                },
+                transaction: Tx
+            );
+
+            return result.HasValue;
+        }
+
+        public async Task<List<Guid>> GetDepartmentIdsByPermissionScopeAsync(Guid accountId, string permissionCode)
+        {
+            const string sql = @"
+                SELECT DISTINCT ara.DepartmentId
+                FROM AccountRoleAssignments ara
+                INNER JOIN Roles r
+                    ON r.RoleId = ara.RoleId
+                    AND r.Status = 1
+                INNER JOIN RolePermissions rp
+                    ON rp.RoleId = r.RoleId
+                INNER JOIN Permissions p
+                    ON p.PermissionId = rp.PermissionId
+                    AND p.Status = 1
+                INNER JOIN Scopes s
+                    ON s.ScopeId = rp.ScopeId
+                WHERE ara.AccountId = @AccountId
+                    AND p.PermissionCode = @PermissionCode
+                    AND s.ScopeCode = N'Department';
+            ";
+
+            var rows = await _db.QueryAsync<Guid>(
+                sql,
+                new
+                {
+                    AccountId = accountId,
+                    PermissionCode = permissionCode
+                },
+                transaction: Tx
+            );
+
+            return rows.ToList();
+        }
+
         public async Task<PagedResult<AccountSummaryEntity>> GetAccountSummariesPagedAsync(PageRequest preq)
         {
             var offset = (preq.Page - 1) * preq.PageSize;

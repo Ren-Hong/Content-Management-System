@@ -20,6 +20,37 @@ namespace Cms.Web.Controllers.Content
             _contentService = contentService;
         }
 
+        [Authorize(Policy = "Permission.Content.View")]
+        [HttpGet("{typeId:guid}")]
+        public async Task<IActionResult> GetContents(Guid typeId)
+        {
+            var serviceResponse = await _contentService.GetContentsAsync(typeId, GetCurrentAccountId());
+
+            return Json(new ApiResponse<IEnumerable<GetContentsResponseModel>>
+            {
+                Success = true,
+                Data = serviceResponse.Select(content => new GetContentsResponseModel
+                {
+                    ContentId = content.ContentId,
+                    RevisionId = content.RevisionId,
+                    Version = content.Version,
+                    OwnerUsername = content.OwnerUsername,
+                    Status = content.Status,
+                    CreatedAt = content.CreatedAt,
+                    FieldValues = content.FieldValues
+                        .Select(field => new GetContentFieldValueModel
+                        {
+                            FieldId = field.FieldId,
+                            FieldName = field.FieldName,
+                            FieldType = field.FieldType,
+                            FieldValue = field.FieldValue
+                        })
+                        .ToList()
+                }).ToList()
+            });
+        }
+
+        [Authorize(Policy = "Permission.Content.Create")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateContent([FromBody] CreateContentRequestModel requestModel)
         {
@@ -64,6 +95,66 @@ namespace Cms.Web.Controllers.Content
             });
         }
 
+        [Authorize(Policy = "Permission.Content.Edit")]
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateContent([FromBody] UpdateContentRequestModel requestModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(BuildValidationErrorResponse());
+            }
+
+            var serviceResponse = await _contentService.UpdateContentAsync(
+                new UpdateContentRequestDto
+                {
+                    ContentId = requestModel.ContentId,
+                    RevisionId = requestModel.RevisionId,
+                    FieldValues = requestModel.FieldValues
+                        .Select(fieldValue => new UpdateContentFieldValueDto
+                        {
+                            FieldId = fieldValue.FieldId,
+                            FieldValue = fieldValue.FieldValue
+                        })
+                        .ToList()
+                },
+                GetCurrentAccountId()
+            );
+
+            return Json(new ApiResponse
+            {
+                Success = serviceResponse.Result == UpdateContentResult.Success,
+                ErrorCode = serviceResponse.Result != UpdateContentResult.Success
+                    ? serviceResponse.Result.ToString()
+                    : null
+            });
+        }
+
+        [Authorize(Policy = "Permission.Content.Delete")]
+        [HttpPost("delete")]
+        public async Task<IActionResult> DeleteContent([FromBody] DeleteContentRequestModel requestModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(BuildValidationErrorResponse());
+            }
+
+            var serviceResponse = await _contentService.DeleteContentAsync(
+                new DeleteContentRequestDto
+                {
+                    ContentId = requestModel.ContentId
+                },
+                GetCurrentAccountId()
+            );
+
+            return Json(new ApiResponse
+            {
+                Success = serviceResponse.Result == DeleteContentResult.Success,
+                ErrorCode = serviceResponse.Result != DeleteContentResult.Success
+                    ? serviceResponse.Result.ToString()
+                    : null
+            });
+        }
+
         private ApiResponse BuildValidationErrorResponse()
         {
             return new ApiResponse
@@ -76,6 +167,15 @@ namespace Cms.Web.Controllers.Content
                         entry => entry.Value!.Errors.Select(error => error.ErrorMessage).ToList()
                     )
             };
+        }
+
+        private Guid GetCurrentAccountId()
+        {
+            var ownerClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return Guid.TryParse(ownerClaim, out var accountId)
+                ? accountId
+                : Guid.Empty;
         }
     }
 }

@@ -22,6 +22,16 @@ namespace Cms.Contract.Repositories.Account.Interfaces
         Task<IEnumerable<AccountAuthEntity>> GetAccountAuthByUsernameAsync(string username);
 
         /// <summary>
+        /// 判斷帳號是否具備某個權限的 Global scope。
+        /// </summary>
+        Task<bool> HasGlobalPermissionScopeAsync(Guid accountId, string permissionCode);
+
+        /// <summary>
+        /// 取得帳號在某個權限下可存取的 Department 範圍。
+        /// </summary>
+        Task<List<Guid>> GetDepartmentIdsByPermissionScopeAsync(Guid accountId, string permissionCode);
+
+        /// <summary>
         /// 更新帳號最後登入時間
         /// </summary>
         /// <param name="accountId">帳號唯一識別碼</param>

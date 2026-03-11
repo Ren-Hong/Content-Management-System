@@ -14,6 +14,6 @@ namespace Cms.Contract.Services.Department.Interfaces
         /// 專給側邊欄用的Department
         /// </summary>
         /// <returns></returns>
-        Task<List<GetDepartmentsForSidebarResponseDto>> GetDepartmentsForSidebarAsync();
+        Task<List<GetDepartmentsForSidebarResponseDto>> GetDepartmentsForSidebarAsync(Guid accountId);
     }
 }

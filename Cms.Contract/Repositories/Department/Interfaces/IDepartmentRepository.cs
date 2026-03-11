@@ -22,5 +22,10 @@ namespace Cms.Contract.Repositories.Department.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<DepartmentSidebarEntity>> GetDepartmentsForSidebarAsync();
+
+        /// <summary>
+        /// 給 Sidebar 用的指定 Department。
+        /// </summary>
+        Task<IEnumerable<DepartmentSidebarEntity>> GetDepartmentsForSidebarAsync(IEnumerable<Guid> departmentIds);
     }
 }

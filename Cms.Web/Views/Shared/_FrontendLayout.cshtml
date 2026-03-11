@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Linq
+@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -10,6 +12,17 @@
 </head>
 <body>
     @RenderBody()
+
+    <script>
+        window.frontendAuth = {
+            permissions: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                User.FindAll("permission")
+                    .Select(claim => claim.Value)
+                    .Distinct()
+                    .ToList()
+            ))
+        };
+    </script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

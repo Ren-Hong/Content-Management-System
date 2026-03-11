@@ -136,7 +136,7 @@ export const InternalMedicine = {
                 </button>
             </div>
 
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs dynamic-form-tabs">
                 <li
                     class="nav-item"
                     v-for="t in contentTypes"

@@ -4,6 +4,7 @@ using Cms.Contract.Controllers.Api;
 using Cms.Contract.Services.ContentType.Interfaces;
 using Cms.Contract.Controllers.ContentType.Models;
 using Cms.Contract.Services.ContentType.Dtos;
+using System.Security.Claims;
 
 namespace Cms.Web.Controllers.ContentType
 {
@@ -19,6 +20,7 @@ namespace Cms.Web.Controllers.ContentType
             _contentTypeService = contentTypeService;
         }
 
+        [Authorize(Policy = "Permission.Content.View")]
         [HttpPost("options")]
         public async Task<IActionResult> GetContentTypeOptions([FromBody] GetContentTypeOptionsRequestModel req)
         {
@@ -27,7 +29,7 @@ namespace Cms.Web.Controllers.ContentType
                 DepartmentId = req.DepartmentId
             };
 
-            var rdto = await _contentTypeService.GetContentTypeOptionsAsync(dto);
+            var rdto = await _contentTypeService.GetContentTypeOptionsAsync(dto, GetCurrentAccountId());
 
             var res = rdto.Select(x => new GetContentTypeOptionsResponseModel
             {
@@ -91,10 +93,11 @@ namespace Cms.Web.Controllers.ContentType
             });
         }
 
+        [Authorize(Policy = "Permission.Content.View")]
         [HttpGet("{typeId:guid}/fields")]
         public async Task<IActionResult> GetContentFields(Guid typeId)
         {
-            var rdto = await _contentTypeService.GetContentFieldsAsync(typeId);
+            var rdto = await _contentTypeService.GetContentFieldsAsync(typeId, GetCurrentAccountId());
 
             var res = rdto.Select(x => new GetContentFieldsResponseModel
             {
@@ -110,6 +113,15 @@ namespace Cms.Web.Controllers.ContentType
                 Success = true,
                 Data = res
             });
+        }
+
+        private Guid GetCurrentAccountId()
+        {
+            var ownerClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return Guid.TryParse(ownerClaim, out var accountId)
+                ? accountId
+                : Guid.Empty;
         }
 
         [HttpPost("update")]

@@ -13,6 +13,7 @@ namespace Cms.Contract.Services.Content.Dtos
     {
         Success,
         TypeNotFound,
+        PermissionDenied,
         OwnerRequired,
         FieldValueRequired,
         FieldNotFound,

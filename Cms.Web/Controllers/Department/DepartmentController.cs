@@ -3,11 +3,13 @@ using Cms.Contract.Services.Department.Interfaces;
 using Cms.Contract.Controllers.Department.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Cms.Web.Controllers.Department
 {
     [ApiController]
     [Route("api/department")]
+    [Authorize]
     public class DepartmentController : Controller
     {
         private readonly IDepartmentService _departmentService;
@@ -38,9 +40,10 @@ namespace Cms.Web.Controllers.Department
         }
 
         [HttpPost("sidebar")]
+        [Authorize(Policy = "Permission.Content.View")]
         public async Task<IActionResult> GetDepartmentsForSidebar()
         {
-            var rdto = await _departmentService.GetDepartmentsForSidebarAsync();
+            var rdto = await _departmentService.GetDepartmentsForSidebarAsync(GetCurrentAccountId());
 
             var res = rdto.Select(x => new GetDepartmentsForSidebarResponseModel
             {
@@ -54,6 +57,15 @@ namespace Cms.Web.Controllers.Department
                 Success = true,
                 Data = res
             });
+        }
+
+        private Guid GetCurrentAccountId()
+        {
+            var ownerClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return Guid.TryParse(ownerClaim, out var accountId)
+                ? accountId
+                : Guid.Empty;
         }
     }
 }

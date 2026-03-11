@@ -5,9 +5,9 @@ namespace Cms.Contract.Services.ContentType.Interfaces
 {
     public interface IContentTypeService
     {
-        Task<List<GetContentTypeOptionsResponseDto>> GetContentTypeOptionsAsync(GetContentTypeOptionsRequestDto req);
+        Task<List<GetContentTypeOptionsResponseDto>> GetContentTypeOptionsAsync(GetContentTypeOptionsRequestDto req, Guid accountId);
 
-        Task<List<GetContentFieldsResponseDto>> GetContentFieldsAsync(Guid typeId);
+        Task<List<GetContentFieldsResponseDto>> GetContentFieldsAsync(Guid typeId, Guid accountId);
 
         Task<CreateContentTypeResponseDto> CreateContentTypeAsync(CreateContentTypeRequestDto req);
 

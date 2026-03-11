@@ -1,5 +1,6 @@
 using Cms.Contract.Services.ContentType.Interfaces;
 using Cms.Contract.Repositories.ContentType.Interfaces;
+using Cms.Contract.Services.PermissionScope.Interfaces;
 using Cms.Contract.Services.ContentType.Dtos;
 using Cms.Contract.Services.UnitOfWork.Interfaces;
 
@@ -7,6 +8,8 @@ namespace Cms.Application.Services.ContentType
 {
     public class ContentTypeService : IContentTypeService
     {
+        private const string ContentViewPermissionCode = "Content.View";
+
         private static readonly HashSet<string> AllowedFieldTypes = new(StringComparer.OrdinalIgnoreCase)
         {
             "text",
@@ -17,19 +20,38 @@ namespace Cms.Application.Services.ContentType
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IContentTypeRepository _contentTypeRepository;
+        private readonly IPermissionScopeService _permissionScopeService;
         public ContentTypeService
         (
             IUnitOfWork unitOfWork,
-            IContentTypeRepository contentTypeRepository
+            IContentTypeRepository contentTypeRepository,
+            IPermissionScopeService permissionScopeService
         )
         {
             _unitOfWork = unitOfWork;
             _contentTypeRepository = contentTypeRepository;
+            _permissionScopeService = permissionScopeService;
         }
 
         
-        public async Task<List<GetContentTypeOptionsResponseDto>> GetContentTypeOptionsAsync(GetContentTypeOptionsRequestDto req)
+        public async Task<List<GetContentTypeOptionsResponseDto>> GetContentTypeOptionsAsync(GetContentTypeOptionsRequestDto req, Guid accountId)
         {
+            if (req.DepartmentId == Guid.Empty)
+            {
+                return [];
+            }
+
+            var canAccessDepartment = await _permissionScopeService.CanAccessDepartmentAsync(
+                accountId,
+                ContentViewPermissionCode,
+                req.DepartmentId
+            );
+
+            if (!canAccessDepartment)
+            {
+                return [];
+            }
+
             var rows = await _contentTypeRepository.GetContentTypeOptionsAsync(req.DepartmentId);
 
             return rows
@@ -41,8 +63,30 @@ namespace Cms.Application.Services.ContentType
                 .ToList();
         }
 
-        public async Task<List<GetContentFieldsResponseDto>> GetContentFieldsAsync(Guid typeId)
+        public async Task<List<GetContentFieldsResponseDto>> GetContentFieldsAsync(Guid typeId, Guid accountId)
         {
+            if (typeId == Guid.Empty)
+            {
+                return [];
+            }
+
+            var departmentId = await _contentTypeRepository.GetDepartmentIdByTypeIdAsync(typeId);
+            if (!departmentId.HasValue)
+            {
+                return [];
+            }
+
+            var canAccessDepartment = await _permissionScopeService.CanAccessDepartmentAsync(
+                accountId,
+                ContentViewPermissionCode,
+                departmentId.Value
+            );
+
+            if (!canAccessDepartment)
+            {
+                return [];
+            }
+
             var rows = await _contentTypeRepository.GetContentFieldsAsync(typeId);
 
             return rows
